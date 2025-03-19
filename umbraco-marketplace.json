@@ -1,0 +1,14 @@
+{
+    "$schema": "https://marketplace.umbraco.com/umbraco-marketplace-schema.json", 
+    "AuthorDetails": {
+      "Name": "Dirk Seefeld",
+      "ImageUrl": "https://github.com/idseefeld.png"
+    },
+    "Category": "",
+    "Description": "",
+    "LicenseTypes": [ "Free" ],
+    "IssueTrackerUrl": "https://github.com/idseefeld/Wysiwg.Umbraco.Community.Extensions/issues",
+    "PackageType": "Package",
+    "Tags": [],
+    "Title": "wysiwgUmbracoCommunityExtensions"
+  }
