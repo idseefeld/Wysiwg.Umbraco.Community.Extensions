@@ -1,6 +1,6 @@
 import { LitElement, css, html, customElement, state } from "@umbraco-cms/backoffice/external/lit";
 import { UmbElementMixin } from "@umbraco-cms/backoffice/element-api";
-import { wysiwgUmbracoCommunityExtensionsService, UserModel } from "../api";
+import { WysiwgUmbracoCommunityExtensionsService, UserModel } from "../api";
 import { UUIButtonElement } from "@umbraco-cms/backoffice/external/uui";
 import { UMB_NOTIFICATION_CONTEXT, UmbNotificationContext } from "@umbraco-cms/backoffice/notification";
 import { UMB_CURRENT_USER_CONTEXT, UmbCurrentUserModel } from "@umbraco-cms/backoffice/current-user";
@@ -44,7 +44,7 @@ export class ExampleDashboardElement extends UmbElementMixin(LitElement) {
     const buttonElement = ev.target as UUIButtonElement;
     buttonElement.state = "waiting";
 
-    const { data, error } = await wysiwgUmbracoCommunityExtensionsService.whoAmI();
+    const { data, error } = await WysiwgUmbracoCommunityExtensionsService.whoAmI();
 
     if (error) {
       buttonElement.state = "failed";
@@ -72,7 +72,7 @@ export class ExampleDashboardElement extends UmbElementMixin(LitElement) {
     buttonElement.state = "waiting";
 
     // Getting a string - should I expect a datetime?!
-    const { data, error } = await wysiwgUmbracoCommunityExtensionsService.whatsTheTimeMrWolf();
+    const { data, error } = await WysiwgUmbracoCommunityExtensionsService.whatsTheTimeMrWolf();
 
     if (error) {
       buttonElement.state = "failed";
@@ -90,7 +90,7 @@ export class ExampleDashboardElement extends UmbElementMixin(LitElement) {
     const buttonElement = ev.target as UUIButtonElement;
     buttonElement.state = "waiting";
 
-    const { data, error } = await wysiwgUmbracoCommunityExtensionsService.whatsMyName();
+    const { data, error } = await WysiwgUmbracoCommunityExtensionsService.whatsMyName();
 
     if (error) {
       buttonElement.state = "failed";

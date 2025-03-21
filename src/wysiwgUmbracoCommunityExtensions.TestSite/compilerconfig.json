@@ -1,0 +1,14 @@
+﻿[
+  {
+    "outputFile": "wwwroot/styles/customblockgrid.css",
+    "inputFile": "wwwroot/styles/customblockgrid.scss"
+  },
+  {
+    "outputFile": "wwwroot/styles/customer.css",
+    "inputFile": "wwwroot/styles/customer.scss"
+  },
+  {
+    "outputFile": "wwwroot/styles/idseefeldblockgrid.css",
+    "inputFile": "wwwroot/styles/idseefeldblockgrid.scss"
+  }
+]

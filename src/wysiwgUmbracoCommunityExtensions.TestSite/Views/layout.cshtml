@@ -1,0 +1,62 @@
+@using Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Extensions;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<IMetaSeo>
+@{
+    Layout = null;
+
+    var authority = Context.Request.Host.Value;
+    var canonicalDomain = Constants.Debug ? authority : "[YOUR_DOMAIN]";
+    var v = Constants.Debug ? Random.Shared.Next(10000, 99999).ToString() : "3";
+
+    var pageTitle = string.IsNullOrEmpty(Model.MetaTitle) ? Model.Name : Model.MetaTitle;
+    var root = Model.AncestorsOrSelf<RootPage>()?.FirstOrDefault();
+    string siteName = root?.SiteName ?? authority ?? "?";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>@pageTitle | @siteName</title>
+
+    <link rel="shortcut icon" type="image/png" href="/favicon.png" />
+    <link rel="canonical" href="https://@(canonicalDomain)" />
+
+    <link href="~/styles/customblockgrid.min.css?v=@v" rel="stylesheet" />
+    <link href="~/styles/customer.min.css?v=@v" rel="stylesheet" />
+</head>
+<body id="top">
+
+    <div id="canvas">
+
+        <header>
+        </header>
+
+        <div id="content" class="content column-left column-right">
+
+            <nav id="left" class="column optional">
+            </nav>
+
+            <main>
+
+                @RenderBody()
+
+            </main>
+
+            <div id="right" class="column optional">
+            </div>
+        </div>
+
+        <footer>
+            @if (Constants.Debug)
+            {
+                <a href="/umbraco" target="_blank">backoffice</a>
+            }
+        </footer>
+
+    </div>
+
+    <script src="~/js/pictureloading.js?v=@v"></script>
+</body>
+</html>

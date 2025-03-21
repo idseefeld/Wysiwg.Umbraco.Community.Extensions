@@ -1,0 +1,11 @@
+@model BlockGridItem
+@{
+    var content = Model.Content as Headline;
+    if (content == null) return;
+
+    var settings = Model.Settings as HeadlineSettings;
+    var size = settings?.Size?.ToLower() ?? "h2";
+
+    var html = new HtmlString($"<{size}>{content.Text}</{size}>");
+}
+@html

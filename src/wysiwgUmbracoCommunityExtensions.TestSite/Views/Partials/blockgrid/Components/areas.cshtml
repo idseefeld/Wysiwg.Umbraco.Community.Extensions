@@ -1,0 +1,12 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@{
+    if (Model?.Areas.Any() != true) { return; }
+}
+
+<div class="umb-block-grid__area-container"
+     style="--umb-block-grid--area-grid-columns: @(Model.AreaGridColumns?.ToString() ?? Model.GridColumns?.ToString() ?? "12");@Model.Settings?.GetBackgroundStyle()">
+    @foreach (var area in Model.Areas)
+    {
+        @await Html.GetBlockGridItemAreaHtmlAsync(area)
+    }
+</div>

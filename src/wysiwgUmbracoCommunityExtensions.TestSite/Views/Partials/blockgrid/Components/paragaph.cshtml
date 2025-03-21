@@ -1,0 +1,8 @@
+@model BlockGridItem
+@{
+    var content = Model.Content as Paragaph;
+    if (content?.Text == null) return;
+}
+<div>
+    @content.Text.GetHtml()
+</div>

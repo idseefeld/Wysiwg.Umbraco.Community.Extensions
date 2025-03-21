@@ -1,7 +1,7 @@
 export const manifests: Array<UmbExtensionManifest> = [
   {
-    name: "wysiwgUmbraco Community Extensions Entrypoint",
-    alias: "wysiwgUmbracoCommunityExtensions.Entrypoint",
+    name: "wysiwg Extensions Entrypoint",
+    alias: "WysiwgExtensions.Entrypoint",
     type: "backofficeEntryPoint",
     js: () => import("./entrypoint"),
   }

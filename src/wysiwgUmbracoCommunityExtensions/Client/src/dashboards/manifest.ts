@@ -1,7 +1,7 @@
 export const manifests: Array<UmbExtensionManifest> = [
   {
-    name: "wysiwgUmbraco Community Extensions Dashboard",
-    alias: "wysiwgUmbracoCommunityExtensions.Dashboard",
+    name: "Block Demo Extensions Dashboard",
+    alias: "WysiwgUmbracoCommunityExtensions.Dashboard",
     type: 'dashboard',
     js: () => import("./dashboard.element"),
     meta: {

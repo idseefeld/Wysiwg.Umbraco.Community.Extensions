@@ -1,5 +1,5 @@
-﻿@using Umbraco.Cms.Core.Models.Blocks
-@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<IEnumerable<BlockGridItem>>
+@using Umbraco.Extensions
+@model IEnumerable<BlockGridItem>
 @{
     if (Model?.Any() != true) { return; }
 }
@@ -7,17 +7,20 @@
 <div class="umb-block-grid__layout-container">
     @foreach (var item in Model)
     {
+        var areasTemplates = new string[] { nameof(Article), nameof(TwoColumnRow) };
+        var alias = areasTemplates.InvariantContains(item.Content.ContentType.Alias)
+        ? BlockGridTemplateExtensions.DefaultItemAreasTemplate
+        : item.Content.ContentType.Alias;
+        var partialViewName = string.Concat(BlockGridTemplateExtensions.DefaultFolder, "Components/", alias);
 
-        <div
-            class="umb-block-grid__layout-item"
-            data-content-element-type-alias="@item.Content.ContentType.Alias"
-            data-content-element-type-key="@item.Content.ContentType.Key"
-            data-element-key="@item.ContentKey"
-            data-col-span="@item.ColumnSpan"
-            data-row-span="@item.RowSpan"
-            style=" --umb-block-grid--item-column-span: @item.ColumnSpan; --umb-block-grid--item-row-span: @item.RowSpan; ">
+        <div class="umb-block-grid__layout-item"
+             data-content-element-type-alias="@alias"
+             data-content-element-type-key="@item.Content.ContentType.Key"
+             data-element-key="@item.ContentKey"
+             data-col-span="@item.ColumnSpan"
+             data-row-span="@item.RowSpan"
+             style=" --umb-block-grid--item-column-span: @item.ColumnSpan; --umb-block-grid--item-row-span: @item.RowSpan; ">
             @{
-                var partialViewName = "blockgrid/Components/" + item.Content.ContentType.Alias;
                 try
                 {
                     @await Html.PartialAsync(partialViewName, item)
@@ -25,8 +28,8 @@
                 catch (InvalidOperationException)
                 {
                     <p>
-                        <strong>Could not render component of type: @(item.Content.ContentType.Alias)</strong>
-                        <br/>
+                        <strong>Could not render component of type: @(alias)</strong>
+                        <br />
                         This likely happened because the partial view <em>@partialViewName</em> could not be found.
                     </p>
                 }

@@ -1,0 +1,110 @@
+﻿@import "colors";
+
+$--uui-size-2: 6px;
+
+/*#region tags*/
+html {
+    font-size: 14px;
+}
+
+body {
+    font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: $body-backgroung-color;
+    color: $text-color;
+}
+
+h1, h2, h3, h4, h5, a, p, small, ul, ol {
+    -webkit-font-smoothing: antialiased;
+    line-height: calc(var(--uui-size-2, 6px)* 4);
+}
+
+h1 {
+    font-size: 24px;
+    line-height: 28px;
+}
+
+h2 {
+    font-size: 18px;
+    line-height: 24px;
+}
+
+h3 {
+    font-size: 1.17em;
+    line-height: 24px;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}
+
+img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+header {
+    width: 100%;
+}
+
+main {
+    padding: 1em;
+}
+
+figure {
+    margin: 1em 0;
+}
+
+footer {
+    background-color: $footer-background-color;
+    padding: 0.5em 1em;
+    margin: 0;
+}
+/*#endregion*/
+
+/*#region ids*/
+#canvas {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #fff;
+
+    .content {
+        display: flex;
+
+        main {
+            width: 100%;
+
+            aside {
+                font-size: 80%;
+
+                a {
+                    font-weight: normal;
+                }
+            }
+        }
+    }
+}
+/*#endregion*/
+
+/*#region classes*/
+
+.noscript-hidden {
+    display: none;
+}
+/*#endregion*/
+
+/*#region media queries*/
+@media (min-width: 1400px) {
+    body {
+        background-image: $body-backgroung-color;
+    }
+
+    #canvas {
+        width: 1400px;
+        margin: 0 auto;
+    }
+}
+
+/*#endregion*/
