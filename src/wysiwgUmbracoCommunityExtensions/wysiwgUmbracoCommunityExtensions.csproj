@@ -27,6 +27,7 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+    <None Include="compilerconfig.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,11 +39,8 @@
   
   <ItemGroup>
     <!-- Dont include the client folder as part of packaging nuget build -->
-    <Compile Remove="wwwroot\**" />
     <Content Remove="Client\**" />
-    <Content Remove="wwwroot\**" />
-    <EmbeddedResource Remove="wwwroot\**" />
-    <None Remove="wwwroot\**" />
+    <Content Remove="compilerconfig.json" />
     <None Remove="pack.cmd" />
 
     <!-- However make the Umbraco-package.json included for dotnet pack or nuget package and visible to the solution -->
