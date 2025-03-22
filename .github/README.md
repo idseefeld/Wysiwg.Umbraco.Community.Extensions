@@ -6,7 +6,7 @@
 
 This package is base on the [***Opinionated Umbraco Package Starter Template***](https://github.com/idseefeld/opinionated-package-starter) official [*Umbraco Extensions*](https://github.com/umbraco/Umbraco-CMS/tree/contrib/templates/UmbracoExtension) template gives you a starting point with additional examples for advanced Block Grid views within the backoffice.
 
-[!Screenshot: backoffice vs frontend](../assets/BOvsFrontend.jpg)
+![Screenshot: backoffice vs frontend](../docs/screenshots/BOvsFrontend.jpg)
 
 
 
@@ -24,7 +24,9 @@ Add the package to an existing Umbraco website (v15+) from nuget:
 
 `dotnet add package Umbraco.Community.wysiwgUmbracoCommunityExtensions`
 
+<!--
 TODO *provide any other instructions for someone using your package*
+-->
 
 ## Contributing
 
@@ -32,4 +34,4 @@ Contributions to this package are most welcome! Please read the [Contributing Gu
 
 ## Acknowledgments
 
-TODO
+Many thanks to the whole [Umbraco](https://umbraco.com/) team and [Lotte Pitcher](https://github.com/LottePitcher)!<br> **H5YR!** 

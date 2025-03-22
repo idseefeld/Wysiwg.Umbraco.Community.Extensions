@@ -1,14 +1,31 @@
 import { UmbTextStyles } from "@umbraco-cms/backoffice/style";
-import { html, customElement, LitElement, property, css, state, unsafeHTML } from "@umbraco-cms/backoffice/external/lit";
+import {
+  html,
+  customElement,
+  LitElement,
+  property,
+  css,
+  state,
+  unsafeHTML,
+} from "@umbraco-cms/backoffice/external/lit";
 import { UmbElementMixin } from "@umbraco-cms/backoffice/element-api";
-import type { UmbBlockDataModel, UmbBlockDataType } from "@umbraco-cms/backoffice/block";
+import type {
+  UmbBlockDataModel,
+  UmbBlockDataType,
+} from "@umbraco-cms/backoffice/block";
 import type { UmbBlockEditorCustomViewElement } from "@umbraco-cms/backoffice/block-custom-view";
-import { UMB_PROPERTY_DATASET_CONTEXT, UmbPropertyDatasetContext } from "@umbraco-cms/backoffice/property";
+import {
+  UMB_PROPERTY_DATASET_CONTEXT,
+  UmbPropertyDatasetContext,
+} from "@umbraco-cms/backoffice/property";
 import { UmbBlockGridValueModel } from "@umbraco-cms/backoffice/block-grid";
 
 const customElementName = "wysiwg-block-headline-view";
 @customElement(customElementName)
-export class WysiwgBlockHeadlineView extends UmbElementMixin(LitElement) implements UmbBlockEditorCustomViewElement {
+export class WysiwgBlockHeadlineView
+  extends UmbElementMixin(LitElement)
+  implements UmbBlockEditorCustomViewElement
+{
   //
   @property({ attribute: false })
   content?: UmbBlockDataType;
@@ -23,7 +40,9 @@ export class WysiwgBlockHeadlineView extends UmbElementMixin(LitElement) impleme
 
   constructor() {
     super();
-    this.consumeContext(UMB_PROPERTY_DATASET_CONTEXT, async (context) => this.getSettings(context));
+    this.consumeContext(UMB_PROPERTY_DATASET_CONTEXT, async (context) =>
+      this.getSettings(context)
+    );
   }
 
   async getSettings(context: any) {
@@ -42,17 +61,30 @@ export class WysiwgBlockHeadlineView extends UmbElementMixin(LitElement) impleme
 
   override render() {
     let size = "h1";
+    let inlineStyle = "";
+    let color = { label: "", value: "" };
     if (this.datasetSettings?.length) {
       const blockType = (this as UmbBlockEditorCustomViewElement).blockType;
-      const settings = this.datasetSettings.filter((s) => blockType?.settingsElementTypeKey === s.contentTypeKey)[0]?.values;
+      const settings = this.datasetSettings.filter(
+        (s) => blockType?.settingsElementTypeKey === s.contentTypeKey
+      )[0]?.values;
       size =
         settings
           .filter((v) => v.alias === "size")[0]
           ?.value?.toString()
           .toLowerCase() ?? size;
+
+      const colorSetting =
+        (settings.filter((v) => v.alias === "color")[0]?.value as {
+          label: string;
+          value: string;
+        }) ?? color;
+      if (colorSetting?.value) {
+        inlineStyle = `style="color: ${colorSetting?.value};"`;
+      }
     }
     const headline = this.content?.text ?? "Headline";
-    const innerHtml = `<${size}>${headline}</${size}>`;
+    const innerHtml = `<${size} ${inlineStyle}>${headline}</${size}>`;
     return html`${unsafeHTML(innerHtml)}`;
   }
 

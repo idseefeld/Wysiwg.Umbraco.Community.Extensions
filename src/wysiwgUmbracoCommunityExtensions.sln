@@ -7,13 +7,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		..\.github\CONTRIBUTING.md = ..\.github\CONTRIBUTING.md
 		..\.github\README.md = ..\.github\README.md
-		..\docs\README_nuget.md = ..\docs\README_nuget.md
 		..\umbraco-marketplace.json = ..\umbraco-marketplace.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wysiwgUmbracoCommunityExtensions.TestSite", "wysiwgUmbracoCommunityExtensions.TestSite\wysiwgUmbracoCommunityExtensions.TestSite.csproj", "{B46061C1-621F-46EA-9142-23D51C12032B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WysiwgUmbracoCommunityExtensions.TestSite", "wysiwgUmbracoCommunityExtensions.TestSite\WysiwgUmbracoCommunityExtensions.TestSite.csproj", "{B46061C1-621F-46EA-9142-23D51C12032B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wysiwgUmbracoCommunityExtensions", "wysiwgUmbracoCommunityExtensions\wysiwgUmbracoCommunityExtensions.csproj", "{E3332BDA-A1B7-4C57-9836-A26EFFB542CC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WysiwgUmbracoCommunityExtensions", "wysiwgUmbracoCommunityExtensions\WysiwgUmbracoCommunityExtensions.csproj", "{E3332BDA-A1B7-4C57-9836-A26EFFB542CC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{86DCB238-F4B9-4C73-A8F0-BB5C187BF1D5}"
+	ProjectSection(SolutionItems) = preProject
+		..\docs\logo.png = ..\docs\logo.png
+		..\docs\README_nuget.md = ..\docs\README_nuget.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "screenshots", "screenshots", "{817C8E25-B913-4332-AD68-D9B3431FFF54}"
+	ProjectSection(SolutionItems) = preProject
+		..\docs\screenshots\BOvsFrontend.jpg = ..\docs\screenshots\BOvsFrontend.jpg
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,6 +62,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{86DCB238-F4B9-4C73-A8F0-BB5C187BF1D5} = {C2EDD998-7255-4FB7-A12D-AEA0E2B3EE9C}
+		{817C8E25-B913-4332-AD68-D9B3431FFF54} = {86DCB238-F4B9-4C73-A8F0-BB5C187BF1D5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6F07004F-9903-4AEB-9ED0-BE57A0326D20}

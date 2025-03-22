@@ -355,3 +355,4 @@ MigrationBackup/
 # Rider
 src/.idea
 /src/wysiwgUmbracoCommunityExtensions/wwwroot
+/src/wysiwgUmbracoCommunityExtensions/pack.cmd

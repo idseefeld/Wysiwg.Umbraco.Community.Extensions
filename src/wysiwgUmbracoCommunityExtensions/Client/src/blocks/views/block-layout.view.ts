@@ -97,7 +97,6 @@ export class WysiwgBlockLayoutView
         (s) => s.key === layout?.settingsKey
       );
       const values = setting?.values as BlockGridLayoutModel[];
-      console.debug("setting:", setting);
 
       const backgroundColor = (
         (values?.find((v) => v.alias === "backgroundColor")?.value ?? {}) as {

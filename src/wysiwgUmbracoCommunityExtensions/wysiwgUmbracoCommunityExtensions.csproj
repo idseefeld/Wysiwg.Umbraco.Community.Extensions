@@ -19,8 +19,15 @@
     <PackageReadmeFile>README_nuget.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageIcon></PackageIcon>
+    <PackageIcon>logo.png</PackageIcon>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <None Include="..\..\docs\logo.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Umbraco.Cms.Web.Website" Version="15.3.0" />
@@ -36,6 +43,7 @@
     <Content Remove="wwwroot\**" />
     <EmbeddedResource Remove="wwwroot\**" />
     <None Remove="wwwroot\**" />
+    <None Remove="pack.cmd" />
 
     <!-- However make the Umbraco-package.json included for dotnet pack or nuget package and visible to the solution -->
     <None Include="Client\public\umbraco-package.json" Pack="false" />

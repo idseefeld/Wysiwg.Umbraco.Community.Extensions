@@ -1,14 +1,25 @@
 {
-    "$schema": "https://marketplace.umbraco.com/umbraco-marketplace-schema.json", 
-    "AuthorDetails": {
-      "Name": "Dirk Seefeld",
-      "ImageUrl": "https://github.com/idseefeld.png"
-    },
-    "Category": "",
-    "Description": "",
-    "LicenseTypes": [ "Free" ],
-    "IssueTrackerUrl": "https://github.com/idseefeld/Wysiwg.Umbraco.Community.Extensions/issues",
-    "PackageType": "Package",
-    "Tags": [],
-    "Title": "wysiwgUmbracoCommunityExtensions"
-  }
+  "$schema": "https://marketplace.umbraco.com/umbraco-marketplace-schema.json",
+  "AuthorDetails": {
+    "Name": "Dirk Seefeld",
+    "ImageUrl": "https://github.com/idseefeld.png",
+    "Url": "https://www.idseefeld.de",
+    "SyncContributorsFromRepository": true
+  },
+  "Category": "Editor Tools",
+  "AlternateCategory": "Developer Tools",
+  "Description": "This package is base on the [***Opinionated Umbraco Package Starter Template***](https://github.com/idseefeld/opinionated-package-starter) official [*Umbraco Extensions*](https://github.com/umbraco/Umbraco-CMS/tree/contrib/templates/UmbracoExtension) template gives you a starting point with additional examples for advanced Block Grid views within the backoffice.",
+  "LicenseTypes": [ "Free" ],
+  "IssueTrackerUrl": "https://github.com/idseefeld/Wysiwg.Umbraco.Community.Extensions/issues",
+  "PackageType": "Package",
+  "Tags": [ "package starter", "tutorial", "inspiration" ],
+  "Title": "WYSIWG in the Umbraco Backoffice",
+  "AlternatePackageNames": [ "wysiwgUmbracoCommunityExtensions" ],
+  "LookingForContributors": true,
+  "Screenshots": [
+    {
+      "Description": "Block Grid View - backoffice vs frontend",
+      "ImageUrl": ""
+    }
+  ]
+}

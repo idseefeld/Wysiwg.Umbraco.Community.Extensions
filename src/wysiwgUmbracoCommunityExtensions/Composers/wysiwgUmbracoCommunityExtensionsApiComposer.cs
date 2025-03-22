@@ -12,7 +12,7 @@ using Umbraco.Cms.Api.Common.OpenApi;
 
 namespace wysiwgUmbracoCommunityExtensions.Composers
 {
-    public class wysiwgUmbracoCommunityExtensionsApiComposer : IComposer
+    public class WysiwgUmbracoCommunityExtensionsApiComposer : IComposer
     {
         public void Compose(IUmbracoBuilder builder)
         {
@@ -44,11 +44,11 @@ namespace wysiwgUmbracoCommunityExtensions.Composers
 
                 // Enable Umbraco authentication for the "Example" Swagger document
                 // PR: https://github.com/umbraco/Umbraco-CMS/pull/15699
-                opt.OperationFilter<wysiwgUmbracoCommunityExtensionsOperationSecurityFilter>();
+                opt.OperationFilter<WysiwgUmbracoCommunityExtensionsOperationSecurityFilter>();
             });
         }
 
-        public class wysiwgUmbracoCommunityExtensionsOperationSecurityFilter : BackOfficeSecurityRequirementsOperationFilterBase
+        public class WysiwgUmbracoCommunityExtensionsOperationSecurityFilter : BackOfficeSecurityRequirementsOperationFilterBase
         {
             protected override string ApiName => Constants.ApiName;
         }

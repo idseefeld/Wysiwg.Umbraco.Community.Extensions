@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\wysiwgUmbracoCommunityExtensions\wysiwgUmbracoCommunityExtensions.csproj" />
+    <ProjectReference Include="..\wysiwgUmbracoCommunityExtensions\WysiwgUmbracoCommunityExtensions.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -10,7 +10,7 @@ namespace wysiwgUmbracoCommunityExtensions.Controllers
     [BackOfficeRoute("wysiwgumbracocommunityextensions/api/v{version:apiVersion}")]
     [Authorize(Policy = AuthorizationPolicies.SectionAccessContent)]
     [MapToApi(Constants.ApiName)]
-    public class wysiwgUmbracoCommunityExtensionsApiControllerBase : ControllerBase
+    public class WysiwgUmbracoCommunityExtensionsApiControllerBase : ControllerBase
     {
     }
 }

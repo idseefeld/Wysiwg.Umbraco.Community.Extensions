@@ -41,7 +41,17 @@ export class WysiwgBlockParagraphView extends UmbElementMixin(LitElement) implem
   }
 
   override render() {
+    let color = { label: "", value: "" };
     let inlineStyle = "";
+    if (this.datasetSettings?.length) {
+      const blockType = (this as UmbBlockEditorCustomViewElement).blockType;
+      const settings = this.datasetSettings.filter((s) => blockType?.settingsElementTypeKey === s.contentTypeKey)[0]?.values;
+
+      const colorSetting = (settings.filter((v) => v.alias === "color")[0]?.value as { label: string; value: string }) ?? color;
+      if (colorSetting?.value) {
+        inlineStyle = `style="color: ${colorSetting?.value};"`;
+      }
+    }
 
     var property = this.content?.text as { blocks: {}; markup: string };
     var markup = property?.markup;
