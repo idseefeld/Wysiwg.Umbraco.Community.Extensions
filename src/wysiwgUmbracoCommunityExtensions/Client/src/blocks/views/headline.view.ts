@@ -64,10 +64,11 @@ export class WysiwgBlockHeadlineView
     let inlineStyle = "";
     let color = { label: "", value: "" };
     if (this.datasetSettings?.length) {
-      const blockType = (this as UmbBlockEditorCustomViewElement).blockType;
+      const layout = (this as UmbBlockEditorCustomViewElement).layout;
       const settings = this.datasetSettings.filter(
-        (s) => blockType?.settingsElementTypeKey === s.contentTypeKey
+        (s) => layout?.settingsKey === s.key
       )[0]?.values;
+
       size =
         settings
           .filter((v) => v.alias === "size")[0]
@@ -79,6 +80,7 @@ export class WysiwgBlockHeadlineView
           label: string;
           value: string;
         }) ?? color;
+
       if (colorSetting?.value) {
         inlineStyle = `style="color: ${colorSetting?.value};"`;
       }

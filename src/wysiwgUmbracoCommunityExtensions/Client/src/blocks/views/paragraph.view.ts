@@ -63,9 +63,9 @@ export class WysiwgBlockParagraphView
     let color = { label: "", value: "" };
     let inlineStyle = "";
     if (this.datasetSettings?.length) {
-      const blockType = (this as UmbBlockEditorCustomViewElement).blockType;
+      const layout = (this as UmbBlockEditorCustomViewElement).layout;
       const settings = this.datasetSettings.filter(
-        (s) => blockType?.settingsElementTypeKey === s.contentTypeKey
+        (s) => layout?.settingsKey === s.key
       )[0]?.values;
 
       const colorSetting =
