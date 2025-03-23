@@ -67,6 +67,10 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
   #intersectionObserver?: IntersectionObserver;
 
   override render() {
+    if(!this._isLoading) {
+      this.#loadImage();
+    }
+
     return html`
       ${this.#renderImageCrop()}
       ${when(this._isLoading, () => this.#renderLoading())}
@@ -76,6 +80,15 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
   override connectedCallback() {
     super.connectedCallback();
 
+    this.#loadImage();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.#intersectionObserver?.disconnect();
+  }
+
+  #loadImage() {
     if (this.loading === "lazy") {
       this.#intersectionObserver = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting) {
@@ -87,11 +100,6 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
     } else {
       this.#generateImageUrl(this.width);
     }
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.#intersectionObserver?.disconnect();
   }
 
   #renderLoading() {

@@ -1,4 +1,4 @@
-import { html, customElement, LitElement, property, css } from "@umbraco-cms/backoffice/external/lit";
+import { html, customElement, LitElement, property, css, unsafeHTML } from "@umbraco-cms/backoffice/external/lit";
 import { UmbElementMixin } from "@umbraco-cms/backoffice/element-api";
 import type { UmbBlockDataType } from "@umbraco-cms/backoffice/block";
 import type { UmbBlockEditorCustomViewElement } from "@umbraco-cms/backoffice/block-custom-view";
@@ -15,12 +15,15 @@ export class PictureWithCropCustomView extends UmbElementMixin(LitElement) imple
     const mediaKey = mediaItem[0]?.mediaKey;
 
     if (mediaKey.length) {
+      let defaultColor : ColorType = { label: "Black", value: "#000" };
       const img = html`<wysiwg-image-crop
         unique="${mediaKey}"
         alt="${this.content?.alternativeText ?? ""}"
         cropAlias="${this.content?.cropAlias ?? ""}"></wysiwg-image-crop>`;
+      const captionColor = this.content?.captionColor as ColorType ?? defaultColor;
+      const inlineStyle = `style="color: ${captionColor.value};"`;
       const caption = this.content?.figCaption
-        ? html`<figcaption>${this.content?.figCaption}</figcaption>`
+        ? html`${unsafeHTML(`<figcaption ${inlineStyle}>${this.content?.figCaption}</figcaption>`)}`
         : "";
       return html`<figure>${img}${caption}</figure>`;
     } else {
@@ -41,5 +44,10 @@ export class PictureWithCropCustomView extends UmbElementMixin(LitElement) imple
     `,
   ];
 }
+
+export type ColorType = {
+  label: string;
+  value: string;
+};
 
 export default PictureWithCropCustomView;
