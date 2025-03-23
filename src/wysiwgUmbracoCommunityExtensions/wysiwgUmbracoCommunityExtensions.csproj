@@ -9,8 +9,8 @@
   <PropertyGroup>
     <Product>Umbraco.Community.wysiwgUmbracoCommunityExtensions</Product>
     <PackageId>Umbraco.Community.wysiwgUmbracoCommunityExtensions</PackageId>
-    <Title>wysiwgUmbracoCommunityExtensions</Title>
-    <Description>...</Description>
+    <Title>WYSIWG in the Umbraco Backoffice</Title>
+    <Description>Some Block Grid editor views for the new backoffice.</Description>
     <PackageTags>umbraco;umbraco-marketplace</PackageTags>
     <Authors>Dirk Seefeld</Authors>
     <Copyright>$([System.DateTime]::UtcNow.ToString(`yyyy`)) © Dirk Seefeld</Copyright>
@@ -20,6 +20,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>logo.png</PackageIcon>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>
   
   <ItemGroup>

@@ -1,14 +1,31 @@
 import { UmbTextStyles } from "@umbraco-cms/backoffice/style";
-import { html, customElement, LitElement, property, css, unsafeHTML, state } from "@umbraco-cms/backoffice/external/lit";
+import {
+  html,
+  customElement,
+  LitElement,
+  property,
+  css,
+  unsafeHTML,
+  state,
+} from "@umbraco-cms/backoffice/external/lit";
 import { UmbElementMixin } from "@umbraco-cms/backoffice/element-api";
-import type { UmbBlockDataModel, UmbBlockDataType } from "@umbraco-cms/backoffice/block";
+import type {
+  UmbBlockDataModel,
+  UmbBlockDataType,
+} from "@umbraco-cms/backoffice/block";
 import type { UmbBlockEditorCustomViewElement } from "@umbraco-cms/backoffice/block-custom-view";
-import { UMB_PROPERTY_DATASET_CONTEXT, UmbPropertyDatasetContext } from "@umbraco-cms/backoffice/property";
+import {
+  UMB_PROPERTY_DATASET_CONTEXT,
+  UmbPropertyDatasetContext,
+} from "@umbraco-cms/backoffice/property";
 import { UmbBlockGridValueModel } from "@umbraco-cms/backoffice/block-grid";
 
 const customElementName = "wysiwg-block-paragraph-view";
 @customElement(customElementName)
-export class WysiwgBlockParagraphView extends UmbElementMixin(LitElement) implements UmbBlockEditorCustomViewElement {
+export class WysiwgBlockParagraphView
+  extends UmbElementMixin(LitElement)
+  implements UmbBlockEditorCustomViewElement
+{
   //
   @property({ attribute: false })
   content?: UmbBlockDataType;
@@ -23,7 +40,9 @@ export class WysiwgBlockParagraphView extends UmbElementMixin(LitElement) implem
 
   constructor() {
     super();
-    this.consumeContext(UMB_PROPERTY_DATASET_CONTEXT, async (context) => this.getSettings(context));
+    this.consumeContext(UMB_PROPERTY_DATASET_CONTEXT, async (context) =>
+      this.getSettings(context)
+    );
   }
 
   async getSettings(context: any) {
@@ -45,9 +64,15 @@ export class WysiwgBlockParagraphView extends UmbElementMixin(LitElement) implem
     let inlineStyle = "";
     if (this.datasetSettings?.length) {
       const blockType = (this as UmbBlockEditorCustomViewElement).blockType;
-      const settings = this.datasetSettings.filter((s) => blockType?.settingsElementTypeKey === s.contentTypeKey)[0]?.values;
+      const settings = this.datasetSettings.filter(
+        (s) => blockType?.settingsElementTypeKey === s.contentTypeKey
+      )[0]?.values;
 
-      const colorSetting = (settings.filter((v) => v.alias === "color")[0]?.value as { label: string; value: string }) ?? color;
+      const colorSetting =
+        (settings.filter((v) => v.alias === "color")[0]?.value as {
+          label: string;
+          value: string;
+        }) ?? color;
       if (colorSetting?.value) {
         inlineStyle = `style="color: ${colorSetting?.value};"`;
       }
@@ -68,6 +93,20 @@ export class WysiwgBlockParagraphView extends UmbElementMixin(LitElement) implem
         box-sizing: border-box;
         margin: 0;
         padding: 0;
+      }
+
+      h2 {
+        font-size: 18px;
+        line-height: 24px;
+      }
+
+      h3 {
+        font-size: 1.17em;
+        line-height: 24px;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        margin-inline-start: 0;
+        margin-inline-end: 0;
       }
     `,
   ];

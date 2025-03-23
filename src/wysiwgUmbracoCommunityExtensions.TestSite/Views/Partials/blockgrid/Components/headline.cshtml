@@ -4,8 +4,9 @@
     if (content == null) return;
 
     var settings = Model.Settings as HeadlineSettings;
+    var inlineStyles = string.IsNullOrEmpty(settings?.Color?.Color) ? string.Empty : $"color: {settings?.Color?.Color};";
     var size = settings?.Size?.ToLower() ?? "h2";
 
-    var html = new HtmlString($"<{size}>{content.Text}</{size}>");
+    var html = new HtmlString($"<{size} style=\"{inlineStyles}\">{content.Text}</{size}>");
 }
 @html

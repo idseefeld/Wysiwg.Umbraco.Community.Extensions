@@ -1,4 +1,4 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Web.Common.PublishedModels;
 @using Umbraco.Extensions;
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<IMetaSeo>
 @{
@@ -23,7 +23,7 @@
     <link rel="shortcut icon" type="image/png" href="/favicon.png" />
     <link rel="canonical" href="https://@(canonicalDomain)" />
 
-    <link href="~/styles/customblockgrid.min.css?v=@v" rel="stylesheet" />
+    <link href="~/styles/wysiwgblockgrid.min.css?v=@v" rel="stylesheet" />
     <link href="~/styles/customer.min.css?v=@v" rel="stylesheet" />
 </head>
 <body id="top">
@@ -53,6 +53,7 @@
             {
                 <a href="/umbraco" target="_blank">backoffice</a>
             }
+            @await Html.PartialAsync("languageSwitch")
         </footer>
 
     </div>

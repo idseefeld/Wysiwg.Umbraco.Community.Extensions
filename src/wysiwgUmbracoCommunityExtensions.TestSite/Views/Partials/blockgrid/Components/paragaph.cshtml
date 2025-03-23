@@ -2,7 +2,10 @@
 @{
     var content = Model.Content as Paragaph;
     if (content?.Text == null) return;
+
+    var settings = Model.Settings as ParagraphSettings;
+    var inlineStyles = string.IsNullOrEmpty(settings?.Color?.Color) ? string.Empty : $"color: {settings?.Color?.Color};";
 }
-<div>
+<div style="@inlineStyles">
     @content.Text.GetHtml()
 </div>

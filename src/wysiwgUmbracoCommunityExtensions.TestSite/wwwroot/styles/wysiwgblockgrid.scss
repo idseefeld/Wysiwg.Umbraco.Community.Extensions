@@ -1,4 +1,4 @@
-﻿.umb-block-grid__layout-container {
+.umb-block-grid__layout-container {
     position: relative;
     display: grid;
     grid-template-columns: repeat(var(--umb-block-grid--grid-columns, 1), minmax(0, 1fr));

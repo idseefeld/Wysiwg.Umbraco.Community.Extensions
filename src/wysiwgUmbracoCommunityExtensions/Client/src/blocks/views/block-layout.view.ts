@@ -178,7 +178,7 @@ export class WysiwgBlockLayoutView
     css`
       :host {
         display: flex;
-        width: 820px;
+        max-width: 1172px;
         height: 100%;
         box-sizing: border-box;
       }
