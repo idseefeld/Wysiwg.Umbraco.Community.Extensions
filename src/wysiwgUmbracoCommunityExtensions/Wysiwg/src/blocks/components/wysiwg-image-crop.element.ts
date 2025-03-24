@@ -2,10 +2,8 @@ import {
   css,
   customElement,
   html,
-  nothing,
   property,
   state,
-  when,
 } from "@umbraco-cms/backoffice/external/lit";
 import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
 import { UmbTextStyles } from "@umbraco-cms/backoffice/style";
@@ -14,35 +12,19 @@ import { CropUrlData, WysiwgUmbracoCommunityExtensionsService } from "../..";
 @customElement("wysiwg-image-crop")
 export class WysiwgBlocksImageCropElement extends UmbLitElement {
   //#region Properties
-  /**
-   * The unique identifier for the media item.
-   * @description This is also known as the media key and is used to fetch the resource.
-   */
-  @property()
-  unique?: string;
 
-  /**
-   * The width of the thumbnail in pixels.
-   * @default 300
-   */
+  @property({ type: String })
+  mediaKey?: string;
+
+  @property({ type: String })
+  alt?: string;
+
+  @property({ type: String })
+  cropAlias? = "";
+
   @property({ type: Number })
   width = 1200;
 
-  /**
-   * The alt text for the thumbnail.
-   */
-  @property()
-  alt?: string;
-
-  /**
-   * The alt text for the thumbnail.
-   */
-  @property({ type: String })
-  cropAlias = "";
-
-  /**
-   * The fallback icon for the thumbnail.
-   */
   @property()
   icon = "icon-picture";
 
@@ -67,92 +49,144 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
   #intersectionObserver?: IntersectionObserver;
 
   override render() {
-    if(!this._isLoading) {
-      this.#loadImage();
-    }
+    //console.debug("wysiwg-image-crop.render", this._imageUrl, this._isLoading);
 
-    return html`
-      ${this.#renderImageCrop()}
-      ${when(this._isLoading, () => this.#renderLoading())}
-    `;
+    const img = this.#renderImageCrop();
+    const loading = this.#renderLoading();
+    //console.debug("wysiwg-image-crop.render img: ", img);
+    //console.debug("wysiwg-image-crop.render loading: ", loading);
+    return html` ${img} ${loading} `;
   }
 
   override connectedCallback() {
     super.connectedCallback();
+    //console.debug("wysiwg-image-crop.connectedCallback");
 
-    this.#loadImage();
+    this.loadImage();
   }
 
   override disconnectedCallback() {
+    //console.debug("wysiwg-image-crop.disconnectedCallback");
+
     super.disconnectedCallback();
     this.#intersectionObserver?.disconnect();
   }
 
-  #loadImage() {
+  override updated(changedProperties: Map<string | number | symbol, unknown>) {
+    super.updated(changedProperties);
+
+    //console.debug("wysiwg-image-crop.updated", changedProperties);
+
+    if (
+      changedProperties.has("mediaKey") ||
+      changedProperties.has("cropAlias")
+    ) {
+      this.loadImage();
+    } else if (changedProperties.has("_imageUrl")) {
+      //console.debug("wysiwg-image-crop.updated", this._imageUrl);
+    }
+  }
+
+  private loadImage() {
     if (this.loading === "lazy") {
       this.#intersectionObserver = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting) {
-          this.#generateImageUrl(entries[0].boundingClientRect.width);
+          this.generateImageUrl(entries[0].boundingClientRect.width);
           this.#intersectionObserver?.disconnect();
         }
       });
       this.#intersectionObserver.observe(this);
     } else {
-      this.#generateImageUrl(this.width);
+      this.generateImageUrl(this.width);
     }
   }
 
   #renderLoading() {
-    return html`<div id="loader"><uui-loader></uui-loader></div>`;
+    if (this._isLoading) {
+      return html`<div id="loader"><uui-loader></uui-loader></div>`;
+    }
   }
 
   #renderImageCrop() {
-    if (this._isLoading) return nothing;
-
-    return when(
-      this._imageUrl,
-      () =>
-        html`<img
+    //console.debug("wysiwg-image-crop.renderImageCrop image", this._imageUrl);
+    try {
+      if (!this._imageUrl) {
+        return html`<div id="icon" part="img"></div>`;
+      } else {
+        return html`<img
           id="figure-image"
           part="img"
           src="${this._imageUrl ?? ""}"
           alt="${this.alt ?? ""}"
           loading="${this.loading}"
           draggable="false"
-        />`,
-      () => html`<umb-icon id="icon" name="${this.icon}"></umb-icon>`
-    );
+        />`;
+      }
+      // const rVal = when(
+      //   this._imageUrl,
+      //   () => {
+      //     html`<img
+      //       id="figure-image"
+      //       part="img"
+      //       src="${this._imageUrl ?? ""}"
+      //       alt="${this.alt ?? ""}"
+      //       loading="${this.loading}"
+      //       draggable="false"
+      //     />`;
+      //   },
+      //   () => html`<umb-icon id="icon" name="${this.icon}"></umb-icon>`
+      // );
+      // //console.debug("wysiwg-image-crop.renderImageCrop resulting html: ", rVal);
+      // return rVal;
+    } catch (e) {
+      console.error("wysiwg-image-crop.renderImageCrop error", e);
+    }
   }
 
-  async #requestCropUrl(mediaItemId: string, cropAlias: string, width: number) {
-    if (!mediaItemId) {
+  private async requestCropUrl(width: number): Promise<string | undefined> {
+    if (!this.mediaKey) {
+      //console.debug("wysiwg-image-crop.Requesting NO mediaKey");
+      //this._imageUrl = undefined;
+      // this._isLoading = false;
       return;
     }
     const options: CropUrlData = {
       query: {
-        cropAlias,
-        mediaItemId,
+        mediaItemId: this.mediaKey,
+        cropAlias: this.cropAlias,
         width,
       },
     };
+    //console.debug("wysiwg-image-crop.Requesting crop url", options);
     const { data, error } =
       await WysiwgUmbracoCommunityExtensionsService.cropUrl(options);
 
+    this._isLoading = false;
+
     if (error) {
       console.error(error);
-      return;
+      return "error";
     }
 
     if (data !== undefined) {
-      this._imageUrl = data;
+      //console.debug("wysiwg-image-crop.Received crop url", data);
+      return data;
     }
+
+    return "no data";
   }
 
-  async #generateImageUrl(width: number) {
-    if (!this.unique) throw new Error("Unique is missing");
-
-    await this.#requestCropUrl(this.unique, this.cropAlias, width);
-    this._isLoading = false;
+  private async generateImageUrl(width: number) {
+    await this.requestCropUrl(width).then((data) => {
+      if (data === "error") {
+        this._imageUrl = undefined;
+        return;
+      } else if (data === "no data") {
+        this._imageUrl = undefined;
+        return;
+      }
+      this._imageUrl = data;
+    });
   }
 
   static override styles = [
@@ -162,11 +196,8 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
         display: block;
         position: relative;
         overflow: hidden;
-        display: flex;
         justify-content: center;
         align-items: center;
-        width: 100%;
-        height: 100%;
       }
 
       #loader {
@@ -180,7 +211,7 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
       ::part(img) {
         display: block;
         width: 100%;
-        height: 100%;
+        height: auto;
         overflow: visible;
 
         background-image: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill-opacity=".1"><path d="M50 0h50v50H50zM0 50h50v50H0z"/></svg>');
