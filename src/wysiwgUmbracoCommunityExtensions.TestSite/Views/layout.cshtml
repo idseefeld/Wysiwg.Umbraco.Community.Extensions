@@ -51,7 +51,9 @@
         <footer>
             @if (Constants.Debug)
             {
-                <a href="/umbraco" target="_blank">backoffice</a>
+                <text>
+                    <a href="/umbraco" target="_blank">backoffice</a> | <a href="/umbraco/swagger/index.html?urls.primaryName=wysiwgUmbraco+Community+Extensions+Backoffice+API" target="_blank">swagger </a>
+                </text>
             }
             @await Html.PartialAsync("languageSwitch")
         </footer>

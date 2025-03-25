@@ -1,14 +1,16 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Umbraco.Cms.Core;
 using Umbraco.Extensions;
+using WysiwgUmbracoCommunityExtensions.Services;
 
 namespace wysiwgUmbracoCommunityExtensions.Controllers
 {
     [ApiVersion("1.0")]
     [ApiExplorerSettings(GroupName = "wysiwgUmbracoCommunityExtensions")]
-    public class WysiwgUmbracoCommunityExtensionsApiController(IPublishedContentQuery publishedContent) : WysiwgUmbracoCommunityExtensionsApiControllerBase
+    public class WysiwgUmbracoCommunityExtensionsApiController(IPublishedContentQuery publishedContent, IInstallService installService, ILogger<WysiwgUmbracoCommunityExtensionsApiController> logger) : WysiwgUmbracoCommunityExtensionsApiControllerBase
     {
         [HttpGet("cropurl")]
         [ProducesResponseType<string>(StatusCodes.Status200OK)]
@@ -37,6 +39,38 @@ namespace wysiwgUmbracoCommunityExtensions.Controllers
                 return NotFound($"No media found for: {mediaItemId}");
             }
             return Ok(url);
+        }
+
+        [HttpGet("install")]
+        [ProducesResponseType<string>(StatusCodes.Status200OK)]
+        public IActionResult Install()
+        {
+            try
+            {
+                installService.Install();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error installing package");
+                return BadRequest(ex.Message);
+            }
+            return Ok("Installed");
+        }
+
+        [HttpGet("uninstall")]
+        [ProducesResponseType<string>(StatusCodes.Status200OK)]
+        public IActionResult UnInstall()
+        {
+            try
+            {
+                installService.Uninstall();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error uninstalling package");
+                return BadRequest(ex.Message);
+            }
+            return Ok("Uninstalled");
         }
     }
 }

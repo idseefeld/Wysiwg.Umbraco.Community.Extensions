@@ -1,7 +1,7 @@
 @using Umbraco.Extensions
 @model BlockGridItem
 @{
-    var content = Model.Content as PictureWithCrop;
+    var content = Model.Content as Wysiwg65_pictureWithCrop;
     if (content?.MediaItem == null) return;
 
     var src = content.MediaItem.GetCropUrl(width: 400, cropAlias: content.CropAlias);

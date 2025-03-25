@@ -1,10 +1,27 @@
+export const prefix = "wysiwg65_";
+export function getLayoutAliasArray(): Array<string> {
+  const layoutAliasArray = [];
+  for (let i = 1; i <= 50; i++) {
+    layoutAliasArray.push(`${prefix}layout${i}`);
+  }
+  return layoutAliasArray;
+
+}
 export const manifests: Array<UmbExtensionManifest> = [
+  {
+    type: "blockEditorCustomView",
+    alias: "wysiwg.PorpertyEditorUi.Layouts",
+    name: "Block Editor Custom View for Layouts",
+    element: () => import("./block-layout.view.js"),
+    forContentTypeAlias: getLayoutAliasArray(),
+    forBlockEditor: "block-grid",
+  },
   {
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockHeadline",
     name: "Block Editor Custom View for Headline",
     element: () => import("./headline.view.js"),
-    forContentTypeAlias: "headline",
+    forContentTypeAlias: prefix + "headline",
     forBlockEditor: "block-grid",
   },
   {
@@ -12,56 +29,7 @@ export const manifests: Array<UmbExtensionManifest> = [
     alias: "wysiwg.PorpertyEditorUi.blockParagraph",
     name: "Block Editor Custom View for Paragraph",
     element: () => import("./paragraph.view.js"),
-    forContentTypeAlias: "paragraph",
-    forBlockEditor: "block-grid",
-  },
-  {
-    type: "blockEditorCustomView",
-    alias: "wysiwg.PorpertyEditorUi.Layouts",
-    name: "Block Editor Custom View for Layouts",
-    element: () => import("./block-layout.view.js"),
-    forContentTypeAlias: [
-      "layout1",
-      "layout2",
-      "layout3",
-      "layout4",
-      "layout5",
-      "layout6",
-      "layout7",
-      "layout8",
-      "layout9",
-      "layout10",
-      "layout11",
-      "layout12",
-      "layout13",
-      "layout14",
-      "layout15",
-      "layout16",
-      "layout17",
-      "layout18",
-      "layout19",
-      "layout20",
-      "layout21",
-      "layout22",
-      "layout23",
-      "layout24",
-      "layout25",
-      "layout26",
-      "layout27",
-      "layout28",
-      "layout29",
-      "layout30",
-      "layout31",
-      "layout32",
-      "layout33",
-      "layout34",
-      "layout35",
-      "layout36",
-      "layout37",
-      "layout38",
-      "layout39",
-      "layout40",
-    ],
+    forContentTypeAlias: prefix + "paragraph",
     forBlockEditor: "block-grid",
   },
   {
@@ -69,7 +37,7 @@ export const manifests: Array<UmbExtensionManifest> = [
     alias: "wysiwg.PorpertyEditorUi.pictureWithCrop",
     name: "Block Editor Custom View for Picture with Crop",
     element: () => import("./picture-with-crop.view.js"),
-    forContentTypeAlias: "pictureWithCrop",
+    forContentTypeAlias: prefix + "pictureWithCrop",
     forBlockEditor: "block-grid",
   },
 ];

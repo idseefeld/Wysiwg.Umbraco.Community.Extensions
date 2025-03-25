@@ -12,7 +12,7 @@ namespace wysiwgUmbracoCommunityExtensions.TestSite.Extensions
     {
         public static string? GetBackgroundStyle(this IPublishedElement settings)
         {
-            if (settings is not RowSettings rowSettings)
+            if (settings is not Wysiwg65_rowSettings rowSettings)
             { return null; }
 
             var backgroundColor = rowSettings.BackgroundColor;
