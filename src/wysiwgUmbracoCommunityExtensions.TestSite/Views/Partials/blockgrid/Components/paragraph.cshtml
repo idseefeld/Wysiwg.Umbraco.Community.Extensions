@@ -1,6 +1,6 @@
 @model BlockGridItem
 @{
-    var content = Model.Content as Paragaph;
+    var content = Model.Content as Paragraph;
     if (content?.Text == null) return;
 
     var settings = Model.Settings as ParagraphSettings;

@@ -1,6 +1,10 @@
-[
+﻿[
   {
     "outputFile": "wwwroot/styles/customer.css",
     "inputFile": "wwwroot/styles/customer.scss"
+  },
+  {
+    "outputFile": "wwwroot/styles/wysiwgblockgrid.css",
+    "inputFile": "wwwroot/styles/wysiwgblockgrid.scss"
   }
 ]

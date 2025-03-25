@@ -19,6 +19,7 @@ import {
   UmbPropertyDatasetContext,
 } from "@umbraco-cms/backoffice/property";
 import { UmbBlockGridValueModel } from "@umbraco-cms/backoffice/block-grid";
+import { ColorType } from "./types";
 
 const customElementName = "wysiwg-block-headline-view";
 @customElement(customElementName)
@@ -26,7 +27,8 @@ export class WysiwgBlockHeadlineView
   extends UmbElementMixin(LitElement)
   implements UmbBlockEditorCustomViewElement
 {
-  //
+  defaultColor: ColorType = { label: "Black", value: "#000" };
+
   @property({ attribute: false })
   content?: UmbBlockDataType;
 
@@ -34,7 +36,7 @@ export class WysiwgBlockHeadlineView
   settings?: UmbBlockDataType;
 
   @state()
-  datasetSettings?: UmbBlockDataModel[]; //UmbBlockGridValueModel;
+  datasetSettings?: UmbBlockDataModel[];
 
   #datasetContext?: UmbPropertyDatasetContext;
 
@@ -62,7 +64,6 @@ export class WysiwgBlockHeadlineView
   override render() {
     let size = "h1";
     let inlineStyle = "";
-    let color = { label: "", value: "" };
     if (this.datasetSettings?.length) {
       const layout = (this as UmbBlockEditorCustomViewElement).layout;
       const settings = this.datasetSettings.filter(
@@ -75,14 +76,21 @@ export class WysiwgBlockHeadlineView
           ?.value?.toString()
           .toLowerCase() ?? size;
 
-      const colorSetting =
-        (settings.filter((v) => v.alias === "color")[0]?.value as {
-          label: string;
-          value: string;
-        }) ?? color;
+      const color =
+        (settings.filter((v) => v.alias === "color")[0]?.value as ColorType)
+          ?.value ?? this.defaultColor.value;
+      if (color) {
+        inlineStyle = `color: ${color};`;
+      }
+      const margin =
+        (settings.filter((v) => v.alias === "margin")[0]?.value as string) ??
+        "";
+      if (margin) {
+        inlineStyle += `margin: ${margin};`;
+      }
 
-      if (colorSetting?.value) {
-        inlineStyle = `style="color: ${colorSetting?.value};"`;
+      if (inlineStyle) {
+        inlineStyle = `style="${inlineStyle}"`;
       }
     }
     const headline = this.content?.text ?? "Headline";
@@ -100,10 +108,6 @@ export class WysiwgBlockHeadlineView
         padding: 0;
         margin: 0;
         padding-bottom: 1.2%;
-      }
-      h1 {
-        font-size: 24px;
-        line-height: 28px;
       }
     `,
   ];

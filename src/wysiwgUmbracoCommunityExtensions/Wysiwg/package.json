@@ -4,6 +4,10 @@
 	"license": "MIT",
   "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=22.0.0 < 23",
+    "npm": ">=10.9.2 < 11"
+  },
   "scripts": {
     "watch": "tsc && vite build --watch",
     "build": "tsc && vite build",
@@ -12,7 +16,7 @@
   "devDependencies": {
     "@hey-api/client-fetch": "^0.4.2",
     "@hey-api/openapi-ts": "^0.53.11",
-    "@umbraco-cms/backoffice": "^*",
+    "@umbraco-cms/backoffice": "^15.3.0",
     "chalk": "^5.4.1",
     "cross-env": "^7.0.3",
     "node-fetch": "^3.3.2",

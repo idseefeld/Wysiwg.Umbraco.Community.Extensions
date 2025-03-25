@@ -7,7 +7,11 @@
 <div class="umb-block-grid__layout-container">
     @foreach (var item in Model)
     {
-        var areasTemplates = new string[] { nameof(Article), nameof(TwoColumnRow) };
+        var areasTemplates = new List<string>();
+        for (var i = 1; i <= 20; i++)
+        {
+            areasTemplates.Add($"layout{i}");
+        }
         var alias = areasTemplates.InvariantContains(item.Content.ContentType.Alias)
         ? BlockGridTemplateExtensions.DefaultItemAreasTemplate
         : item.Content.ContentType.Alias;

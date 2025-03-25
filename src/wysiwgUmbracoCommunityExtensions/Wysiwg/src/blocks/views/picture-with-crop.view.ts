@@ -9,7 +9,7 @@ import {
 import { UmbElementMixin } from "@umbraco-cms/backoffice/element-api";
 import type { UmbBlockDataType } from "@umbraco-cms/backoffice/block";
 import type { UmbBlockEditorCustomViewElement } from "@umbraco-cms/backoffice/block-custom-view";
-import { MediaPickerValueModel } from "../types";
+import { ColorType, PictureWithCropCustomViewProps } from "./types";
 
 @customElement("wysiwg-picturewithcrop-view")
 export class PictureWithCropCustomView
@@ -21,14 +21,7 @@ export class PictureWithCropCustomView
   @property({ attribute: false })
   content?: UmbBlockDataType;
 
-  // protected override update(changedProperties: PropertyValues): void {
-  //   super.update(changedProperties);
-  //   console.debug("PictureWithCropCustomView.update", changedProperties);
-  // }
-
   render() {
-    // console.debug("PictureWithCropCustomView.render", this.content);
-
     const pictureWithCrop = this.content as PictureWithCropCustomViewProps;
     if (!pictureWithCrop) {
       return html`<div class="error">Invalid data</div>`; //ToDo: get message from localized language file
@@ -47,11 +40,6 @@ export class PictureWithCropCustomView
         mediaKey="${mediaKey}"
         alt="${this.content?.alternativeText ?? ""}"
         cropAlias="${cropAlias}"></wysiwg-image-crop>`;
-      // const img = html`
-      //   mediaKey: "${mediaKey}"<br />
-      //   alt: "${this.content?.alternativeText ?? ""}" <br />
-      //   cropAlias: "${cropAlias}"
-      // `;
 
       const inlineStyle = `style="color: ${captionColor};"`;
       const figCaption = caption
@@ -80,17 +68,5 @@ export class PictureWithCropCustomView
     `,
   ];
 }
-
-export type PictureWithCropCustomViewProps = {
-  mediaItem: MediaPickerValueModel;
-  cropAlias: string[];
-  figCaption: string;
-  captionColor: ColorType;
-};
-
-export type ColorType = {
-  label: string;
-  value: string;
-};
 
 export default PictureWithCropCustomView;
