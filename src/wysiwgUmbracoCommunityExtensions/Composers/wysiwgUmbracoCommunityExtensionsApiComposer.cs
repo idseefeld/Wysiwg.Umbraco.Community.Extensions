@@ -12,7 +12,7 @@ using Umbraco.Cms.Api.Common.OpenApi;
 using WysiwgUmbracoCommunityExtensions.Services;
 
 
-namespace wysiwgUmbracoCommunityExtensions.Composers
+namespace WysiwgUmbracoCommunityExtensions.Composers
 {
     public class WysiwgUmbracoCommunityExtensionsApiComposer : IComposer
     {
@@ -21,7 +21,7 @@ namespace wysiwgUmbracoCommunityExtensions.Composers
 
             builder.Services.AddSingleton<IOperationIdHandler, CustomOperationHandler>();
 
-            builder.Services.AddSingleton<IInstallService, InstallService>();
+            builder.Services.AddSingleton<ISetupService, SetupService>();
 
             builder.Services.Configure<SwaggerGenOptions>(opt =>
             {
@@ -68,7 +68,7 @@ namespace wysiwgUmbracoCommunityExtensions.Composers
 
             protected override bool CanHandle(ApiDescription apiDescription, ControllerActionDescriptor controllerActionDescriptor)
             {
-                return controllerActionDescriptor.ControllerTypeInfo.Namespace?.StartsWith("wysiwgUmbracoCommunityExtensions.Controllers", comparisonType: StringComparison.InvariantCultureIgnoreCase) is true;
+                return controllerActionDescriptor.ControllerTypeInfo.Namespace?.StartsWith("WysiwgUmbracoCommunityExtensions.Controllers", comparisonType: StringComparison.InvariantCultureIgnoreCase) is true;
             }
 
             public override string Handle(ApiDescription apiDescription) => $"{apiDescription.ActionDescriptor.RouteValues["action"]}";

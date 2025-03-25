@@ -6,11 +6,11 @@ using Umbraco.Cms.Core;
 using Umbraco.Extensions;
 using WysiwgUmbracoCommunityExtensions.Services;
 
-namespace wysiwgUmbracoCommunityExtensions.Controllers
+namespace WysiwgUmbracoCommunityExtensions.Controllers
 {
     [ApiVersion("1.0")]
-    [ApiExplorerSettings(GroupName = "wysiwgUmbracoCommunityExtensions")]
-    public class WysiwgUmbracoCommunityExtensionsApiController(IPublishedContentQuery publishedContent, IInstallService installService, ILogger<WysiwgUmbracoCommunityExtensionsApiController> logger) : WysiwgUmbracoCommunityExtensionsApiControllerBase
+    [ApiExplorerSettings(GroupName = "WysiwgUmbracoCommunityExtensions")]
+    public class WysiwgUmbracoCommunityExtensionsApiController(IPublishedContentQuery publishedContent, ISetupService installService, ILogger<WysiwgUmbracoCommunityExtensionsApiController> logger) : WysiwgUmbracoCommunityExtensionsApiControllerBase
     {
         [HttpGet("cropurl")]
         [ProducesResponseType<string>(StatusCodes.Status200OK)]
@@ -18,13 +18,13 @@ namespace wysiwgUmbracoCommunityExtensions.Controllers
         public IActionResult CropUrl(string mediaItemId, string? cropAlias = "", double? width = 1400)
         {
             var allowedWidth = (int)Math.Ceiling(width.GetValueOrDefault() / 100.0) * 100;
-            var mediaItem = publishedContent.Media(mediaItemId);
+            var mediaItem = publishedContent.Media(mediaItemId);//ToDo: frontend resolves mediaItemId to Umbraco.Cms.Core.Models.MediaWithCrops and GetCropUrl respects localCrops. How can I achieve same behaviour here?
             var url = mediaItem?.GetCropUrl(width: allowedWidth, cropAlias: cropAlias);
             if (mediaItem == null || url == null)
             {
                 return NotFound($"No media found for: {mediaItemId}");
             }
-            return Ok( url);
+            return Ok(url);
         }
 
         [HttpGet("imageurl")]

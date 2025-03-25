@@ -7,7 +7,7 @@ export default defineConfig({
       formats: ["es"],
       fileName: "wysiwg-umbraco-community-extensions",
     },
-    outDir: "../wwwroot/App_Plugins/wysiwgUmbracoCommunityExtensions", // your web component will be saved in this location
+    outDir: "../wwwroot/App_Plugins/WysiwgUmbracoCommunityExtensions", // your web component will be saved in this location
     emptyOutDir: true,
     sourcemap: true,
     rollupOptions: {

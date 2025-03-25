@@ -1,0 +1,15 @@
+@using Microsoft.AspNetCore.Html
+@using Umbraco.Cms.Core.Models.Blocks
+@using WysiwgUmbracoCommunityExtensions.Extensions
+@using WysiwgUmbracoCommunityExtensions.ViewModels
+@model BlockGridItem
+@{
+    var content = Model.Content as Wysiwg65_paragraph;
+    if (content?.Text == null) return;
+
+    var settings = Model.Settings as Wysiwg65_paragraphSettings;
+    var inlineStyles = string.IsNullOrEmpty(settings?.Color?.Color) ? string.Empty : $"color: {settings?.Color?.Color};";
+}
+<div style="@inlineStyles">
+    @content.Text.GetHtml()
+</div>

@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Product>Umbraco.Community.wysiwgUmbracoCommunityExtensions</Product>
-    <PackageId>Umbraco.Community.wysiwgUmbracoCommunityExtensions</PackageId>
+    <Product>Umbraco.Community.WysiwgUmbracoCommunityExtensions</Product>
+    <PackageId>Umbraco.Community.WysiwgUmbracoCommunityExtensions</PackageId>
     <Title>WYSIWG in the Umbraco Backoffice</Title>
     <Description>Some Block Grid editor views for the new backoffice.</Description>
     <PackageTags>umbraco;umbraco-marketplace</PackageTags>

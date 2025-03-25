@@ -4,7 +4,7 @@ using Umbraco.Cms.Api.Common.Attributes;
 using Umbraco.Cms.Web.Common.Authorization;
 using Umbraco.Cms.Web.Common.Routing;
 
-namespace wysiwgUmbracoCommunityExtensions.Controllers
+namespace WysiwgUmbracoCommunityExtensions.Controllers
 {
     [ApiController]
     [BackOfficeRoute("wysiwgumbracocommunityextensions/api/v{version:apiVersion}")]
