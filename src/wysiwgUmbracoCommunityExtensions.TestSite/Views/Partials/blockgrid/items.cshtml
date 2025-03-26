@@ -10,12 +10,12 @@
         var areasTemplates = new List<string>();
         for (var i = 1; i <= 20; i++)
         {
-            areasTemplates.Add($"layout{i}");
+            areasTemplates.Add($"{WysiwgUmbracoCommunityExtensions.Constants.Prefix}layout{i}");
         }
         var alias = areasTemplates.InvariantContains(item.Content.ContentType.Alias)
         ? BlockGridTemplateExtensions.DefaultItemAreasTemplate
         : item.Content.ContentType.Alias;
-        var partialViewName = string.Concat(BlockGridTemplateExtensions.DefaultFolder, "Components/", alias);
+        var partialViewName = string.Concat(BlockGridTemplateExtensions.DefaultFolder, "Components/", alias.Replace(WysiwgUmbracoCommunityExtensions.Constants.Prefix,""));
 
         <div class="umb-block-grid__layout-item"
              data-content-element-type-alias="@alias"

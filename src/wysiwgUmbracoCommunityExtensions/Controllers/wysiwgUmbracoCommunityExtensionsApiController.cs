@@ -43,11 +43,11 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
 
         [HttpGet("install")]
         [ProducesResponseType<string>(StatusCodes.Status200OK)]
-        public IActionResult Install()
+        public async Task<IActionResult> Install(bool resetExisting = false)
         {
             try
             {
-                installService.Install();
+                await installService.Install(resetExisting);
             }
             catch (Exception ex)
             {
@@ -63,7 +63,7 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
         {
             try
             {
-                installService.Uninstall();
+                _ = installService.Uninstall();
             }
             catch (Exception ex)
             {

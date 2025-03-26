@@ -3,12 +3,12 @@
 @{
     var content = Model.Content as Wysiwg65_pictureWithCrop;
     if (content?.MediaItem == null) return;
-
-    var src = content.MediaItem.GetCropUrl(width: 400, cropAlias: content.CropAlias);
+    var mediaItem = content.MediaItem;
+    var src = mediaItem.GetCropUrl(width: 400, cropAlias: content.CropAlias);
 }
 <figure>
     <div>
-        <img id="@content.MediaItem.Id" src="@src" alt="@content.AlternativeText" />
+        <img id="@mediaItem.Id" src="@src" alt="@content.AlternativeText" />
     </div>
 
     @if (!string.IsNullOrEmpty(content.FigCaption))

@@ -66,7 +66,7 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		public virtual string Margin => this.Value<string>(_publishedValueFallback, "margin");
 
 		///<summary>
-		/// Size
+		/// #Size
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.0+131c9cd")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
