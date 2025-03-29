@@ -21,3 +21,11 @@ export type ImageUrlData = {
 export type ImageUrlResponse = (string);
 
 export type ImageUrlError = (unknown | string);
+
+export type InstallResponse = (string);
+
+export type InstallError = (unknown | string);
+
+export type UnInstallResponse = (string);
+
+export type UnInstallError = (unknown);
