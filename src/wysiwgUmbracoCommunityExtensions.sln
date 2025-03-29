@@ -23,6 +23,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "screenshots", "screenshots", "{817C8E25-B913-4332-AD68-D9B3431FFF54}"
 	ProjectSection(SolutionItems) = preProject
 		..\docs\screenshots\BOvsFrontend.jpg = ..\docs\screenshots\BOvsFrontend.jpg
+		..\docs\screenshots\doc-data-types.jpg = ..\docs\screenshots\doc-data-types.jpg
+		..\docs\screenshots\swagger-install.jpg = ..\docs\screenshots\swagger-install.jpg
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Idseefeld.De.Web", "Idseefeld.De.Web\Idseefeld.De.Web.csproj", "{7CF8706A-F308-64A3-A3B6-55C02CA06AB5}"
