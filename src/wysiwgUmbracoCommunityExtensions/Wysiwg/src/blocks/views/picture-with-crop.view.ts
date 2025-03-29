@@ -39,7 +39,8 @@ export class PictureWithCropCustomView
       const img = html`<wysiwg-image-crop
         mediaKey="${mediaKey}"
         alt="${this.content?.alternativeText ?? ""}"
-        cropAlias="${cropAlias}"></wysiwg-image-crop>`;
+        cropAlias="${cropAlias}"
+      ></wysiwg-image-crop>`;
 
       const inlineStyle = `style="color: ${captionColor};"`;
       const figCaption = caption
@@ -60,10 +61,15 @@ export class PictureWithCropCustomView
         /* border-radius: 9px; */
         padding: 0;
       }
-      .error{
+      .error {
         color: red;
         font-weight: bold;
         text-align: center;
+      }
+      figure {
+        margin: 0;
+        padding: 0;
+        display: block;
       }
     `,
   ];

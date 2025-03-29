@@ -86,7 +86,7 @@ export class WysiwgBlockLayoutView
   //#endregion
 
   async getBackgroudStyle() {
-    let rVal = "";
+    let inlineStyles = "";
 
     if (this.properties?.settingsData?.length) {
       const viewElement = this as UmbBlockEditorCustomViewElement;
@@ -105,7 +105,13 @@ export class WysiwgBlockLayoutView
         }
       ).value;
       if (backgroundColor) {
-        rVal = `background-color: ${backgroundColor};`;
+        inlineStyles += `background-color: ${backgroundColor};`;
+      }
+
+      const padding =
+        values?.find((v) => v.alias === "padding")?.value ?? "";
+      if (padding) {
+        inlineStyles += `padding: ${padding};`;
       }
 
       const backgroundImage = values?.find((v) => v.alias === "backgroundImage")
@@ -115,15 +121,15 @@ export class WysiwgBlockLayoutView
         : "";
       await this.#requestImageUrl(mediaKey);
       if (this._imageUrl) {
-        rVal += `background-image: url('${this._imageUrl}');`;
+        inlineStyles += `background-image: url('${this._imageUrl}');`;
       }
     }
 
-    this.backgroundStyle = rVal;
+    this.backgroundStyle = inlineStyles;
   }
 
   async #requestImageUrl(mediaItemId: string) {
-    if(!mediaItemId) {
+    if (!mediaItemId) {
       return;
     }
     const options: ImageUrlData = {

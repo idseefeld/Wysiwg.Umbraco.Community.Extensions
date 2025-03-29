@@ -4,10 +4,10 @@
 @using WysiwgUmbracoCommunityExtensions.ViewModels
 @model BlockGridItem
 @{
-    var content = Model.Content as Wysiwg65_paragraph;
+    var content = new Wysiwg65_paragraph(Model.Content);
     if (content?.Text == null) return;
 
-    var settings = Model.Settings as Wysiwg65_paragraphSettings;
+    var settings = new Wysiwg65_paragraphSettings(Model.Settings);
     var inlineStyles = string.IsNullOrEmpty(settings?.Color?.Color) ? string.Empty : $"color: {settings?.Color?.Color};";
 }
 <div style="@inlineStyles">

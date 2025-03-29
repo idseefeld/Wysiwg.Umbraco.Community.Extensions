@@ -3,7 +3,7 @@
 @using WysiwgUmbracoCommunityExtensions.ViewModels
 @model BlockGridItem
 @{
-    var content = Model.Content as Wysiwg65_pictureWithCrop;
+    var content = new Wysiwg65_pictureWithCrop(Model.Content);
     if (content?.MediaItem == null) return;
 
     var src = content.MediaItem.GetCropUrl(width: 400, cropAlias: content.CropAlias);

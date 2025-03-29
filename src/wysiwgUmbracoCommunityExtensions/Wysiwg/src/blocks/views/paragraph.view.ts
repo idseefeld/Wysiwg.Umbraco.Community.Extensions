@@ -74,10 +74,13 @@ export class WysiwgBlockParagraphView
           value: string;
         }) ?? color;
       if (colorSetting?.value) {
-        inlineStyle = `style="color: ${colorSetting?.value};"`;
+        inlineStyle = `color: ${colorSetting?.value};`;
       }
     }
 
+    if (inlineStyle) {
+      inlineStyle = `style="${inlineStyle}"`;
+    }
     var property = this.content?.text as { blocks: {}; markup: string };
     var markup = property?.markup;
     const innerHtml = `<div ${inlineStyle}>${markup}</div>`;

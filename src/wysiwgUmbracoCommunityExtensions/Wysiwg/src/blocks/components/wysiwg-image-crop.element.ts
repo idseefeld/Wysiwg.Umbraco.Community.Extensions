@@ -75,8 +75,6 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
   override updated(changedProperties: Map<string | number | symbol, unknown>) {
     super.updated(changedProperties);
 
-    //console.debug("wysiwg-image-crop.updated", changedProperties);
-
     if (
       changedProperties.has("mediaKey") ||
       changedProperties.has("cropAlias")
@@ -108,7 +106,6 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
   }
 
   #renderImageCrop() {
-    //console.debug("wysiwg-image-crop.renderImageCrop image", this._imageUrl);
     try {
       if (!this._imageUrl) {
         return html`<div id="icon" part="img"></div>`;
@@ -122,22 +119,6 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
           draggable="false"
         />`;
       }
-      // const rVal = when(
-      //   this._imageUrl,
-      //   () => {
-      //     html`<img
-      //       id="figure-image"
-      //       part="img"
-      //       src="${this._imageUrl ?? ""}"
-      //       alt="${this.alt ?? ""}"
-      //       loading="${this.loading}"
-      //       draggable="false"
-      //     />`;
-      //   },
-      //   () => html`<umb-icon id="icon" name="${this.icon}"></umb-icon>`
-      // );
-      // //console.debug("wysiwg-image-crop.renderImageCrop resulting html: ", rVal);
-      // return rVal;
     } catch (e) {
       console.error("wysiwg-image-crop.renderImageCrop error", e);
     }
@@ -145,9 +126,6 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
 
   private async requestCropUrl(width: number): Promise<string | undefined> {
     if (!this.mediaKey) {
-      //console.debug("wysiwg-image-crop.Requesting NO mediaKey");
-      //this._imageUrl = undefined;
-      // this._isLoading = false;
       return;
     }
     const options: CropUrlData = {
@@ -157,7 +135,7 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
         width,
       },
     };
-    //console.debug("wysiwg-image-crop.Requesting crop url", options);
+
     const { data, error } =
       await WysiwgUmbracoCommunityExtensionsService.cropUrl(options);
 
@@ -169,7 +147,6 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
     }
 
     if (data !== undefined) {
-      //console.debug("wysiwg-image-crop.Received crop url", data);
       return data;
     }
 
@@ -217,6 +194,10 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
         background-image: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill-opacity=".1"><path d="M50 0h50v50H50zM0 50h50v50H0z"/></svg>');
         background-size: 10px 10px;
         background-repeat: repeat;
+      }
+      img {
+        width: 100%;
+        height: auto;
       }
 
       #icon {

@@ -16,8 +16,8 @@
         var alias = areasTemplates.InvariantContains(item.Content.ContentType.Alias)
         ? WysiwgUmbracoCommunityExtensions.Constants.DefaultItemAreasTemplate
         : item.Content.ContentType.Alias;
-        var componentFolder = alias.StartsWith(WysiwgUmbracoCommunityExtensions.Constants.Prefix) ? WysiwgUmbracoCommunityExtensions.Constants.Prefix : "Components/";
-        var partialViewName = string.Concat(BlockGridTemplateExtensions.DefaultFolder, "Components/", alias);
+        var componentFolder = alias.StartsWith(WysiwgUmbracoCommunityExtensions.Constants.Prefix) ? WysiwgUmbracoCommunityExtensions.Constants.Prefix.Replace("_", "/") : "Components/";
+        var partialViewName = string.Concat(BlockGridTemplateExtensions.DefaultFolder, componentFolder, alias);
 
         <div class="umb-block-grid__layout-item"
              data-content-element-type-alias="@alias"

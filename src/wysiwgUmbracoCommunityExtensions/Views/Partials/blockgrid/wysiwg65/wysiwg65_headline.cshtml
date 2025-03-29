@@ -3,10 +3,10 @@
 @using WysiwgUmbracoCommunityExtensions.ViewModels
 @model BlockGridItem
 @{
-    var content = Model.Content as Wysiwg65_headline;
+    var content = new Wysiwg65_headline(Model.Content);
     if (content == null) return;
 
-    var settings = Model.Settings as Wysiwg65_headlineSettings;
+    var settings = new Wysiwg65_headlineSettings(Model.Settings);
     var inlineStyles = string.IsNullOrEmpty(settings?.Color?.Color) ? string.Empty : $"color: {settings?.Color?.Color};";
     inlineStyles += string.IsNullOrEmpty(settings?.Margin) ? string.Empty : $"margin: {settings?.Margin};";
     var size = settings?.Size?.ToLower() ?? "h2";

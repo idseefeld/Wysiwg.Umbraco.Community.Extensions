@@ -24,12 +24,13 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         IDataTypeContainerService dataTypeContainerService,
         IDataTypePresentationFactory dataTypePresentationFactory,
         IShortStringHelper shortStringHelper,
-        IBackOfficeSecurityAccessor backOfficeSecurityAccessor
+        IBackOfficeSecurityAccessor backOfficeSecurityAccessor,
+        IPartialViewService partialViewService
         ) : ISetupService
     {
         #region properties
         private bool _resetExisting = false;
-        private const string ErrorMsgPrefix = " Error during installation of WYSIWG Umbraco Community Extensions:";
+        private const string ErrorMsgPrefix = "Error during installation of WYSIWG Umbraco Community Extensions:";
         private readonly string _errorMsgDataTypeNotFoundStart = $"{ErrorMsgPrefix} Could not find data type:";
         private readonly string _errorMsgUpdateContentTypeStart = $"{ErrorMsgPrefix} Could not update content type";
         private readonly string _contentElementsRootContainer = $"{Constants.Prefix.ToFirstUpper()}Content Elements";
@@ -85,6 +86,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
                 await CreateDataTypeBlockGrid();
 
+                await SwitchPartialViews();
+
                 logger.LogInformation("Successfully installed of WYSIWG Umbraco Community Extensions.");
             }
             catch (Exception ex)
@@ -125,7 +128,6 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 ?? throw new InvalidOperationException("No backoffice user found");
         }
         #endregion
-
 
         #region daty types
         private async Task CreateDataTypesForBlockElements()
@@ -352,11 +354,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
     {""label"":""Portrait"",""alias"":""portrait"",""width"":800,""height"":1200},
     {""label"":""Landscape"",""alias"":""landscape"",""width"":1200,""height"":800}
 ]".GetJsonArrayFromString()
-                    },
-                    //new DataTypePropertyPresentationModel {
-                    //    Alias = "validationLimit",
-                    //    Value = @"{""min"":0,""max"":1}"
-                    //}
+                    }
                 ]
             };
             await CreateDataType(createDataTypeRequestModel, name);
@@ -378,8 +376,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         }
         private async Task CreateDataTypeBlockGrid()
         {
-            _allContentTypes = contentTypeService.GetAll();
-            if (_allContentTypes.FirstOrDefault(t => t.Name != null && t.Name.Equals(_requiredBlockGridName)) != null)
+            UpdateContentTypes();
+
+            _existingDataTypes = await dataTypeService.GetAllAsync();
+            if (_existingDataTypes.FirstOrDefault(t => t.Name != null && t.Name.Equals(_requiredBlockGridName)) != null)
             { return; }
 
             var blockGroupKey = Guid.NewGuid();
@@ -652,12 +652,17 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         #endregion
 
         #region block elements
+        private void UpdateContentTypes()
+        {
+            _allContentTypes = contentTypeService.GetAll()
+                .Where(t => t.Alias.StartsWith(Constants.Prefix));
+        }
         private async Task CreateBlockElements()
         {
             CreateContentElementContainers();
 
-            _allContentTypes = contentTypeService.GetAll()
-                .Where(t => t.Alias.StartsWith(Constants.Prefix));
+            UpdateContentTypes();
+
             var requiredExists = _allContentTypes.Select(t => t.Alias)
                 .Intersect(_requiredContentTypes)
                 .Count() == _requiredContentTypes.Length;
@@ -823,7 +828,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 var propertyDefinitions = new List<PropertyDefinition>()
                 {
                     new ("Background Color", $"{Constants.Prefix}CustomerColors"),
-                    new ("Background Image", "Media Picker")
+                    new ("Background Image", "Media Picker"),
+                    new ("Padding", "Textstring")
                 };
                 await CreateContentElementProperties(type, propertyDefinitions);
             }
@@ -1050,7 +1056,31 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 throw new Exception($"{_errorMsgUpdateContentTypeStart} {type.Name}.");
             }
         }
+        private async Task SwitchPartialViews(bool restoreOriginal = false)
+        {
+            var allPartialViews = (await partialViewService.GetAllAsync());
+            if (allPartialViews == null)
+            { return; }
+
+            var prefix = "backup-";
+            var itemsPartial = $"blockgrid\\{(restoreOriginal ? prefix : "")}items.";
+            var itemsPartialViews = allPartialViews
+                .FirstOrDefault(v => v.Path.InvariantContains(itemsPartial));
+            if (itemsPartialViews == null)
+            { return; }
+
+            var updateModel = new PartialViewRenameModel
+            {
+                Name = $"{(restoreOriginal ? "": prefix)}items.cshtml"
+            };
+            var attempt = await partialViewService.RenameAsync(itemsPartialViews.Path, updateModel, _userKey);
+            if (!attempt.Success)
+            {
+                throw new Exception($"{ErrorMsgPrefix} {attempt.Status}");
+            }
+        }
         #endregion
+
         #endregion
 
         #region uninstall
@@ -1065,6 +1095,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             await DeleteDataTypes(errorStart);
 
             await DeleteDataTypeContainer(errorStart);
+
+            await RecoverPartialViews();
         }
 
         private async Task DeleteDataTypeContainer(string errorStart)
@@ -1145,6 +1177,11 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     throw new Exception($"{errorStart} Could not delete content type:  {type.Name}");
                 }
             }
+        }
+
+        private async Task RecoverPartialViews()
+        {
+            await SwitchPartialViews(true);
         }
 
         #endregion
