@@ -22,6 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{86DCB238-F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "screenshots", "screenshots", "{817C8E25-B913-4332-AD68-D9B3431FFF54}"
 	ProjectSection(SolutionItems) = preProject
+		..\docs\screenshots\blockgrid-css.jpg = ..\docs\screenshots\blockgrid-css.jpg
 		..\docs\screenshots\BOvsFrontend.jpg = ..\docs\screenshots\BOvsFrontend.jpg
 		..\docs\screenshots\doc-data-types.jpg = ..\docs\screenshots\doc-data-types.jpg
 		..\docs\screenshots\swagger-install.jpg = ..\docs\screenshots\swagger-install.jpg
