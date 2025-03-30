@@ -28,8 +28,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "screenshots", "screenshots"
 		..\docs\screenshots\swagger-install.jpg = ..\docs\screenshots\swagger-install.jpg
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Idseefeld.De.Web", "Idseefeld.De.Web\Idseefeld.De.Web.csproj", "{7CF8706A-F308-64A3-A3B6-55C02CA06AB5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,18 +62,6 @@ Global
 		{E3332BDA-A1B7-4C57-9836-A26EFFB542CC}.Release|x64.Build.0 = Release|Any CPU
 		{E3332BDA-A1B7-4C57-9836-A26EFFB542CC}.Release|x86.ActiveCfg = Release|Any CPU
 		{E3332BDA-A1B7-4C57-9836-A26EFFB542CC}.Release|x86.Build.0 = Release|Any CPU
-		{7CF8706A-F308-64A3-A3B6-55C02CA06AB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7CF8706A-F308-64A3-A3B6-55C02CA06AB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7CF8706A-F308-64A3-A3B6-55C02CA06AB5}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{7CF8706A-F308-64A3-A3B6-55C02CA06AB5}.Debug|x64.Build.0 = Debug|Any CPU
-		{7CF8706A-F308-64A3-A3B6-55C02CA06AB5}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{7CF8706A-F308-64A3-A3B6-55C02CA06AB5}.Debug|x86.Build.0 = Debug|Any CPU
-		{7CF8706A-F308-64A3-A3B6-55C02CA06AB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7CF8706A-F308-64A3-A3B6-55C02CA06AB5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7CF8706A-F308-64A3-A3B6-55C02CA06AB5}.Release|x64.ActiveCfg = Release|Any CPU
-		{7CF8706A-F308-64A3-A3B6-55C02CA06AB5}.Release|x64.Build.0 = Release|Any CPU
-		{7CF8706A-F308-64A3-A3B6-55C02CA06AB5}.Release|x86.ActiveCfg = Release|Any CPU
-		{7CF8706A-F308-64A3-A3B6-55C02CA06AB5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
