@@ -5,7 +5,7 @@ export const manifests: Array<UmbExtensionManifest> = [
     type: 'dashboard',
     js: () => import("./dashboard.element"),
     meta: {
-      label: "WYSIWG Dashboard",
+      label: "WYSIWG",
       pathname: "wysiwg-dashboard"
     },
     conditions: [

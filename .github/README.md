@@ -24,11 +24,13 @@ Add the package to an existing Umbraco website (v15+) from nuget:
 
 `dotnet add package Umbraco.Community.wysiwgUmbracoCommunityExtensions`
 
-Currently you need to manually setup the Block Grid views in the backoffice. This will be automated in a future release: While debuging your website call /umbraco/swagger and choose from the dropdown *wysiwgUmbraco Community Extensions Backoffice API*, authorize (in the popup leave client_secret blank) and click *Try it out* and _**Execute**_ buttons in the install panel. This should respond with status 200: "Installed"
+Start (Debug) the website and login to the backoffice. Go to the settings section and you should find a new dashboard **_WYSIWG_**.
 
-![Screenshot: swagger dashboard](../docs/screenshots/swagger-install.jpg)
+![Screenshot: WYSIWG DDashboard](../docs/screenshots/wysiwg-dashboard.jpg)
 
-Now go to the settings section of the backoffice and you should find new Document and Data types:
+Setup WYSIWG by clicking the button, wait until the success notification and refresh the page.<br>
+Now you should find new Document and Data types: 
+
 ![Screenshot: document and data types](../docs/screenshots/doc-data-types.jpg)
 
 Before you proceed in your IDE, you should create the page model with ModelsBuilder. 
