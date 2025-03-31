@@ -47,7 +47,9 @@
     <!-- Dont include the client folder as part of packaging nuget build -->
     <Content Remove="Wysiwg\**" />
     <Content Remove="compilerconfig.json" />
+    <Content Remove="wwwroot\styles\customblockgrid.scss" />
     <None Remove="pack.cmd" />
+    <None Include="wwwroot\styles\customblockgrid.scss" />
 
     <!-- However make the Umbraco-package.json included for dotnet pack or nuget package and visible to the solution -->
     <None Include="Wysiwg\public\umbraco-package.json" Pack="false" />
