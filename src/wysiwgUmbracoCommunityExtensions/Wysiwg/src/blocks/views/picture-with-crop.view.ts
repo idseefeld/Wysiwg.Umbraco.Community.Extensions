@@ -27,17 +27,22 @@ export class PictureWithCropCustomView
       return html`<div class="error">Invalid data</div>`; //ToDo: get message from localized language file
     }
     const mediaItems = pictureWithCrop?.mediaItem ?? [];
-    const mediaKey = mediaItems.length ? mediaItems[0].mediaKey : "";
-    const cropAlias = pictureWithCrop?.cropAlias[0] ?? "";
-    const captionColor =
-      pictureWithCrop?.captionColor?.value ?? this.defaultColor.value;
-    const caption = pictureWithCrop?.figCaption;
-
+    const mediaItem = mediaItems[0];
+    const mediaKey = mediaItem ? mediaItem.mediaKey : "";
     if (!mediaKey) {
       return html`<div class="error">No Image selected or found</div>`; //ToDo: get message from localized language file
     } else {
+      const cropAlias = pictureWithCrop?.cropAlias[0] ?? "";
+      const crops = mediaItem.crops ?? null;
+      const selectedCrop = JSON.stringify(crops?.find((c) => c.alias === cropAlias.toLowerCase()) ?? "");
+      console.log("selectedCrop", selectedCrop);
+      const captionColor =
+        pictureWithCrop?.captionColor?.value ?? this.defaultColor.value;
+      const caption = pictureWithCrop?.figCaption;
+
       const img = html`<wysiwg-image-crop
         mediaKey="${mediaKey}"
+        selectedCrop=${selectedCrop}
         alt="${this.content?.alternativeText ?? ""}"
         cropAlias="${cropAlias}"
       ></wysiwg-image-crop>`;

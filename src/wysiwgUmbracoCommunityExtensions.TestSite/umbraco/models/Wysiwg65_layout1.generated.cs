@@ -18,7 +18,7 @@ using Umbraco.Extensions;
 
 namespace Umbraco.Cms.Web.Common.PublishedModels
 {
-	/// <summary>Article</summary>
+	/// <summary>Full Row</summary>
 	[PublishedModel("wysiwg65_layout1")]
 	public partial class Wysiwg65_layout1 : PublishedElementModel
 	{

@@ -1,4 +1,29 @@
 @* ToDo: implement dynamic switch related to the current page *@
+@{
+    var lang = System.Threading.Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName;
+    var isEnglish = lang.InvariantEquals("en");
+
+    @if (Constants.Debug)
+    {
+        var local = isEnglish ? "en-US" : "de-DE";
+        var backofficeHref = $"/umbraco/section/content/workspace/document/edit/{Model.Key}/{local}/tab/content";
+        <text>
+            <a href="@backofficeHref" target="_blank">backoffice</a> | <a href="/umbraco/swagger/index.html?urls.primaryName=wysiwgUmbraco+Community+Extensions+Backoffice+API" target="_blank">swagger </a>
+        </text>
+    }
+}
 <nav>
-    <a href="/">EN</a> | <a href="/de">DE</a>
+    @if (isEnglish)
+    {
+        <text>
+            <a href="/"><strong>EN</strong></a> | <a href="/de">DE</a>
+        </text>
+    }
+    else
+    {
+        <text>
+            <a href="/">EN</a> | <a href="/de"><strong>DE</strong></a>
+        </text>
+    }
+
 </nav>

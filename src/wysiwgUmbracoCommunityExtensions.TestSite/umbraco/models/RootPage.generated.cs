@@ -66,7 +66,7 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		public virtual string SiteName => this.Value<string>(_publishedValueFallback, "siteName");
 
 		///<summary>
-		/// #Meta Title
+		/// Meta Title
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.0+131c9cd")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]

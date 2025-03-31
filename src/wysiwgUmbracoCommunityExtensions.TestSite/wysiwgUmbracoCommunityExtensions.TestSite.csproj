@@ -6,6 +6,9 @@
     <CompressionEnabled>false</CompressionEnabled> <!-- Disable compression. E.g. for umbraco backoffice files. These files should be precompressed by node and not let dotnet handle it -->
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Extensions\CustomBlockGridTemplateExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Remove="compilerconfig.json" />
     <Content Remove="wwwroot\styles\wysiwgblockgrid.css" />
     <Content Remove="wwwroot\styles\wysiwgblockgrid.min.css" />

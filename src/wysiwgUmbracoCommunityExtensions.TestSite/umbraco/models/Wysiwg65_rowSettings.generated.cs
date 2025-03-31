@@ -64,5 +64,13 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
 		[ImplementPropertyType("backgroundImage")]
 		public virtual global::Umbraco.Cms.Core.Models.MediaWithCrops BackgroundImage => this.Value<global::Umbraco.Cms.Core.Models.MediaWithCrops>(_publishedValueFallback, "backgroundImage");
+
+		///<summary>
+		/// Padding
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.0+131c9cd")]
+		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		[ImplementPropertyType("padding")]
+		public virtual string Padding => this.Value<string>(_publishedValueFallback, "padding");
 	}
 }
