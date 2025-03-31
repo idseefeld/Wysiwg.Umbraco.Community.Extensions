@@ -196,6 +196,7 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
         background-repeat: repeat;
       }
       img {
+        display: flex;
         width: 100%;
         height: auto;
       }

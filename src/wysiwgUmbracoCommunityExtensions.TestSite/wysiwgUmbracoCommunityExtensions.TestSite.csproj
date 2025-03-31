@@ -9,13 +9,9 @@
     <Content Remove="compilerconfig.json" />
     <Content Remove="wwwroot\styles\wysiwgblockgrid.css" />
     <Content Remove="wwwroot\styles\wysiwgblockgrid.min.css" />
-    <Content Remove="wwwroot\styles\wysiwgblockgrid.scss" />
   </ItemGroup>
   <ItemGroup>
     <None Include="compilerconfig.json" />
-    <None Include="wwwroot\styles\wysiwgblockgrid.css" />
-    <None Include="wwwroot\styles\wysiwgblockgrid.min.css" />
-    <None Include="wwwroot\styles\wysiwgblockgrid.scss" />
   </ItemGroup>
 
   <ItemGroup>
