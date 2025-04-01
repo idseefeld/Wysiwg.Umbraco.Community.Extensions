@@ -22,7 +22,7 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 	/// <summary>Meta & SEO</summary>
 	public partial interface IMetaSeo : IPublishedContent
 	{
-		/// <summary>#Meta Title</summary>
+		/// <summary>Meta Title</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.0+131c9cd")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
 		string MetaTitle { get; }
@@ -60,14 +60,14 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		// properties
 
 		///<summary>
-		/// #Meta Title
+		/// Meta Title
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.0+131c9cd")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
 		[ImplementPropertyType("metaTitle")]
 		public virtual string MetaTitle => GetMetaTitle(this, _publishedValueFallback);
 
-		/// <summary>Static getter for #Meta Title</summary>
+		/// <summary>Static getter for Meta Title</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.0+131c9cd")]
 		[return: global::System.Diagnostics.CodeAnalysis.MaybeNull]
 		public static string GetMetaTitle(IMetaSeo that, IPublishedValueFallback publishedValueFallback) => that.Value<string>(publishedValueFallback, "metaTitle");

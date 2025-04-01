@@ -4,6 +4,7 @@ export type CropUrlData = {
     query?: {
         cropAlias?: string;
         mediaItemId?: string;
+        selectedCrop?: string;
         width?: number;
     };
 };

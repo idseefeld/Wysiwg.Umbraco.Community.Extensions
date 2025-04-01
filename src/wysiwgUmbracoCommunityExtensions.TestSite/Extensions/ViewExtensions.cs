@@ -4,9 +4,9 @@ using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Strings;
 using static Umbraco.Cms.Core.PropertyEditors.ValueConverters.ColorPickerValueConverter;
 using Umbraco.Cms.Web.Common.PublishedModels;
-using wysiwgUmbracoCommunityExtensions.TestSite.Models;
+using WysiwgUmbracoCommunityExtensions.TestSite.Models;
 
-namespace wysiwgUmbracoCommunityExtensions.TestSite.Extensions
+namespace WysiwgUmbracoCommunityExtensions.TestSite.Extensions
 {
     public static class ViewExtensions
     {

@@ -16,6 +16,9 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
   @property({ type: String })
   mediaKey?: string;
 
+  @property({type: String })
+  selectedCrop?: string;
+
   @property({ type: String })
   alt?: string;
 
@@ -133,6 +136,7 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
         mediaItemId: this.mediaKey,
         cropAlias: this.cropAlias,
         width,
+        selectedCrop: this.selectedCrop,
       },
     };
 

@@ -1,4 +1,4 @@
-namespace wysiwgUmbracoCommunityExtensions.TestSite.Models
+namespace WysiwgUmbracoCommunityExtensions.TestSite.Models
 {
     public class Row
     {

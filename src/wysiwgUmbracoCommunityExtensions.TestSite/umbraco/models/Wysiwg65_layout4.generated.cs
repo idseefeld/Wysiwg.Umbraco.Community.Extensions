@@ -18,14 +18,14 @@ using Umbraco.Extensions;
 
 namespace Umbraco.Cms.Web.Common.PublishedModels
 {
-	/// <summary>Picture Settings</summary>
-	[PublishedModel("wysiwg65_pictureSettings")]
-	public partial class Wysiwg65_pictureSettings : PublishedElementModel
+	/// <summary>Layout 4</summary>
+	[PublishedModel("wysiwg65_layout4")]
+	public partial class Wysiwg65_layout4 : PublishedElementModel
 	{
 		// helpers
 #pragma warning disable 0109 // new is redundant
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.0+131c9cd")]
-		public new const string ModelTypeAlias = "wysiwg65_pictureSettings";
+		public new const string ModelTypeAlias = "wysiwg65_layout4";
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.0+131c9cd")]
 		public new const PublishedItemType ModelItemType = PublishedItemType.Content;
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.0+131c9cd")]
@@ -34,40 +34,19 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 			=> PublishedModelUtility.GetModelContentType(contentTypeCache, ModelItemType, ModelTypeAlias);
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.0+131c9cd")]
 		[return: global::System.Diagnostics.CodeAnalysis.MaybeNull]
-		public static IPublishedPropertyType GetModelPropertyType<TValue>(IPublishedContentTypeCache contentTypeCache, Expression<Func<Wysiwg65_pictureSettings, TValue>> selector)
+		public static IPublishedPropertyType GetModelPropertyType<TValue>(IPublishedContentTypeCache contentTypeCache, Expression<Func<Wysiwg65_layout4, TValue>> selector)
 			=> PublishedModelUtility.GetModelPropertyType(GetModelContentType(contentTypeCache), selector);
 #pragma warning restore 0109
 
 		private IPublishedValueFallback _publishedValueFallback;
 
 		// ctor
-		public Wysiwg65_pictureSettings(IPublishedElement content, IPublishedValueFallback publishedValueFallback)
+		public Wysiwg65_layout4(IPublishedElement content, IPublishedValueFallback publishedValueFallback)
 			: base(content, publishedValueFallback)
 		{
 			_publishedValueFallback = publishedValueFallback;
 		}
 
 		// properties
-
-		///<summary>
-		/// Default Width
-		///</summary>
-		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.0+131c9cd")]
-		[ImplementPropertyType("defaultWidth")]
-		public virtual int DefaultWidth => this.Value<int>(_publishedValueFallback, "defaultWidth");
-
-		///<summary>
-		/// Placeholder Width
-		///</summary>
-		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.0+131c9cd")]
-		[ImplementPropertyType("placeholderWidth")]
-		public virtual int PlaceholderWidth => this.Value<int>(_publishedValueFallback, "placeholderWidth");
-
-		///<summary>
-		/// Use Grey Placeholder SVG
-		///</summary>
-		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.0+131c9cd")]
-		[ImplementPropertyType("useGreyPlaceholderSvg")]
-		public virtual bool UseGreyPlaceholderSvg => this.Value<bool>(_publishedValueFallback, "useGreyPlaceholderSvg");
 	}
 }
