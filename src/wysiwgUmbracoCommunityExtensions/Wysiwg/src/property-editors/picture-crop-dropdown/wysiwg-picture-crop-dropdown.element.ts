@@ -1,12 +1,30 @@
 // get the crop data for a dropdownlist from selected cropper data type
-import { css, html, customElement, property, state, nothing } from "@umbraco-cms/backoffice/external/lit";
-import { UUISelectElement, UUISelectEvent } from "@umbraco-cms/backoffice/external/uui";
+import {
+  css,
+  html,
+  customElement,
+  property,
+  state,
+  nothing,
+} from "@umbraco-cms/backoffice/external/lit";
+import {
+  UUISelectElement,
+  UUISelectEvent,
+} from "@umbraco-cms/backoffice/external/uui";
 import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
-import { UmbPropertyEditorConfigCollection, UmbPropertyEditorUiElement, UmbPropertyValueChangeEvent } from "@umbraco-cms/backoffice/property-editor";
+import {
+  UmbPropertyEditorConfigCollection,
+  UmbPropertyEditorUiElement,
+  UmbPropertyValueChangeEvent,
+} from "@umbraco-cms/backoffice/property-editor";
 
 @customElement("wysiwg-picture-crop-dropdown")
-export class WysiwgPictureCropDropdownElement extends UmbLitElement implements UmbPropertyEditorUiElement {
+export class WysiwgPictureCropDropdownElement
+  extends UmbLitElement
+  implements UmbPropertyEditorUiElement
+{
   #selection: Array<string> = [];
+  private debugLocalize: boolean = false;
 
   @property({ type: Array })
   public set value(value: Array<string> | string | undefined) {
@@ -16,17 +34,24 @@ export class WysiwgPictureCropDropdownElement extends UmbLitElement implements U
     return this.#selection;
   }
 
-	/**
-	 * Sets the input to readonly mode, meaning value cannot be changed but still able to read and select its content.
-	 * @type {boolean}
-	 * @attr
-	 * @default false
-	 */
-	@property({ type: Boolean, reflect: true })
-	readonly = false;
+  /**
+   * Sets the input to readonly mode, meaning value cannot be changed but still able to read and select its content.
+   * @type {boolean}
+   * @attr
+   * @default false
+   */
+  @property({ type: Boolean, reflect: true })
+  readonly = false;
 
   @state()
   private _options: Array<Option & { invalid?: boolean }> = [];
+
+  async updated(changedProperties: Map<string | number | symbol, unknown>) {
+    super.updated(changedProperties);
+    if (changedProperties.has("value")) {
+      this.#setValue(this.#selection.length > 0 ? this.#selection[0] : null);
+    }
+  }
 
   public set config(config: UmbPropertyEditorConfigCollection | undefined) {
     if (!config) return;
@@ -36,7 +61,11 @@ export class WysiwgPictureCropDropdownElement extends UmbLitElement implements U
     if (Array.isArray(items) && items.length > 0) {
       this._options =
         typeof items[0] === "string"
-          ? items.map((item) => ({ name: item, value: item, selected: this.#selection.includes(item) }))
+          ? items.map((item) => ({
+              name: item,
+              value: item,
+              selected: this.#selection.includes(item),
+            }))
           : items.map((item) => ({
               name: item.name,
               value: item.value,
@@ -47,7 +76,9 @@ export class WysiwgPictureCropDropdownElement extends UmbLitElement implements U
       this.#selection.forEach((value) => {
         if (!this._options.find((item) => item.value === value)) {
           this._options.push({
-            name: `${value} (${this.localize.term("validation_legacyOption")})`,
+            name: `${value} (${this.localize.term("wysiwg_legacyOption", {
+              debug: this.debugLocalize,
+            })})`,
             value,
             selected: true,
             invalid: true,
@@ -79,15 +110,33 @@ export class WysiwgPictureCropDropdownElement extends UmbLitElement implements U
     });
 
     if (selectionHasInvalids) {
-      return html`<div class="error"><umb-localize key="validation_legacyOptionDescription"></umb-localize></div>`;
+      return html`<div class="error">
+        <umb-localize
+          key="wysiwg_legacyOptionDescription"
+          .debug=${this.debugLocalize}
+          >invalid selection</umb-localize
+        >
+      </div>`;
     }
 
     return nothing;
   }
 
   #renderDropdownSingle() {
+    if (!this._options || this._options.length === 0) {
+      return html`<umb-debug ?visible=${true}></umb-debug>
+        <p class="error">
+          <umb-localize key="wysiwg_noOptions" .debug=${this.debugLocalize}
+            ></umb-localize
+          >
+        </p>`;
+    }
     return html`
-      <umb-input-dropdown-list .options=${this._options} @change=${this.#onChange} ?readonly=${this.readonly}></umb-input-dropdown-list>
+      <umb-input-dropdown-list
+        .options=${this._options}
+        @change=${this.#onChange}
+        ?readonly=${this.readonly}
+      ></umb-input-dropdown-list>
       ${this.#renderDropdownValidation()}
     `;
   }

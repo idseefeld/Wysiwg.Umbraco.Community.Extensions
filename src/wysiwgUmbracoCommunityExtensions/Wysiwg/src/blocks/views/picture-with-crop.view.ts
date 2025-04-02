@@ -16,6 +16,7 @@ export class PictureWithCropCustomView
   extends UmbElementMixin(LitElement)
   implements UmbBlockEditorCustomViewElement
 {
+  private debugLocalize: boolean = false;
   defaultColor: ColorType = { label: "Black", value: "#000" };
 
   @property({ attribute: false })
@@ -24,13 +25,13 @@ export class PictureWithCropCustomView
   render() {
     const pictureWithCrop = this.content as PictureWithCropCustomViewProps;
     if (!pictureWithCrop) {
-      return html`<div class="error">Invalid data</div>`; //ToDo: get message from localized language file
+      return html`<div class="error"><umb-localize key="wysiwg_invalidData" .debug=${this.debugLocalize}>invalid data</umb-localize></div>`;
     }
     const mediaItems = pictureWithCrop?.mediaItem ?? [];
     const mediaItem = mediaItems[0];
     const mediaKey = mediaItem ? mediaItem.mediaKey : "";
     if (!mediaKey) {
-      return html`<div class="error">No Image selected or found</div>`; //ToDo: get message from localized language file
+      return html`<div class="error"><umb-localize key="wysiwg_noImageSelected" .debug=${this.debugLocalize}>No image selected or found</umb-localize></div>`;
     } else {
       const cropAlias = pictureWithCrop?.cropAlias[0] ?? "";
       const crops = mediaItem.crops ?? null;

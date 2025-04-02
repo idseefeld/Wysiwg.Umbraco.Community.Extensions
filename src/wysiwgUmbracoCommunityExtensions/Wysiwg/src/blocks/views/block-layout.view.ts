@@ -168,8 +168,8 @@ export class WysiwgBlockLayoutView
         ? html`<uui-tag
             slot="name"
             look="secondary"
-            title=${this.localize.term("blockEditor_notExposedDescription")}
-            ><umb-localize key="blockEditor_notExposedLabel"></umb-localize
+            title=${this.localize.term("wysiwg_notExposedDescription")}
+            ><umb-localize key="wysiwg_notExposedLabel"></umb-localize
           ></uui-tag>`
         : nothing}
       <umb-block-grid-areas-container
