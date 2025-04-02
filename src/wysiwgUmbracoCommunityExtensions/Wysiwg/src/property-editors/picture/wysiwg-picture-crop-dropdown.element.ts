@@ -56,20 +56,11 @@ export class WysiwgPictureCropDropdownElement
   public set config(config: UmbPropertyEditorConfigCollection | undefined) {
     if (!config) return;
 
-    const items = config.getValueByAlias("items");
-
-    if (Array.isArray(items) && items.length > 0) {
-      this._options =
-        typeof items[0] === "string"
-          ? items.map((item) => ({
-              name: item,
-              value: item,
-              selected: this.#selection.includes(item),
-            }))
-          : items.map((item) => ({
-              name: item.name,
-              value: item.value,
-              selected: this.#selection.includes(item.value),
+    if (Array.isArray(config) && config.length > 0) {
+      this._options = config.map((item) => ({
+              name: item.value?.toString() ?? item.alias,
+              value: item.alias,
+              selected: this.#selection.includes(item.alias),
             }));
 
       // If selection includes a value that is not in the list, add it to the list
@@ -131,6 +122,7 @@ export class WysiwgPictureCropDropdownElement
           >
         </p>`;
     }
+
     return html`
       <umb-input-dropdown-list
         .options=${this._options}
