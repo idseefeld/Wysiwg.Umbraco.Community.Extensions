@@ -13,20 +13,20 @@ export const manifests: Array<UmbExtensionManifest> = [
   {
     "type": "localization",
     "alias": "WysiwgUmbracoCommunityExtensions.Localize.EnUS",
-    "name": "English (United States)",
+    "name": "English",
     "meta": {
-      "culture": "en-us"
+      "culture": "en"
     },
-    "js": "/App_Plugins/WysiwgUmbracoCommunityExtensions/Localize/en-us.js"
+    "js": "/App_Plugins/WysiwgUmbracoCommunityExtensions/Localize/en.js"
   },
   {
     "type": "localization",
-    "alias": "WysiwgUmbracoCommunityExtensions.Localize.EnGB",
-    "name": "English (United Kingdom)",
+    "alias": "WysiwgUmbracoCommunityExtensions.Localize.EnUS",
+    "name": "English (US)",
     "meta": {
-      "culture": "en-gb"
+      "culture": "en-us"
     },
-    "js": "/App_Plugins/WysiwgUmbracoCommunityExtensions/Localize/en-gb.js"
+    "js": "/App_Plugins/WysiwgUmbracoCommunityExtensions/Localize/en.js"
   },
   {
     "type": "localization",
@@ -35,6 +35,15 @@ export const manifests: Array<UmbExtensionManifest> = [
     "meta": {
       "culture": "de-de"
     },
-    "js": "/App_Plugins/WysiwgUmbracoCommunityExtensions/Localize/de-de.js"
+    "js": "/App_Plugins/WysiwgUmbracoCommunityExtensions/Localize/de.js"
+  },
+  {
+    "type": "localization",
+    "alias": "WysiwgUmbracoCommunityExtensions.Localize.DeDE",
+    "name": "German (Switzerland)",
+    "meta": {
+      "culture": "de-ch"
+    },
+    "js": "/App_Plugins/WysiwgUmbracoCommunityExtensions/Localize/de.js"
   }
 ];

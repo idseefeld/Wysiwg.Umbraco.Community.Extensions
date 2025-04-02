@@ -21,6 +21,7 @@ import { WysiwgUmbracoCommunityExtensionsService } from "../api";
 export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
   @state()
   private _contextCurrentUser: UmbCurrentUserModel | undefined = undefined;
+  private _debug: boolean = true;
 
   constructor() {
     super();
@@ -54,8 +55,8 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
       if (this.#notificationContext) {
         this.#notificationContext.peek("danger", {
           data: {
-            headline: `Installation failed`,
-            message: `${error}`,
+            headline: this.localize.term("wysiwg_installError"),
+            message: `${this.localize.term("wysiwg_installErrorDescription")} ${error}`,
           },
         });
       }
@@ -68,8 +69,8 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
       if (this.#notificationContext) {
         this.#notificationContext.peek("positive", {
           data: {
-            headline: `Installation successful`,
-            message: `WYSIWYG document and data types created`,
+            headline: this.localize.term("wysiwg_installSuccess"),
+            message: this.localize.term("wysiwg_installSuccessDescription"),
           },
         });
       }
@@ -89,8 +90,8 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
       if (this.#notificationContext) {
         this.#notificationContext.peek("danger", {
           data: {
-            headline: `Uninstall failed`,
-            message: `${error}`,
+            headline: this.localize.term("wysiwg_uninstallError"),
+            message: `${this.localize.term("wysiwg_uninstallErrorDescription")} ${error}`,
           },
         });
       }
@@ -103,8 +104,8 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
       if (this.#notificationContext) {
         this.#notificationContext.peek("positive", {
           data: {
-            headline: `Uninstall successful`,
-            message: `WYSIWYG document and data types removed`,
+            headline: this.localize.term("wysiwg_uninstallSuccessTitle"),
+            message: this.localize.term("wysiwg_uninstallSuccessDescription")
           },
         });
       }
@@ -113,106 +114,53 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     }
   };
 
-  /*
-  renderBoxes() {
-    return html`
-
-      <uui-box headline="Who am I?">
-        <div slot="header">[Server]</div>
-        <h2>
-          <uui-icon name="icon-user"></uui-icon>${this._serverUserData?.email
-            ? this._serverUserData.email
-            : "Press the button!"}
-        </h2>
-        <ul>
-          ${this._serverUserData?.groups.map(
-            (group) => html`<li>${group.name}</li>`
-          )}
-        </ul>
-        <uui-button
-          color="default"
-          look="primary"
-          @click="${this.#onClickWhoAmI}"
-        >
-          Who am I?
-        </uui-button>
-        <p>
-          This endpoint gets your current user from the server and displays your
-          email and list of user groups. It also displays a Notification with
-          your details.
-        </p>
-      </uui-box>
-
-      <uui-box headline="What's my Name?">
-        <div slot="header">[Server]</div>
-        <h2><uui-icon name="icon-user"></uui-icon> ${this._yourName}</h2>
-        <uui-button
-          color="default"
-          look="primary"
-          @click="${this.#onClickWhatsMyName}"
-        >
-          Whats my name?
-        </uui-button>
-        <p>
-          This endpoint has a forced delay to show the button 'waiting' state
-          for a few seconds before completing the request.
-        </p>
-      </uui-box>
-
-      <uui-box headline="What's the Time?">
-        <div slot="header">[Server]</div>
-        <h2>
-          <uui-icon name="icon-alarm-clock"></uui-icon> ${this._timeFromMrWolf
-            ? this._timeFromMrWolf.toLocaleString()
-            : "Press the button!"}
-        </h2>
-        <uui-button
-          color="default"
-          look="primary"
-          @click="${this.#onClickWhatsTheTimeMrWolf}"
-        >
-          Whats the time Mr Wolf?
-        </uui-button>
-        <p>This endpoint gets the current date and time from the server.</p>
-      </uui-box>
-    `;
-  }
-
-    */
-
   render() {
     if (!this._contextCurrentUser?.isAdmin) {
-      return html`<p>Only admins can see this dashboard</p>`;
+      return html`<umb-localize key="wysiwg_" .debug=${this._debug}>
+      <p>Only admins can see this dashboard</p>
+      </umb-localize>`;
     }
 
     return html`
-      <uui-box headline="Setup WYSIWG">
+      <uui-box headline=${this.localize.term("wysiwg_setupTitle", {
+              debug: this._debug,
+            })}>
         <uui-button
           color="positive"
           look="primary"
           @click="${this.#onClickInstall}"
         >
+        <umb-localize key="wysiwg_setupButtonLabel" .debug=${this._debug}>
           Setup document and data types
+        </umb-localize>
         </uui-button>
         <div slot="header"></div>
-        <p>
-          This will create the document and data types needed for WYSIWG block
-          editor views.
-        </p>
+        <umb-localize key="wysiwg_setupButtonDescription" .debug=${this._debug}>
+          <p>
+            This will create the document and data types needed for WYSIWG block
+            editor views.
+          </p>
+        </umb-localize>
       </uui-box>
-      <uui-box headline="Remove WYSIWG">
+      <uui-box headline=${this.localize.term("wysiwg_uninstallTitle", {
+              debug: this._debug,
+            })}>
         <uui-button
           color="danger"
           look="primary"
           @click="${this.#onClickUninstall}"
         >
+        <umb-localize key="wysiwg_uninstallButtonLabel" .debug=${this._debug}>
           Remove document and data types
+        </umb-localize>
         </uui-button>
         <div slot="header"></div>
-        <p>
-          This will remove the document and data types needed for WYSIWG block
-          editor views.
-        </p>
+        <umb-localize key="wysiwg_uninstallButtonDescription" .debug=${this._debug}>
+          <p>
+            This will remove the document and data types needed for WYSIWG block
+            editor views.
+          </p>
+        </umb-localize>
       </uui-box>
     `;
   }
