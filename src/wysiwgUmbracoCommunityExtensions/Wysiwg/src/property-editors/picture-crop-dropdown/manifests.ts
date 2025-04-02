@@ -1,24 +1,15 @@
 export const manifests: Array<UmbExtensionManifest> = [
   {
     type: "propertyEditorUi",
-    alias: "wysiwg.PropertyEditorUi.Dropdown",
-    name: "Dropdown Picture Crops",
+    alias: "wysiwg.PropertyEditorUi.CropsDropdown",
+    name: "WYSIWG Dropdown Picture Crops",
     element: () => import("./wysiwg-picture-crop-dropdown.element.js"),
     meta: {
-      label: "Dropdown Picture Crops",
+      label: "WYSIWG Dropdown Picture Crops",
       propertyEditorSchemaAlias: "Umbraco.Plain.String",
-      icon: "icon-list",
+      icon: "icon-indent",
       group: "lists",
-      supportsReadOnly: true,
-      settings: {
-        properties: [
-          {
-            alias: 'cropperDataType',
-						label: 'Image Cropper Data Type',
-						propertyEditorUiAlias: 'wysiwg.PropertyEditorUi.DataTypePicker',
-          }
-        ]
-      }
+      supportsReadOnly: true
     },
   }
 ];

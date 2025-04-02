@@ -74,6 +74,14 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		public virtual string CropAlias => this.Value<string>(_publishedValueFallback, "cropAlias");
 
 		///<summary>
+		/// Dynamic Crops
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.0+131c9cd")]
+		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		[ImplementPropertyType("dynamicCrops")]
+		public virtual string DynamicCrops => this.Value<string>(_publishedValueFallback, "dynamicCrops");
+
+		///<summary>
 		/// Fig Caption
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.0+131c9cd")]
