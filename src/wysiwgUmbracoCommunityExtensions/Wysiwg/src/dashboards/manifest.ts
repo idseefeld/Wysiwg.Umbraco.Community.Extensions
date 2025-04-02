@@ -1,9 +1,9 @@
 export const manifests: Array<UmbExtensionManifest> = [
   {
-    name: "Block Demo Extensions Dashboard",
-    alias: "BlockDemoExtensions.Dashboard",
+    name: "WYSIWG Extensions Dashboard",
+    alias: "WysiwgDashboardElement.Dashboard",
     type: 'dashboard',
-    js: () => import("./dashboard.element"),
+    js: () => import('./dashboard.element.js'),
     meta: {
       label: "WYSIWG",
       pathname: "wysiwg-dashboard"

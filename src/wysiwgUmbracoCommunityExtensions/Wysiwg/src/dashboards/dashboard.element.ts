@@ -17,8 +17,8 @@ import {
 } from "@umbraco-cms/backoffice/current-user";
 import { WysiwgUmbracoCommunityExtensionsService } from "../api";
 
-@customElement("example-dashboard")
-export class ExampleDashboardElement extends UmbElementMixin(LitElement) {
+@customElement("wysiwg-dashboard")
+export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
   @state()
   private _contextCurrentUser: UmbCurrentUserModel | undefined = undefined;
 
@@ -241,10 +241,10 @@ export class ExampleDashboardElement extends UmbElementMixin(LitElement) {
   ];
 }
 
-export default ExampleDashboardElement;
+export default WysiwgDashboardElement;
 
 declare global {
   interface HTMLElementTagNameMap {
-    "example-dashboard": ExampleDashboardElement;
+    "wysiwg-dashboard": WysiwgDashboardElement;
   }
 }
