@@ -1,7 +1,11 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Web.Common.PublishedModels;
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<StandardPage>
 @{
 	Layout = "layout.cshtml";
 }
 
 @await Html.GetBlockGridHtmlAsync(Model.Main)
+
+<div style="max-width: 300px; background-color: #cef; padding: 10px">
+    @await Html.GetBlockListHtmlAsync(Model.BlockList)
+</div>

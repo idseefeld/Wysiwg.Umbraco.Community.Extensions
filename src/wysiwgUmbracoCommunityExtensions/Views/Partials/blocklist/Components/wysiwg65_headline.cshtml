@@ -1,0 +1,30 @@
+@using Microsoft.AspNetCore.Html
+@using Umbraco.Cms.Core.Models.Blocks
+@using WysiwgUmbracoCommunityExtensions.ViewModels
+@model IBlockReference
+@{
+    Wysiwg65_headline? content = null;
+    Wysiwg65_headlineSettings? settings = null;
+    if (Model is BlockListItem listItem)
+    {
+        content = new Wysiwg65_headline(listItem.Content);
+        if (content == null) return;
+
+        settings = new Wysiwg65_headlineSettings(listItem.Settings);
+    }
+    else if (Model is BlockGridItem gridItem)
+    {
+        content = new Wysiwg65_headline(gridItem.Content);
+        if (content == null) return;
+
+        settings = new Wysiwg65_headlineSettings(gridItem.Settings);
+    }
+
+    var inlineStyles = string.IsNullOrEmpty(settings?.Color?.Color) ? string.Empty : $"color: {settings?.Color?.Color};";
+    inlineStyles += string.IsNullOrEmpty(settings?.Margin) ? string.Empty : $"margin: {settings?.Margin};";
+    var size = settings?.Size?.ToLower() ?? "h2";
+    var margin = settings?.Margin ?? string.Empty;
+
+    var html = new HtmlString($"<{size} style=\"{inlineStyles}\">{content?.Text}</{size}>");
+}
+@html
