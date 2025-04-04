@@ -1,14 +1,29 @@
 import {
-  UmbCropModel,
   UmbFocalPointModel,
 } from "@umbraco-cms/backoffice/media";
 
-export type WysiwgMediaPickerPropertyValueEntry = {
+export type WysiwgMediaPickerPropertyValueEntry =  {
   key: string;
   mediaKey: string;
   mediaTypeAlias: string;
   focalPoint: UmbFocalPointModel | null;
-  crops: Array<UmbCropModel>;
-  selectedCropAlias: string;
+  crops: Array<WysiwgCropModel>;
+  selectedCropAlias?: string;
+};
+
+export type WysiwgMediaPickerPropertyValues = Array<WysiwgMediaPickerPropertyValueEntry>;
+
+export type WysiwgCropModel = {
+  label?: string;
+  alias: string;
+  height: number;
+  width: number;
+  default?: boolean;
+  coordinates?: {
+      x1: number;
+      x2: number;
+      y1: number;
+      y2: number;
+  };
 };
 

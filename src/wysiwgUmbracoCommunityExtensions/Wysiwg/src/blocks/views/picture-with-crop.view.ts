@@ -14,8 +14,7 @@ import { ColorType, PictureWithCropCustomViewProps } from "./types";
 @customElement("wysiwg-picturewithcrop-view")
 export class PictureWithCropCustomView
   extends UmbElementMixin(LitElement)
-  implements UmbBlockEditorCustomViewElement
-{
+  implements UmbBlockEditorCustomViewElement {
   private debugLocalize: boolean = false;
   defaultColor: ColorType = { label: "Black", value: "#000" };
 
@@ -25,18 +24,28 @@ export class PictureWithCropCustomView
   render() {
     const pictureWithCrop = this.content as PictureWithCropCustomViewProps;
     if (!pictureWithCrop) {
-      return html`<div class="error"><umb-localize key="wysiwg_invalidData" .debug=${this.debugLocalize}>invalid data</umb-localize></div>`;
+      return html`<div class="error">
+        <umb-localize key="wysiwg_invalidData" .debug=${this.debugLocalize}
+          >invalid data</umb-localize
+        >
+      </div>`;
     }
-    const mediaItems = pictureWithCrop?.mediaItem ?? [];
-    const mediaItem = mediaItems[0];
-    const mediaKey = mediaItem ? mediaItem.mediaKey : "";
+    const mediaCropItems = pictureWithCrop?.mediaItem ?? [];
+    const mediaCropItem = mediaCropItems[0] ?? null;
+    const mediaKey = mediaCropItem ? mediaCropItem.mediaKey : "";
     if (!mediaKey) {
-      return html`<div class="error"><umb-localize key="wysiwg_noImageSelected" .debug=${this.debugLocalize}>No image selected or found</umb-localize></div>`;
+      return html`<div class="error">
+        <umb-localize key="wysiwg_noImageSelected" .debug=${this.debugLocalize}
+          >No image selected or found</umb-localize
+        >
+      </div>`;
     } else {
-      const cropAlias = pictureWithCrop?.cropAlias[0] ?? "";
-      const crops = mediaItem.crops ?? null;
-      const selectedCrop = JSON.stringify(crops?.find((c) => c.alias === cropAlias.toLowerCase()) ?? "");
-      console.log("selectedCrop", selectedCrop);
+      const cropAlias = mediaCropItem?.selectedCropAlias ?? "";;
+      const crops = mediaCropItem.crops ?? null;
+      const selectedCrop = JSON.stringify(
+        crops?.find((c) => c.alias === cropAlias.toLowerCase()) ?? ""
+      );
+
       const captionColor =
         pictureWithCrop?.captionColor?.value ?? this.defaultColor.value;
       const caption = pictureWithCrop?.figCaption;

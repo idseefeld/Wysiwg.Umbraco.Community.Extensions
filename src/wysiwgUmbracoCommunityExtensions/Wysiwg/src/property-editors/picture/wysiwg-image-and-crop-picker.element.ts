@@ -1,6 +1,5 @@
 import {
   UMB_MEDIA_ENTITY_TYPE,
-  UmbCropModel,
   UmbInputRichMediaElement,
   UmbMediaPickerPropertyValueEntry,
 } from "@umbraco-cms/backoffice/media";
@@ -13,10 +12,10 @@ import {
 } from "@umbraco-cms/backoffice/external/lit";
 import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
 import { UMB_PROPERTY_CONTEXT } from "@umbraco-cms/backoffice/property";
-import type { UmbNumberRangeValueType } from "@umbraco-cms/backoffice/models";
 import {
   UmbPropertyEditorConfigCollection,
   UmbPropertyEditorUiElement,
+  UmbPropertyValueChangeEvent,
 } from "@umbraco-cms/backoffice/property-editor";
 import type { UmbTreeStartNode } from "@umbraco-cms/backoffice/tree";
 import {
@@ -24,53 +23,57 @@ import {
   UmbFormControlMixin,
 } from "@umbraco-cms/backoffice/validation";
 
-import { UmbChangeEvent } from "@umbraco-cms/backoffice/event";
 import {
   UUISelectElement,
   UUISelectEvent,
 } from "@umbraco-cms/backoffice/external/uui";
-import { WysiwgMediaPickerPropertyValueEntry } from "./types";
-
-const elementName = "wysiwg-image-and-crop-picker";
+import {
+  WysiwgCropModel,
+  WysiwgMediaPickerPropertyValueEntry,
+  WysiwgMediaPickerPropertyValues,
+} from "./types";
+import { CropsData, CropsResponse, WysiwgUmbracoCommunityExtensionsService } from "../../api";
+import { UmbNumberRangeValueType } from "@umbraco-cms/backoffice/models";
 
 /**
- * @element umb-property-editor-ui-media-picker
+ * based on @element umb-property-editor-ui-media-picker
  */
+
+const elementName = "wysiwg-image-and-crop-picker";
 @customElement(elementName)
 export class WysiwgImageAndCropPickerElement
-  extends UmbFormControlMixin<
-    WysiwgMediaPickerPropertyValueEntry | undefined,
-    typeof UmbLitElement,
-    undefined
-  >(UmbLitElement)
-  implements UmbPropertyEditorUiElement
-{
+  extends UmbFormControlMixin<WysiwgMediaPickerPropertyValues | undefined, typeof UmbLitElement, undefined>(UmbLitElement)
+  implements UmbPropertyEditorUiElement {
   //#region properties
   public set config(config: UmbPropertyEditorConfigCollection | undefined) {
     if (!config) return;
 
-    this._allowedMediaTypes =
-      config.getValueByAlias<string>("filter")?.split(",") ?? [];
-    this._focalPointEnabled = Boolean(
-      config.getValueByAlias("enableLocalFocalPoint")
-    );
+    this._allowedMediaTypes = config.getValueByAlias<string>("filter")?.split(",") ?? [];
+    this._focalPointEnabled = Boolean(config.getValueByAlias("enableLocalFocalPoint"));
     this._multiple = Boolean(config.getValueByAlias("multiple"));
-    this._preselectedCrops =
-      config?.getValueByAlias<Array<UmbCropModel>>("crops") ?? [];
+    this._defaultCropAlias = config.getValueByAlias<string>("defaultCropAlias") ?? "";
 
-    this._options = this._preselectedCrops.map((item) => ({
-      name: item.label?.toString() ?? item.alias,
-      value: item.alias,
-      selected: this._selectedCrop === item.alias,
-    }));
+    this._preselectedCrops = config?.getValueByAlias<Array<WysiwgCropModel>>("crops") ?? [];
+
+    if (this._preselectedCrops.length > 1) {
+      this._selectedCropAlias = this.value?.[0]?.selectedCropAlias ?? this._defaultCropAlias;
+      const options = this._preselectedCrops.map((item) => ({
+        name: item.label?.toString() ?? item.alias,
+        value: item.alias,
+        selected: item.alias === this._selectedCropAlias,
+      })) as Array<Option & { invalid?: boolean }>;
+      this._options = [
+        { name: "[original]", value: "",  },
+        ...options,
+      ];
+    } else {
+      this.getImageCropperCrops();
+    }
 
     const startNodeId = config.getValueByAlias<string>("startNodeId") ?? "";
-    this._startNode = startNodeId
-      ? { unique: startNodeId, entityType: UMB_MEDIA_ENTITY_TYPE }
-      : undefined;
+    this._startNode = startNodeId ? { unique: startNodeId, entityType: UMB_MEDIA_ENTITY_TYPE } : undefined;
 
-    const minMax =
-      config.getValueByAlias<UmbNumberRangeValueType>("validationLimit");
+    const minMax = config.getValueByAlias<UmbNumberRangeValueType>('validationLimit');
     this._min = minMax?.min ?? 0;
     this._max = minMax?.max ?? Infinity;
   }
@@ -93,6 +96,8 @@ export class WysiwgImageAndCropPickerElement
    */
   @property({ type: Boolean, reflect: true })
   readonly = false;
+
+  private _defaultCropAlias: string = "";
   //#endregion
 
   //#region states
@@ -103,13 +108,7 @@ export class WysiwgImageAndCropPickerElement
   private _focalPointEnabled: boolean = false;
 
   @state()
-  private _preselectedCrops: Array<UmbCropModel> = [];
-
-  @state()
-  private _options: Array<Option & { invalid?: boolean }> = [];
-
-  @state()
-  private _selectedCrop: string = "";
+  private _preselectedCrops: Array<WysiwgCropModel> = [];
 
   @state()
   private _allowedMediaTypes: Array<string> = [];
@@ -128,6 +127,13 @@ export class WysiwgImageAndCropPickerElement
 
   @state()
   private _variantId?: string;
+
+  // additions
+  @state()
+  private _selectedCropAlias: string = "";
+
+  @state()
+  private _options: Array<Option & { invalid?: boolean }> = [];
   //#endregion
 
   constructor() {
@@ -135,73 +141,135 @@ export class WysiwgImageAndCropPickerElement
 
     this.consumeContext(UMB_PROPERTY_CONTEXT, (context) => {
       this.observe(context.alias, (alias) => (this._alias = alias));
-      this.observe(
-        context.variantId,
-        (variantId) => (this._variantId = variantId?.toString() || "invariant")
-      );
+      this.observe(context.variantId, (variantId) => (this._variantId = variantId?.toString() || "invariant"));
     });
   }
 
   override firstUpdated() {
-    this.addFormControlElement(
-      this.shadowRoot!.querySelector("umb-input-rich-media")!
-    );
+    this.addFormControlElement(this.shadowRoot!.querySelector("umb-input-rich-media")!);
+    const cropSelect = this.shadowRoot?.querySelector<UUISelectElement>("umb-input-dropdown-list");
+    if (cropSelect) {
+      this.addFormControlElement(this.shadowRoot!.querySelector("umb-input-dropdown-list")!);
+    }
   }
 
-  override focus() {
-    return this.shadowRoot
-      ?.querySelector<UmbInputRichMediaElement>("umb-input-rich-media")
-      ?.focus();
+  override focus() {//options?: FocusOptions) {
+    // console.log("options", options);
+    return this.shadowRoot?.querySelector<UmbInputRichMediaElement>("umb-input-rich-media")?.focus();
   }
 
-  #onChange(event: CustomEvent & { target: UmbInputRichMediaElement }) {
+  private async getImageCropperCrops(mediaKey?: string) {
+    await this.crops(mediaKey).then((data) => {
+      if (data === "error") {
+        this._preselectedCrops = [];
+        return;
+      } else if (data === "no data") {
+        this._preselectedCrops = [];
+        return;
+      }
+      const imageCrops = data as Array<WysiwgCropModel>;
+      console.debug("imageCrops", imageCrops);
+      var newOptions = imageCrops.map((item) => ({
+        name: item.label?.toString() ?? item.alias,
+        value: "imagCropper_" + item.alias,
+        selected: item.alias === this._selectedCropAlias,
+      }));
+
+      this._options = [
+        ...this._options,
+        ...newOptions,
+      ];
+    });
+  }
+
+  private async crops(mediaKey?: string): Promise<CropsResponse | "error" | "no data"> {
+    const options: CropsData = {
+      query: {
+        mediaItemId: mediaKey ?? "",
+      },
+    };
+
+    const { data, error } =
+      await WysiwgUmbracoCommunityExtensionsService.crops(options);
+
+    if (error) {
+      console.error(error);
+      return "error";
+    }
+
+    if (data !== undefined) {
+      return data;
+    }
+
+    return "no data";
+  }
+
+  #onChangeImage(event: CustomEvent & { target: UmbInputRichMediaElement }) {
     const isEmpty = event.target.value?.length === 0;
-    const image: UmbMediaPickerPropertyValueEntry | undefined =
-      event.target.value?.[0];
-    const newValue = isEmpty ? undefined : image;
-    console.log(newValue);
+    const mediaItems: UmbMediaPickerPropertyValueEntry | undefined =
+      event.target.value?.find((item) => !!item.mediaKey) ?? undefined;
+    let newValue = isEmpty ? undefined : mediaItems;
 
-    this.value = {
-      key: image?.key,
-      mediaKey: image?.mediaKey,
-      mediaTypeAlias: image?.mediaTypeAlias,
-      focalPoint: image?.focalPoint,
-      crops: image?.crops,
-      selectedCropAlias: this._selectedCrop,
-    } as WysiwgMediaPickerPropertyValueEntry;
-
-    this.dispatchEvent(new UmbChangeEvent());
+    if (isEmpty) {
+      this._updateValue({
+        selectedCropAlias: this._selectedCropAlias,
+      }, true);
+    } else {
+      this._updateValue({
+        key: newValue?.key,
+        mediaKey: newValue?.mediaKey,
+        mediaTypeAlias: newValue?.mediaTypeAlias,
+        focalPoint: newValue?.focalPoint,
+        crops: newValue?.crops,
+      } as UmbMediaPickerPropertyValueEntry);
+    }
   }
 
   #onChangeCrop(event: UUISelectEvent) {
-    if (!this.value) return;
-    const image = this.value as UmbMediaPickerPropertyValueEntry;
     const value = event.target.value as string;
-    this._selectedCrop = value;
-    this.value = {
-      key: image?.key,
-      mediaKey: image?.mediaKey,
-      mediaTypeAlias: image?.mediaTypeAlias,
-      focalPoint: image?.focalPoint,
-      crops: image?.crops,
-      selectedCropAlias: this._selectedCrop,
-    } as WysiwgMediaPickerPropertyValueEntry;
-    this.dispatchEvent(new UmbChangeEvent());
+    this._selectedCropAlias = value;
+
+    this._updateValue({
+      selectedCropAlias: this._selectedCropAlias,
+    });
+  }
+
+  private _updateValue(fieldsToUpdate: Partial<WysiwgMediaPickerPropertyValueEntry>, deleteImage: boolean = false) {
+    const newValue: WysiwgMediaPickerPropertyValues = [];
+    if (!this.value || !this.value.length || deleteImage) {
+      const item = {
+        ...fieldsToUpdate,
+      } as WysiwgMediaPickerPropertyValueEntry;
+      newValue.push(item);
+    } else {
+      for (let i = 0; i < this.value.length; i++) {
+        const item = {
+          ...this.value[i],
+          ...fieldsToUpdate,
+        };
+        newValue.push(item);
+      }
+    }
+    this.value = newValue;
+    // this._mediaKey = newValue[0]?.mediaKey ?? "";
+    this.dispatchEvent(new UmbPropertyValueChangeEvent());
   }
 
   render() {
     return html` ${this.#renderImage()} ${this.#renderDropdown()} `;
   }
+
   #renderImage() {
-    const mediaItems = !!this.value
-      ? [this.value as UmbMediaPickerPropertyValueEntry]
-      : [];
+    // const mediaItems = (this.value?.find((item => item.mediaKey === this._mediaKey))
+    //   ?? undefined) as UmbMediaPickerValueModel | undefined;
+    // console.debug("mediaItems", mediaItems);
+
     return html`
       <umb-input-rich-media
         .alias=${this._alias}
         .allowedContentTypeIds=${this._allowedMediaTypes}
         .focalPointEnabled=${this._focalPointEnabled}
-        .value=${mediaItems}
+        .value=${this.value ?? []}
         .max=${this._max}
         .min=${this._min}
         .preselectedCrops=${this._preselectedCrops}
@@ -210,7 +278,7 @@ export class WysiwgImageAndCropPickerElement
         .required=${this.mandatory}
         .requiredMessage=${this.mandatoryMessage}
         ?multiple=${this._multiple}
-        @change=${this.#onChange}
+        @change=${this.#onChangeImage}
         ?readonly=${this.readonly}
       >
       </umb-input-rich-media>
@@ -218,23 +286,29 @@ export class WysiwgImageAndCropPickerElement
   }
 
   #renderDropdown() {
-    if (!this.value) return;
-    if (this._options.length === 0) return html``;
+    const enabled = !!this.value?.length && !!this.value[0]?.mediaKey;
+    const label = "crop-select";
+    //if (!this._options.length) return html`<uui-select label=${label}></uui-select>`;
 
     return html`
-      <umb-input-dropdown-list
+      <uui-select
+        label=${label}
+        .disabled=${!enabled}
         .options=${this._options}
         @change=${this.#onChangeCrop}
         ?readonly=${this.readonly}
-      ></umb-input-dropdown-list>
+      ></uui-select>
     `;
   }
 
   static override readonly styles = [
     UUISelectElement.styles,
     css`
-      umb-input-dropdown-list {
+      uui-select {
         margin-top: 8px;
+      }
+      .hidden {
+        visibility: hidden;
       }
     `,
   ];

@@ -1,12 +1,13 @@
 @using Umbraco.Cms.Core.Models.Blocks
 @using Umbraco.Extensions
 @using WysiwgUmbracoCommunityExtensions.ViewModels
+@using WysiwgUmbracoCommunityExtensions.Extensions
 @model BlockGridItem
 @{
     var content = new Wysiwg65_pictureWithCrop(Model.Content);
     if (content?.MediaItem == null) return;
 
-    var src = content.MediaItem.GetCropUrl(width: 400, cropAlias: content.CropAlias);
+    var src = content.MediaItem.GetSelectedCropUrl(width: 400);
 }
 <figure>
     <img id="@content.MediaItem.Id" src="@src" alt="@content.AlternativeText" />

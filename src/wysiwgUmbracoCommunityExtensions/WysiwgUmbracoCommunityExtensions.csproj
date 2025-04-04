@@ -50,7 +50,10 @@
     <Content Remove="Wysiwg\**" />
     <EmbeddedResource Remove="wwwroot\App_Plugins\**" />
     <None Remove="wwwroot\App_Plugins\**" />
+    <Compile Remove="Models\CropModel.cs" />
     <Content Remove="compilerconfig.json" />
+    <Content Remove="Views\Partials\blockgrid\area.cshtml" />
+    <Content Remove="Views\Partials\blockgrid\default.cshtml" />
     <Content Remove="wwwroot\styles\customblockgrid.scss" />
     <None Remove="pack.cmd" />
     <None Include="wwwroot\styles\customblockgrid.scss" />

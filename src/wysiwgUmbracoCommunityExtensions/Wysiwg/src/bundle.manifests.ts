@@ -12,10 +12,19 @@ export const manifests: Array<UmbExtensionManifest> = [
   ...propertyEditorsManifests,
   {
     "type": "localization",
-    "alias": "WysiwgUmbracoCommunityExtensions.Localize.EnUS",
+    "alias": "WysiwgUmbracoCommunityExtensions.Localize.En",
     "name": "English",
     "meta": {
       "culture": "en"
+    },
+    "js": "/App_Plugins/WysiwgUmbracoCommunityExtensions/Localize/en.js"
+  },
+  {
+    "type": "localization",
+    "alias": "WysiwgUmbracoCommunityExtensions.Localize.EnGB",
+    "name": "English (UK)",
+    "meta": {
+      "culture": "en-gb"
     },
     "js": "/App_Plugins/WysiwgUmbracoCommunityExtensions/Localize/en.js"
   },
@@ -39,7 +48,7 @@ export const manifests: Array<UmbExtensionManifest> = [
   },
   {
     "type": "localization",
-    "alias": "WysiwgUmbracoCommunityExtensions.Localize.DeDE",
+    "alias": "WysiwgUmbracoCommunityExtensions.Localize.DeCH",
     "name": "German (Switzerland)",
     "meta": {
       "culture": "de-ch"
