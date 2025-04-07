@@ -2,19 +2,17 @@
 import { manifest as schemaManifest } from './Wysiwg.ImageAndCropPicker.js'
 
 const extensionManifest: Array<UmbExtensionManifest> = [
-  // {
-  //   type: "propertyEditorUi",
-  //   alias: "wysiwg.PropertyEditorUi.CropsDropdown",
-  //   name: "WYSIWG Dropdown Picture Crops",
-  //   element: () => import("./wysiwg-picture-crop-dropdown.element.js"),
-  //   meta: {
-  //     label: "WYSIWG Dropdown Picture Crops",
-  //     propertyEditorSchemaAlias: "Umbraco.Plain.String",
-  //     icon: "icon-indent",
-  //     group: "lists",
-  //     supportsReadOnly: true
-  //   },
-  // },
+  {
+    type: 'propertyEditorUi',
+    alias: 'Wysiwg.ImageCropsWithDefaultConfiguration',
+    name: 'Image Crops with Default Property Editor UI',
+    element: () => import('./wysiwg-image-crops.element.js'),
+    meta: {
+      label: 'Image Crops Configuration',
+      icon: 'icon-autofill',
+      group: 'common',
+    },
+  },
   {
     type: "propertyEditorUi",
     alias: "wysiwg.PropertyEditorUi.ImageAndCropPicker",

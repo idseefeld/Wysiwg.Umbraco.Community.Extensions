@@ -46,7 +46,7 @@ namespace WysiwgUmbracoCommunityExtensions.PropertyEditors
                         {
                             Key = Guid.NewGuid(),
                             MediaKey = guidUdi.Guid,
-                            Crops = Enumerable.Empty<ImageCropperValue.ImageCropperCrop>(),
+                            Crops = [], //Enumerable.Empty<ImageCropperValue.ImageCropperCrop>(),
                             FocalPoint = new ImageCropperValue.ImageCropperFocalPoint { Left = 0.5m, Top = 0.5m },
                             SelectedCropAlias = string.Empty,
                         };

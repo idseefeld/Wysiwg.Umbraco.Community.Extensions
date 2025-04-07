@@ -12,16 +12,21 @@ namespace WysiwgUmbracoCommunityExtensions.Models
     {
         public class CropConfigurationExtended : CropConfiguration
         {
+            [ConfigurationField("label")]
             public string? Label { get; set; }
+
+            [ConfigurationField("defaultCrop")]
+            public bool DefaultCrop { get; internal set; }
         }
+
         [ConfigurationField("filter")]
         public string? Filter { get; set; }
 
         [ConfigurationField("multiple")]
-        public bool Multiple { get; set; }
+        public bool Multiple { get; } = false;
 
         [ConfigurationField("validationLimit")]
-        public NumberRange ValidationLimit { get; set; } = new NumberRange();
+        public NumberRange ValidationLimit { get; } = new NumberRange() { Min = 0, Max = 1 };
 
         [ConfigurationField("startNodeId")]
         public Guid? StartNodeId { get; set; }
@@ -35,7 +40,7 @@ namespace WysiwgUmbracoCommunityExtensions.Models
         [ConfigurationField(Umbraco.Cms.Core.Constants.DataTypes.ReservedPreValueKeys.IgnoreUserStartNodes)]
         public bool IgnoreUserStartNodes { get; set; }
 
-        [ConfigurationField("defaultCropAlias")]
-        public string? DefaultCropAlias { get; set; }
+        //[ConfigurationField("defaultCropAlias")]
+        //public string? DefaultCropAlias { get; set; }
     }
 }

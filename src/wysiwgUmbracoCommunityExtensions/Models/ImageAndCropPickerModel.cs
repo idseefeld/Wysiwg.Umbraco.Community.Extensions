@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
+using static Umbraco.Cms.Core.PropertyEditors.ValueConverters.ImageCropperValue;
 
 namespace WysiwgUmbracoCommunityExtensions.Models
 {
@@ -16,7 +17,7 @@ namespace WysiwgUmbracoCommunityExtensions.Models
 
         public string MediaTypeAlias { get; set; } = string.Empty;
 
-        public IEnumerable<ImageCropperValue.ImageCropperCrop>? Crops { get; set; }
+        public IEnumerable<ImageCropperCrop>? Crops { get; set; }
 
         public ImageCropperValue.ImageCropperFocalPoint? FocalPoint { get; set; }
 

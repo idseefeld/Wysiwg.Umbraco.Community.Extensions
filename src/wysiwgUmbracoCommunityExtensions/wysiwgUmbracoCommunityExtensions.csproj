@@ -51,6 +51,7 @@
     <EmbeddedResource Remove="wwwroot\App_Plugins\**" />
     <None Remove="wwwroot\App_Plugins\**" />
     <Compile Remove="Models\CropModel.cs" />
+    <Compile Remove="Models\ImageCropperCropExtended.cs" />
     <Content Remove="compilerconfig.json" />
     <Content Remove="Views\Partials\blockgrid\area.cshtml" />
     <Content Remove="Views\Partials\blockgrid\default.cshtml" />

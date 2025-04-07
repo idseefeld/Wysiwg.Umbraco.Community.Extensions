@@ -51,12 +51,13 @@ export class WysiwgImageAndCropPickerElement
     this._allowedMediaTypes = config.getValueByAlias<string>("filter")?.split(",") ?? [];
     this._focalPointEnabled = Boolean(config.getValueByAlias("enableLocalFocalPoint"));
     this._multiple = Boolean(config.getValueByAlias("multiple"));
-    this._defaultCropAlias = config.getValueByAlias<string>("defaultCropAlias") ?? "";
+    // this._defaultCropAlias = config.getValueByAlias<string>("defaultCropAlias");
 
     this._preselectedCrops = config?.getValueByAlias<Array<WysiwgCropModel>>("crops") ?? [];
 
     if (this._preselectedCrops.length > 1) {
-      this._selectedCropAlias = this.value?.[0]?.selectedCropAlias ?? this._defaultCropAlias;
+      const defaultCrop = this._preselectedCrops.find((item) => !!item.defaultCrop);
+      this._selectedCropAlias = this.value?.[0]?.selectedCropAlias ?? defaultCrop?.alias ?? "";// ?? this._defaultCropAlias ?? "";
       const options = this._preselectedCrops.map((item) => ({
         name: item.label?.toString() ?? item.alias,
         value: item.alias,
@@ -97,7 +98,8 @@ export class WysiwgImageAndCropPickerElement
   @property({ type: Boolean, reflect: true })
   readonly = false;
 
-  private _defaultCropAlias: string = "";
+  // private _defaultCropAlias?: string = "";
+
   //#endregion
 
   //#region states

@@ -34,7 +34,7 @@ namespace WysiwgUmbracoCommunityExtensions.Extensions
                             Alias = configuredCrop.Alias,
                             Width = configuredCrop.Width,
                             Height = configuredCrop.Height,
-                            Coordinates = imageCropperCrop?.Coordinates
+                            Coordinates = imageCropperCrop?.Coordinates,
                         });
                     }
                 }

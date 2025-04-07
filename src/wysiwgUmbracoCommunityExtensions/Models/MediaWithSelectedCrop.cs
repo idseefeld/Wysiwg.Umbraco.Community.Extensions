@@ -10,23 +10,19 @@ using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
 
 namespace WysiwgUmbracoCommunityExtensions.Models
 {
-    public class MediaWithSelectedCrop : MediaWithCrops
+    public class MediaWithSelectedCrop(IPublishedContent content, IPublishedValueFallback publishedValueFallback, ImageCropperValue localCrops) : MediaWithCrops(content, publishedValueFallback, localCrops)
     {
-        public MediaWithSelectedCrop(IPublishedContent content, IPublishedValueFallback publishedValueFallback, ImageCropperValue localCrops) : base(content, publishedValueFallback, localCrops)
-        {
-        }
-
-        //[JsonProperty("selectedCropAlias")]
+        //public new ImageCropperValueExtended? LocalCrops { get; }
         public string? SelectedCropAlias { get; set; }
     }
-    public class MediaWithSelectedCrop<T> : MediaWithSelectedCrop
+    //public class ImageCropperValueExtended : ImageCropperValue
+    //{
+    //    public new IEnumerable<ImageCropperCropExtended>? Crops { get; set; }
+    //}
+    public class MediaWithSelectedCrop<T>(T content, IPublishedValueFallback publishedValueFallback, ImageCropperValue localCrops) : MediaWithSelectedCrop(content, publishedValueFallback, localCrops)
         where T : IPublishedContent
     {
-        public MediaWithSelectedCrop(T content, IPublishedValueFallback publishedValueFallback, ImageCropperValue localCrops)
-        : base(content, publishedValueFallback, localCrops) =>
-        Content = content;
-
-        public new T Content { get; }
+        public new T Content { get; } = content;
 
         public static implicit operator T(MediaWithSelectedCrop<T> mediaWithCrops) => mediaWithCrops.Content;
     }

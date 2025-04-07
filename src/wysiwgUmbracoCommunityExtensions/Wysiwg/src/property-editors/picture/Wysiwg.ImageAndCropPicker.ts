@@ -29,7 +29,7 @@ export const manifest: ManifestPropertyEditorSchema = {
 					alias: 'crops',
 					label: 'Image Crops',
 					description: 'Local crops, stored on document',
-					propertyEditorUiAlias: 'Umb.PropertyEditorUi.ImageCropsConfiguration',
+					propertyEditorUiAlias: 'Wysiwg.ImageCropsWithDefaultConfiguration',
 				},
 				{
 					alias: 'ignoreUserStartNodes',
@@ -37,12 +37,12 @@ export const manifest: ManifestPropertyEditorSchema = {
 					description: 'Selecting this option allows a user to choose nodes that they normally dont have access to.',
 					propertyEditorUiAlias: 'Umb.PropertyEditorUi.Toggle',
 				},
-        {
-          alias: 'defaultCropAlias',
-          label: 'Default Crop Alias',
-          description: 'Default crop alias',
-          propertyEditorUiAlias: 'Umb.PropertyEditorUi.TextBox'
-        }
+        // {
+        //   alias: 'defaultCropAlias',
+        //   label: 'Default Crop Alias',
+        //   description: 'Default crop alias',
+        //   propertyEditorUiAlias: 'Umb.PropertyEditorUi.TextBox'
+        // }
 			],
 		},
 	},

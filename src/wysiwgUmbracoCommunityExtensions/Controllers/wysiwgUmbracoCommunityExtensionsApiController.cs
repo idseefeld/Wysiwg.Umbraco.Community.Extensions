@@ -53,10 +53,10 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
             }
             else
             {
-                if (publishedContent.Media(mediaItemId) is not MediaWithCrops tempItem)
+                if (publishedContent.Media(mediaItemId) is not MediaWithSelectedCrop tempItem)
                 { return NotFound($"No media item found for: {mediaItemId}"); }
 
-                MediaWithCrops mediaItem = tempItem;
+                MediaWithSelectedCrop mediaItem = tempItem;
                 rVal = mediaItem.LocalCrops?.Crops ?? [];
             }
             return Ok(rVal);

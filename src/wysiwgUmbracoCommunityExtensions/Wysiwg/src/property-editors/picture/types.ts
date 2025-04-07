@@ -18,7 +18,7 @@ export type WysiwgCropModel = {
   alias: string;
   height: number;
   width: number;
-  default?: boolean;
+  defaultCrop?: boolean;
   coordinates?: {
       x1: number;
       x2: number;
