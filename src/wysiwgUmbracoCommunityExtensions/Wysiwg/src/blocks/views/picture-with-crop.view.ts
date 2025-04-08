@@ -42,9 +42,13 @@ export class PictureWithCropCustomView
     } else {
       const cropAlias = mediaCropItem?.selectedCropAlias ?? "";;
       const crops = mediaCropItem.crops ?? null;
-      const selectedCrop = JSON.stringify(
-        crops?.find((c) => c.alias === cropAlias.toLowerCase()) ?? ""
-      );
+      const crop = crops?.find((c) => c.alias === cropAlias.toLowerCase());
+      const selectedCrop = !crop
+        ? ""
+        : JSON.stringify(crop);
+      const selectedFocalPoint = !mediaCropItem?.focalPoint
+        ? ""
+        : JSON.stringify(mediaCropItem.focalPoint);
 
       const captionColor =
         pictureWithCrop?.captionColor?.value ?? this.defaultColor.value;
@@ -53,6 +57,7 @@ export class PictureWithCropCustomView
       const img = html`<wysiwg-image-crop
         mediaKey="${mediaKey}"
         selectedCrop=${selectedCrop}
+        selectedFocalPoint=${selectedFocalPoint}
         alt="${this.content?.alternativeText ?? ""}"
         cropAlias="${cropAlias}"
       ></wysiwg-image-crop>`;

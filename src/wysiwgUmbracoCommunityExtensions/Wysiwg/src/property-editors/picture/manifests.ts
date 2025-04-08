@@ -1,4 +1,3 @@
-// import type { ManifestModal } from '@umbraco-cms/backoffice/modal';
 import { manifest as schemaManifest } from './Wysiwg.ImageAndCropPicker.js'
 
 const extensionManifest: Array<UmbExtensionManifest> = [
@@ -20,7 +19,7 @@ const extensionManifest: Array<UmbExtensionManifest> = [
     element: () => import("./wysiwg-image-and-crop-picker.element.js"),
     meta: {
       label: "WYSIWG Picture and Crop Picker",
-      propertyEditorSchemaAlias: "Wysiwg.ImageAndCropPicker",//"Umbraco.Plain.Json",//"Umbraco.Plain.String",//
+      propertyEditorSchemaAlias: "Wysiwg.ImageAndCropPicker",
       icon: "icon-picture",
       group: "media",
       supportsReadOnly: true,
@@ -29,16 +28,6 @@ const extensionManifest: Array<UmbExtensionManifest> = [
 	schemaManifest,
 ];
 
-// const modals: Array<ManifestModal> = [
-// 	{
-// 		type: 'modal',
-// 		alias: 'Wysiwg.Modal.ImageCropperEditor',
-// 		name: 'Wysiwg Image Cropper Editor Modal',
-// 		js: () => import('./wysiwg-image-cropper-editor-modal.element.js'),
-// 	},
-// ];
-
 export const manifests = [
-  // ...modals,
   ...extensionManifest,
 ];

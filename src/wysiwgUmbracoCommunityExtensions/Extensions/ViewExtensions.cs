@@ -47,9 +47,9 @@ namespace WysiwgUmbracoCommunityExtensions.Extensions
             return new HtmlString(text.ToHtmlString());
         }
 
-        public static string GetSelectedCropUrl(this MediaWithSelectedCrop media, int width)
+        public static string GetSelectedCropUrl(this MediaWithSelectedCrop media, int width, string selectedCropAlias = "")
         {
-            var cropAlias = media.SelectedCropAlias ?? "";
+            var cropAlias = media.SelectedCropAlias ?? selectedCropAlias ?? "";
             var src = string.IsNullOrEmpty(cropAlias)
                 ? media.GetCropUrl(width: width)
                 : media.GetCropUrl(width: width, cropAlias: cropAlias);

@@ -2,7 +2,7 @@ import {
   UmbFocalPointModel,
 } from "@umbraco-cms/backoffice/media";
 
-export type WysiwgMediaPickerPropertyValueEntry =  {
+export type WysiwgMediaPickerPropertyValueEntry = {
   key: string;
   mediaKey: string;
   mediaTypeAlias: string;
@@ -20,10 +20,10 @@ export type WysiwgCropModel = {
   width: number;
   defaultCrop?: boolean;
   coordinates?: {
-      x1: number;
-      x2: number;
-      y1: number;
-      y2: number;
+    x1: number;
+    x2: number;
+    y1: number;
+    y2: number;
   };
 };
 
