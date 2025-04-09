@@ -8,25 +8,17 @@ import {
 import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
 import { UmbTextStyles } from "@umbraco-cms/backoffice/style";
 import { CropUrlData, WysiwgUmbracoCommunityExtensionsService } from "../..";
+import { WysiwgMediaPickerPropertyValueEntry } from "../../property-editors/picture/types";
+import { UmbPropertyEditorUiElement, UmbPropertyValueChangeEvent } from "@umbraco-cms/backoffice/property-editor";
 
 @customElement("wysiwg-image-crop")
-export class WysiwgBlocksImageCropElement extends UmbLitElement {
+export class WysiwgBlocksImageCropElement extends UmbLitElement implements UmbPropertyEditorUiElement {
   //#region Properties
-
   @property({ type: String })
-  mediaKey?: string;
+  value: string = "";
 
-  @property({ type: String })
-  selectedCrop?: string;
-
-  @property({ type: String })
-  selectedFocalPoint?: string;
-
-  @property({ type: String })
-  alt?: string;
-
-  @property({ type: String })
-  cropAlias? = "";
+  @property({ type: Object })
+  mediaItem?: WysiwgMediaPickerPropertyValueEntry | null = null;
 
   @property({ type: Number })
   width = 1200;
@@ -44,13 +36,13 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
   //#endregion
 
   //#region state
+
   @state()
   private _isLoading = true;
 
-  @state()
-  private _imageUrl: string | undefined = "";
-
   //#endregion
+
+  private _prevImgSrc: string = "";
 
   #intersectionObserver?: IntersectionObserver;
 
@@ -74,13 +66,14 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
   override updated(changedProperties: Map<string | number | symbol, unknown>) {
     super.updated(changedProperties);
 
-    if (
-      changedProperties.has("mediaKey") ||
-      changedProperties.has("cropAlias") ||
-      changedProperties.has("selectedCrop") ||
-      changedProperties.has("selectedFocalPoint")
-    ) {
+    if (changedProperties.has("mediaItem")) {
       this.loadImage();
+    }
+    if (changedProperties.has("value")) {
+      if (this._prevImgSrc !== this.value) {
+        this.dispatchEvent(new UmbPropertyValueChangeEvent());
+        this._prevImgSrc = this.value;
+      }
     }
   }
 
@@ -106,14 +99,14 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
 
   #renderImageCrop() {
     try {
-      if (!this._imageUrl) {
+      if (!this.value) {
         return html`<div id="icon" part="img"></div>`;
       } else {
         return html`<img
           id="figure-image"
           part="img"
-          src="${this._imageUrl ?? ""}"
-          alt="${this.alt ?? ""}"
+          src="${this.value ?? ""}"
+          alt="${this.mediaItem?.mediaKey ?? ""}"
           loading="${this.loading}"
           draggable="false"
         />`;
@@ -124,16 +117,24 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
   }
 
   private async requestCropUrl(width: number): Promise<string | undefined> {
-    if (!this.mediaKey) {
+    if (!this.mediaItem?.mediaKey) {
       return;
     }
+    const cropAlias = this.mediaItem.selectedCropAlias?.toLowerCase() ?? "";
+    const crop = this.mediaItem.crops?.find((c) => c.alias === cropAlias);
+    const selectedCrop = !crop
+      ? ""
+      : JSON.stringify(crop);
+    const selectedFocalPoint = !this.mediaItem.focalPoint
+      ? ""
+      : JSON.stringify(this.mediaItem.focalPoint);
     const options: CropUrlData = {
       query: {
-        mediaItemId: this.mediaKey,
-        cropAlias: this.cropAlias,
+        mediaItemId: this.mediaItem.mediaKey,
+        cropAlias: cropAlias,
         width,
-        selectedCrop: this.selectedCrop,
-        selectedFocalPoint: this.selectedFocalPoint
+        selectedCrop: selectedCrop,
+        selectedFocalPoint: selectedFocalPoint
       },
     };
 
@@ -157,13 +158,13 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
   private async generateImageUrl(width: number) {
     await this.requestCropUrl(width).then((data) => {
       if (data === "error") {
-        this._imageUrl = undefined;
+        this.value = "";
         return;
       } else if (data === "no data") {
-        this._imageUrl = undefined;
+        this.value = "";
         return;
       }
-      this._imageUrl = data;
+      this.value = data ?? "";
     });
   }
 

@@ -70,9 +70,7 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
             if (cropperDataType != null)
             {
                 var cropsKey = "crops";
-                var cropperConfig = cropperDataType.ConfigurationData.ContainsKey(cropsKey)
-                    ? cropperDataType.ConfigurationData[cropsKey] as JsonArray
-                    : null;
+                var cropperConfig = cropperDataType.ConfigurationData.TryGetValue(cropsKey, out object? value) ? value as JsonArray : null;
                 var json = cropperConfig?.ToJsonString();
                 if (string.IsNullOrEmpty(json))
                 {
@@ -81,7 +79,17 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
                 }
                 var crops = JsonSerializer.Deserialize<ImageCropperCrop[]>(json, JsonSerializerOptions.Web);
                 if (crops != null)
-                { rVal = crops; }
+                {
+                    rVal = crops.Select(c =>
+                        new ImageCropperCrop
+                        {
+                            Alias = c.Alias,
+                            Coordinates = c.Coordinates,
+                            Width = c.Width,
+                            Height = c.Height
+                        }
+                    );
+                }
             }
             return rVal;
         }
@@ -126,7 +134,8 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
             }
             string? url = null;
             var localCrops = new ImageCropperValue();
-            if (selectedCropModel != null) { localCrops.Crops = [selectedCropModel]; }
+            if (selectedCropModel != null)
+            { localCrops.Crops = [selectedCropModel]; }
             localCrops.FocalPoint = focalPoint;
 
             var mediaItem = new MediaWithCrops(tempItem, new NoopPublishedValueFallback(), localCrops);
@@ -143,61 +152,8 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
             }
 
             logger.LogWarning("No crops found ");
-            url = mediaItem?.GetCropUrl(width: allowedWidth);
+            url = mediaItem?.GetCropUrl(width: allowedWidth, cropAlias: cropAlias);
             return url == null ? ImageUrl(mediaItemId) : Ok(url);
-
-            #region obsolete
-            //var umbracoFile = mediaItem.GetProperty(MediaConventions.File)?.GetValue() as imageValueConverter;
-            //var hasCrop = (umbracoFile?.Crops) != null && umbracoFile.Crops.FirstOrDefault(c => c.Alias.InvariantEquals(cropAlias)) != null;
-
-            //if (selectedCropModel != null && (selectedCropModel.Coordinates != null || !string.IsNullOrEmpty(selectedCropModel.Alias)))
-            //{
-
-            //    var imageCropperValue = new imageValueConverter()
-            //    {
-            //        Crops = [selectedCropModel]
-            //    };
-
-            //    if (selectedCropModel.Coordinates == null)
-            //    {
-            //        //ToDo: change to propper values based on orig width and heigth and crop width and height etc.
-            //        selectedCropModel.Coordinates = new ImageCropperCropCoordinates();
-            //        switch (selectedCropModel.Width / selectedCropModel.Height)
-            //        {
-            //            case 1:
-            //                selectedCropModel.Coordinates.X1 = (decimal)0.125;
-            //                selectedCropModel.Coordinates.X2 = (decimal)0.125;
-            //                break;
-            //            case < 1:
-            //                selectedCropModel.Coordinates.X1 = (decimal)0.5;
-            //                break;
-            //            case > 1:
-            //                selectedCropModel.Coordinates.Y1 = (decimal)0.111042266351138;
-            //                break;
-            //        }
-            //    }
-
-            //    var x1 = selectedCropModel.Coordinates.X1;
-            //    var x2 = selectedCropModel.Coordinates.X2;
-            //    var y1 = selectedCropModel.Coordinates.Y1;
-            //    var y2 = selectedCropModel.Coordinates.Y2;
-            //    var hashValue = $"{mediaItem.Url()}?cc={x1},{y1},{x2},{y2}&width={allowedWidth}";// &mode={ImageCropMode.Crop}";
-            //    var hash = hashValue.ToMd5();
-            //    url = $"{hashValue}&v={hash}";
-
-            //}
-            //else if (hasCrop)
-            //{
-            //    url = mediaItem?.GetCropUrl(width: allowedWidth, cropAlias: cropAlias);
-            //}
-            //else
-            //{
-            //    logger.LogWarning("There are no crops defined on the Image data types cropper configuration! You should add: square, portrait and landscape");
-            //    url = mediaItem?.GetCropUrl(width: allowedWidth);
-            //}
-
-            //return url == null ? ImageUrl(mediaItemId) : Ok(url);
-            #endregion
         }
 
         [HttpGet("imageurl")]
@@ -219,7 +175,7 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
         [ProducesResponseType<IEnumerable<IMediaType>>(StatusCodes.Status404NotFound)]
         public IActionResult MediaTypes(string name = "")
         {
-            var mediaTypes = mediaTypeService.GetAll();
+            var mediaTypes = mediaTypeService.GetAll().ToArray();
             if (string.IsNullOrEmpty(name))
             {
                 return Ok(mediaTypes);

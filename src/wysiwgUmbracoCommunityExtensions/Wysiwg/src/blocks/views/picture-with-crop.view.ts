@@ -40,28 +40,11 @@ export class PictureWithCropCustomView
         >
       </div>`;
     } else {
-      const cropAlias = mediaCropItem?.selectedCropAlias ?? "";;
-      const crops = mediaCropItem.crops ?? null;
-      const crop = crops?.find((c) => c.alias === cropAlias.toLowerCase());
-      const selectedCrop = !crop
-        ? ""
-        : JSON.stringify(crop);
-      const selectedFocalPoint = !mediaCropItem?.focalPoint
-        ? ""
-        : JSON.stringify(mediaCropItem.focalPoint);
+      const img = html`<wysiwg-image-crop .mediaItem=${mediaCropItem}></wysiwg-image-crop>`;
 
       const captionColor =
         pictureWithCrop?.captionColor?.value ?? this.defaultColor.value;
       const caption = pictureWithCrop?.figCaption;
-
-      const img = html`<wysiwg-image-crop
-        mediaKey="${mediaKey}"
-        selectedCrop=${selectedCrop}
-        selectedFocalPoint=${selectedFocalPoint}
-        alt="${this.content?.alternativeText ?? ""}"
-        cropAlias="${cropAlias}"
-      ></wysiwg-image-crop>`;
-
       const inlineStyle = `style="color: ${captionColor};"`;
       const figCaption = caption
         ? unsafeHTML(`<figcaption ${inlineStyle}>${caption}</figcaption>`)

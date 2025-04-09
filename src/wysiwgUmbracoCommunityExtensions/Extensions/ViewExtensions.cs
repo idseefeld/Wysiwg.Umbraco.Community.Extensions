@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Html;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Strings;
 using Umbraco.Extensions;
+using WysiwgUmbracoCommunityExtensions.Controllers;
 using WysiwgUmbracoCommunityExtensions.Models;
 using WysiwgUmbracoCommunityExtensions.ViewModels;
 using static Umbraco.Cms.Core.PropertyEditors.ValueConverters.ColorPickerValueConverter;
