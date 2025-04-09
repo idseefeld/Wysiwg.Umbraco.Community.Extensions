@@ -1,8 +1,8 @@
-import { MediaPickerValueModel } from "../types";
+import { WysiwgMediaPickerPropertyValues } from "../../property-editors/picture/types";
 
 export type PictureWithCropCustomViewProps = {
-  mediaItem: MediaPickerValueModel;
-  cropAlias: string[];
+  mediaItem: WysiwgMediaPickerPropertyValues;
+  cropAliasCollection: string[];
   figCaption: string;
   captionColor: ColorType;
 };

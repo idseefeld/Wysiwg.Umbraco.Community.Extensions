@@ -16,8 +16,11 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
   @property({ type: String })
   mediaKey?: string;
 
-  @property({type: String })
+  @property({ type: String })
   selectedCrop?: string;
+
+  @property({ type: String })
+  selectedFocalPoint?: string;
 
   @property({ type: String })
   alt?: string;
@@ -52,25 +55,18 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
   #intersectionObserver?: IntersectionObserver;
 
   override render() {
-    //console.debug("wysiwg-image-crop.render", this._imageUrl, this._isLoading);
-
     const img = this.#renderImageCrop();
     const loading = this.#renderLoading();
-    //console.debug("wysiwg-image-crop.render img: ", img);
-    //console.debug("wysiwg-image-crop.render loading: ", loading);
     return html` ${img} ${loading} `;
   }
 
   override connectedCallback() {
     super.connectedCallback();
-    //console.debug("wysiwg-image-crop.connectedCallback");
 
     this.loadImage();
   }
 
   override disconnectedCallback() {
-    //console.debug("wysiwg-image-crop.disconnectedCallback");
-
     super.disconnectedCallback();
     this.#intersectionObserver?.disconnect();
   }
@@ -80,11 +76,11 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
 
     if (
       changedProperties.has("mediaKey") ||
-      changedProperties.has("cropAlias")
+      changedProperties.has("cropAlias") ||
+      changedProperties.has("selectedCrop") ||
+      changedProperties.has("selectedFocalPoint")
     ) {
       this.loadImage();
-    } else if (changedProperties.has("_imageUrl")) {
-      //console.debug("wysiwg-image-crop.updated", this._imageUrl);
     }
   }
 
@@ -137,6 +133,7 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
         cropAlias: this.cropAlias,
         width,
         selectedCrop: this.selectedCrop,
+        selectedFocalPoint: this.selectedFocalPoint
       },
     };
 

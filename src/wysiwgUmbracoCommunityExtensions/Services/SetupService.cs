@@ -108,7 +108,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             return allDtTypes;
         }
 
-        private string GetErrorMessage(string name, bool isDataType = false)
+        private static string GetErrorMessage(string name, bool isDataType = false)
         {
             if (isDataType)
             {
@@ -165,8 +165,6 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
         private async Task CreateDataTypeHeadlineSizes(string name)
         {
-
-#pragma warning disable CA1861 // Avoid constant arrays as arguments
             var createDataTypeRequestModel = new CreateDataTypeRequestModel
             {
                 Parent = new Umbraco.Cms.Api.Management.ViewModels.ReferenceByIdModel(_containerId.GetValueOrDefault()),
@@ -180,13 +178,11 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     }
                 ]
             };
-#pragma warning restore CA1861 // Avoid constant arrays as arguments
             await CreateDataType(createDataTypeRequestModel, name);
         }
 
         private async Task CreateDataTypeCropNames(string name)
         {
-#pragma warning disable CA1861 // Avoid constant arrays as arguments
             var createDataTypeRequestModel = new CreateDataTypeRequestModel
             {
                 Parent = new Umbraco.Cms.Api.Management.ViewModels.ReferenceByIdModel(_containerId.GetValueOrDefault()),
@@ -200,7 +196,6 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     }
                 ]
             };
-#pragma warning restore CA1861 // Avoid constant arrays as arguments
             await CreateDataType(createDataTypeRequestModel, name);
         }
 
@@ -1040,13 +1035,13 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             await AddProperties(type, propItems, "Content");
         }
 
-        private async Task AddProperties(ContentType type, IEnumerable<PropertyType> propItems, string GroupName, int groupSortOrder = 1)
+        private async Task AddProperties(ContentType type, IEnumerable<PropertyType> propItems, string groupName, int groupSortOrder = 1)
         {
-            PropertyTypeCollection propertyCollection = new PropertyTypeCollection(true, propItems);
+            var propertyCollection = new PropertyTypeCollection(true, propItems);
             type.PropertyGroups.Add(new PropertyGroup(isPublishing: true)
             {
-                Alias = GroupName.ToLower(),
-                Name = GroupName,
+                Alias = groupName.ToLower(),
+                Name = groupName,
                 SortOrder = groupSortOrder,
                 PropertyTypes = propertyCollection
             });
@@ -1058,7 +1053,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         }
         private async Task SwitchPartialViews(bool restoreOriginal = false)
         {
-            var allPartialViews = (await partialViewService.GetAllAsync());
+            var allPartialViews = await partialViewService.GetAllAsync();
             if (allPartialViews == null)
             { return; }
 

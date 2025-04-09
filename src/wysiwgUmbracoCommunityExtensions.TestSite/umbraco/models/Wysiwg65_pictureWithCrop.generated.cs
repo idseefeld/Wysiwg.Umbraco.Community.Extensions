@@ -66,22 +66,6 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		public virtual global::Umbraco.Cms.Core.PropertyEditors.ValueConverters.ColorPickerValueConverter.PickedColor CaptionColor => this.Value<global::Umbraco.Cms.Core.PropertyEditors.ValueConverters.ColorPickerValueConverter.PickedColor>(_publishedValueFallback, "captionColor");
 
 		///<summary>
-		/// Crop Alias
-		///</summary>
-		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.1+1720692")]
-		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
-		[ImplementPropertyType("cropAlias")]
-		public virtual string CropAlias => this.Value<string>(_publishedValueFallback, "cropAlias");
-
-		///<summary>
-		/// Dynamic Crops
-		///</summary>
-		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.1+1720692")]
-		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
-		[ImplementPropertyType("dynamicCrops")]
-		public virtual string DynamicCrops => this.Value<string>(_publishedValueFallback, "dynamicCrops");
-
-		///<summary>
 		/// Fig Caption
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.1+1720692")]
@@ -95,6 +79,6 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.1+1720692")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
 		[ImplementPropertyType("mediaItem")]
-		public virtual global::Umbraco.Cms.Core.Models.MediaWithCrops MediaItem => this.Value<global::Umbraco.Cms.Core.Models.MediaWithCrops>(_publishedValueFallback, "mediaItem");
+		public virtual global::WysiwgUmbracoCommunityExtensions.Models.MediaWithSelectedCrop MediaItem => this.Value<global::WysiwgUmbracoCommunityExtensions.Models.MediaWithSelectedCrop>(_publishedValueFallback, "mediaItem");
 	}
 }
