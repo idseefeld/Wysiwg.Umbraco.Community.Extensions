@@ -34,7 +34,7 @@ import {
 } from "./types";
 import { CropsData, CropsResponse, MediaTypeModel, MediaTypesResponse, WysiwgUmbracoCommunityExtensionsService } from "../../api";
 import { UmbNumberRangeValueType } from "@umbraco-cms/backoffice/models";
-import { WysiwgBlocksImageCropElement } from "../../blocks";
+import { WysiwgBlocksImageCropElement } from "./wysiwg-image-crop.element.js";
 
 /**
  * based on @element umb-property-editor-ui-media-picker
