@@ -9,6 +9,7 @@ export type WysiwgMediaPickerPropertyValueEntry = {
   focalPoint: UmbFocalPointModel | null;
   crops: Array<WysiwgCropModel>;
   selectedCropAlias?: string;
+  cropUrl?: string;
 };
 
 export type WysiwgMediaPickerPropertyValues = Array<WysiwgMediaPickerPropertyValueEntry>;

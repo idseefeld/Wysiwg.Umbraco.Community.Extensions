@@ -34,6 +34,7 @@ import {
 } from "./types";
 import { CropsData, CropsResponse, MediaTypeModel, MediaTypesResponse, WysiwgUmbracoCommunityExtensionsService } from "../../api";
 import { UmbNumberRangeValueType } from "@umbraco-cms/backoffice/models";
+import { WysiwgBlocksImageCropElement } from "./wysiwg-image-crop.element.js";
 
 /**
  * based on @element umb-property-editor-ui-media-picker
@@ -68,12 +69,12 @@ export class WysiwgImageAndCropPickerElement
         selected: item.alias === this._selectedCropAlias,
       })) as Array<Option & { invalid?: boolean }>;
       this._options = [
-        { name: "[original]", value: "", },
+        { name: "", value: "", },
         ...options,
       ];
-    } else {
-      this.getImageCropperCrops();
     }
+
+    this.getImageCropperCrops();
 
     const startNodeId = config.getValueByAlias<string>("startNodeId") ?? "";
     this._startNode = startNodeId ? { unique: startNodeId, entityType: UMB_MEDIA_ENTITY_TYPE } : undefined;
@@ -141,6 +142,11 @@ export class WysiwgImageAndCropPickerElement
 
   @state()
   private _mediaTypes?: Array<MediaTypeModel> = [];
+
+  @state()
+  private _imgSrc: string = "";
+  @state()
+  private _prevImgSrc: string = "";
   //#endregion
 
   constructor() {
@@ -194,6 +200,7 @@ export class WysiwgImageAndCropPickerElement
   }
 
   private async getImageCropperCrops(mediaKey?: string) {
+    if (!this._selectedCropAlias) { this._selectedCropAlias = this.value?.[0]?.selectedCropAlias ?? ""; }
     await this.crops(mediaKey).then((data) => {
       if (data === "error") {
         this._preselectedCrops = [];
@@ -203,10 +210,9 @@ export class WysiwgImageAndCropPickerElement
         return;
       }
       const imageCrops = data as Array<WysiwgCropModel>;
-      console.debug("imageCrops", imageCrops);
       var newOptions = imageCrops.map((item) => ({
         name: `[${(item.label?.toString() ?? item.alias)}]`,
-        value: "imageCropper_" + item.alias,
+        value: item.alias,
         selected: item.alias === this._selectedCropAlias,
       }));
 
@@ -240,6 +246,11 @@ export class WysiwgImageAndCropPickerElement
   }
 
   #onChangeImage(event: CustomEvent & { target: UmbInputRichMediaElement }) {
+    if (this._imgSrc !== this._prevImgSrc) {
+      console.debug("imgSrc changed", this._imgSrc, this._prevImgSrc);
+      this._prevImgSrc = this._imgSrc;
+    }
+
     const isEmpty = event.target.value?.length === 0;
     const mediaItems: UmbMediaPickerPropertyValueEntry | undefined =
       event.target.value?.find((item) => !!item.mediaKey) ?? undefined;
@@ -271,6 +282,16 @@ export class WysiwgImageAndCropPickerElement
     this._updateValue({
       selectedCropAlias: this._selectedCropAlias,
     });
+  }
+
+  #onChangePreview(event: CustomEvent & { target: WysiwgBlocksImageCropElement }) {
+    if (event?.target?.value?.length > 0) {
+
+      console.log("onChangePreview", event?.target?.value);
+      this._updateValue({
+        cropUrl: event?.target?.value,
+      });
+    }
   }
 
   private _updateValue(fieldsToUpdate: Partial<WysiwgMediaPickerPropertyValueEntry>, deleteImage: boolean = false) {
@@ -307,21 +328,11 @@ export class WysiwgImageAndCropPickerElement
   }
 
   #renderPreviewImage() {
-    if (!this.value) { return; }
+    if (!this.value || !this.value.length || !this.value[0]?.mediaKey) { return; }
 
     const media = this.value[0];
-    const crop = media.crops.find((crop) => crop.alias === this._selectedCropAlias);
-    const selectedCrop = !crop ? "" : JSON.stringify(crop);
-    const cropAlias = media?.selectedCropAlias ?? this._selectedCropAlias;
-    return html`
-      <wysiwg-image-crop
-        mediaKey="${media.mediaKey}"
-        cropAlias="${cropAlias}"
-        selectedCrop=${selectedCrop}
-        selectedFocalPoint=${media.focalPoint ?? ""}
-        alt="${media.mediaKey}"
-      ></wysiwg-image-crop>
-    `;
+
+    return html`<wysiwg-image-crop .mediaItem=${media} @change=${this.#onChangePreview}></wysiwg-image-crop>`;
   }
 
   #renderEditImage() {
@@ -389,6 +400,9 @@ export class WysiwgImageAndCropPickerElement
         display: flex;
         flex-direction: column;
         position: relative;
+        width: 100%;
+        max-width: 200px;
+        min-width: 100px;
       }
       #left {
         margin-right: 20px;
