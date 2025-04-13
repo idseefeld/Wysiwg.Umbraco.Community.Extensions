@@ -60,9 +60,9 @@ export class PictureWithCropCustomView
         display: block;
         height: auto;
         box-sizing: border-box;
-        background-color: transparent;
-        /* border-radius: 9px; */
+        margin: 0;
         padding: 0;
+        font-family: var(--wysiwg-font-family, initial);
       }
       .error {
         color: red;
@@ -73,6 +73,9 @@ export class PictureWithCropCustomView
         margin: 0;
         padding: 0;
         display: block;
+      }
+      figcaption {
+        font-style: var(--wysiwg-figcaption-font-style, italic);
       }
     `,
   ];

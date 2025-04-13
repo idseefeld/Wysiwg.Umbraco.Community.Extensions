@@ -10,6 +10,6 @@
     var settings = new Wysiwg65_paragraphSettings(Model.Settings);
     var inlineStyles = string.IsNullOrEmpty(settings?.Color?.Color) ? string.Empty : $"color: {settings?.Color?.Color};";
 }
-<div style="@inlineStyles">
+<div class="paragraph" style="@inlineStyles">
     @content.Text.GetHtml()
 </div>
