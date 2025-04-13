@@ -29,7 +29,8 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
         ISetupService installService,
         IMediaTypeService mediaTypeService,
         ILogger<WysiwgUmbracoCommunityExtensionsApiController> logger,
-        IBackOfficeSecurityAccessor backOfficeSecurityAccessor
+        IBackOfficeSecurityAccessor backOfficeSecurityAccessor,
+        ISetupService setupService
         ) : WysiwgUmbracoCommunityExtensionsApiControllerBase
     {
         protected static Guid CurrentUserKey(IBackOfficeSecurityAccessor backOfficeSecurityAccessor)
@@ -97,7 +98,72 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
         [HttpGet("cropurl")]
         [ProducesResponseType<string>(StatusCodes.Status200OK)]
         [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
-        public IActionResult CropUrl(string mediaItemId, string cropAlias = "", string selectedCrop = "", double width = 1400.0, string selectedFocalPoint = "")
+        public IActionResult CropUrl(string mediaItemId, string? cropAlias = "", double? width = 1400)
+        {
+            var allowedWidth = (int)Math.Ceiling(width.GetValueOrDefault() / 100.0) * 100;
+            if (allowedWidth < 10)
+            { allowedWidth = 10; }
+            var mediaItem = publishedContent.Media(mediaItemId);
+
+            //ToDo: frontend resolves mediaItemId to Umbraco.Cms.Core.Models.MediaWithCrops and GetCropUrl respects localCrops. How can I achieve same behaviour here? Idea: MediaItems crop is not the same as the MediaPicker item which might has its own crop configuration. Thus I need another method ór more input parameters...
+
+            var umbracoFile = mediaItem?.GetProperty(MediaConventions.File)?.GetValue() as Umbraco.Cms.Core.PropertyEditors.ValueConverters.ImageCropperValue;
+            var hasCrop = (umbracoFile?.Crops) != null && umbracoFile.Crops.FirstOrDefault(c => c.Alias.InvariantEquals(cropAlias)) != null;
+
+            string? url = null;
+            if (hasCrop)
+            {
+                url = mediaItem?.GetCropUrl(width: allowedWidth, cropAlias: cropAlias);
+            }
+            else
+            {
+                logger.LogWarning("There are no crops definded on the Image data types cropper configuration! You should add: square, portrait and landscape");
+                url = mediaItem?.GetCropUrl(width: allowedWidth);
+            }
+
+            return url == null ? ImageUrl(mediaItemId) : Ok(url);
+        }
+
+        [HttpGet("imageurl")]
+        [ProducesResponseType<string>(StatusCodes.Status200OK)]
+        [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+        public IActionResult ImageUrl(string mediaItemId)
+        {
+            var mediaItem = publishedContent.Media(mediaItemId);
+            var url = mediaItem?.Url();
+            if (mediaItem == null || url == null)
+            {
+                return NotFound($"No media found for: {mediaItemId}");
+            }
+            return Ok(url);
+        }
+
+        [HttpGet("mediatypes")]
+        [ProducesResponseType<IEnumerable<IMediaType>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<IEnumerable<IMediaType>>(StatusCodes.Status404NotFound)]
+        public IActionResult MediaTypes(string name = "")
+        {
+            var mediaTypes = mediaTypeService.GetAll().ToArray();
+            if (string.IsNullOrEmpty(name))
+            {
+                return Ok(mediaTypes);
+            }
+            else
+            {
+                var requestedTypeNames = name.Split(',');
+                var requestedMediaTypes = mediaTypes.Where(x => x.Name.InvariantEquals(name));
+                if (requestedMediaTypes == null)
+                {
+                    return NotFound($"No media type found for: {name}");
+                }
+                return Ok(requestedMediaTypes);
+            }
+        }
+
+        [HttpGet("v2-cropurl")]
+        [ProducesResponseType<string>(StatusCodes.Status200OK)]
+        [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+        public IActionResult V2CropUrl(string mediaItemId, string cropAlias = "", string selectedCrop = "", double width = 1400.0, string selectedFocalPoint = "")
         {
             if (string.IsNullOrEmpty(mediaItemId))
             {
@@ -156,39 +222,38 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
             return url == null ? ImageUrl(mediaItemId) : Ok(url);
         }
 
-        [HttpGet("imageurl")]
-        [ProducesResponseType<string>(StatusCodes.Status200OK)]
-        [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
-        public IActionResult ImageUrl(string mediaItemId)
-        {
-            var mediaItem = publishedContent.Media(mediaItemId);
-            var url = mediaItem?.Url();
-            if (mediaItem == null || url == null)
-            {
-                return NotFound($"No media found for: {mediaItemId}");
-            }
-            return Ok(url);
-        }
+        // I could not figure out how to use the VersionStatus enum in Typescript
+        //[HttpGet("updateStatus")]
+        //[ProducesResponseType<VersionStatus>(StatusCodes.Status200OK)]
+        //[ProducesResponseType<VersionStatus>(StatusCodes.Status500InternalServerError)]
+        //public async Task<IActionResult> GetUpdateStatus()
+        //{
+        //    try
+        //    {
+        //        var version = await setupService.GetVersionStatus();
+        //        return Ok(version);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logger.LogError(ex, "Error checking version");
+        //        return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        //    }
+        //}
 
-        [HttpGet("mediatypes")]
-        [ProducesResponseType<IEnumerable<IMediaType>>(StatusCodes.Status200OK)]
-        [ProducesResponseType<IEnumerable<IMediaType>>(StatusCodes.Status404NotFound)]
-        public IActionResult MediaTypes(string name = "")
+        [HttpGet("updateStatusCode")]
+        [ProducesResponseType<int>(StatusCodes.Status200OK)]
+        [ProducesResponseType<int>(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetUpdateStatusCode()
         {
-            var mediaTypes = mediaTypeService.GetAll().ToArray();
-            if (string.IsNullOrEmpty(name))
+            try
             {
-                return Ok(mediaTypes);
+                var code = await setupService.GetVersionStatusCode();
+                return Ok(code);
             }
-            else
+            catch (Exception ex)
             {
-                var requestedTypeNames = name.Split(',');
-                var requestedMediaTypes = mediaTypes.Where(x => x.Name.InvariantEquals(name));
-                if (requestedMediaTypes == null)
-                {
-                    return NotFound($"No media type found for: {name}");
-                }
-                return Ok(requestedMediaTypes);
+                logger.LogError(ex, "Error checking version");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
@@ -217,6 +282,8 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
             try
             {
                 _ = installService.Uninstall();
+
+                Thread.Sleep(500);
             }
             catch (Exception ex)
             {

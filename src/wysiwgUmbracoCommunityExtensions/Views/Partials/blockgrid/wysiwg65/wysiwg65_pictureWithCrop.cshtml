@@ -1,88 +1,31 @@
-@using Microsoft.AspNetCore.Html
 @using Umbraco.Cms.Core.Models.Blocks
-@using Umbraco.Cms.Core.Models.PublishedContent
-@using Umbraco.Cms.Core.PropertyEditors.ValueConverters
-@using Umbraco.Cms.Core.PublishedCache
-@using Umbraco.Cms.Core.Services
-@using Umbraco.Cms.Core.Services.Navigation
 @using Umbraco.Extensions
-@using WysiwgUmbracoCommunityExtensions.Controllers
-@using WysiwgUmbracoCommunityExtensions.Models
 @using WysiwgUmbracoCommunityExtensions.ViewModels
-@using WysiwgUmbracoCommunityExtensions.Extensions
-@using Conventions = Umbraco.Cms.Core.Constants.Conventions
-@inject IMediaNavigationQueryService MediaNavigationQueryService
-@inject IPublishedMediaCache PublishedMediaCache
 @model BlockGridItem
 @{
     var content = new Wysiwg65_pictureWithCrop(Model.Content);
     if (content?.MediaItem == null) return;
 
-    var width = 1200;
-
-    var alternativeText = content.AlternativeText ?? "";
-    var figCaption = content.FigCaption ?? "";
-    var color = content.CaptionColor?.Color ?? "";
-    var selectedCrop = content.MediaItem.SelectedCropAlias ?? "";
-    var inlineStyle = new HtmlFormattableString(string.IsNullOrEmpty(color) ? "" : $"style=\"color: {color};\"");
-    if (content.MediaItem.ContentType.Alias == Conventions.MediaTypes.Folder)
-    {
-        RenderFolder(content.MediaItem, width, selectedCrop, alternativeText, figCaption, inlineStyle, PublishedMediaCache, MediaNavigationQueryService);
-    }
-    else if (content.MediaItem.ContentType.Alias == Conventions.MediaTypes.Image)
-    {
-        RenderImage(content.MediaItem, width, selectedCrop, alternativeText, figCaption, inlineStyle);
-    }
+    var src = content.MediaItem.GetCropUrl(width: 400, cropAlias: content.CropAlias);
 }
+<figure>
+    <div>
+        <img id="@content.MediaItem.Id" src="@src" alt="@content.AlternativeText" />
+    </div>
 
-@functions {
-    private void RenderImage(MediaWithSelectedCrop image, int width, string cropAlias, string alternativeText, string figCaption, IHtmlContent inlineStyle)
+    @if (!string.IsNullOrEmpty(content.FigCaption))
     {
-        var src = image.GetSelectedCropUrl(width, cropAlias) ?? image.GetCropUrl(width: width, cropAlias: cropAlias);
-
-        <figure>
-            <img id="@image?.Id" src="@src" alt="@alternativeText" />
-
-            @if (!string.IsNullOrEmpty(figCaption))
-            {
-                <figcaption @(inlineStyle)>
-                    @figCaption
-                </figcaption>
-            }
-        </figure>
-    }
-
-    private void RenderFolder(PublishedContentWrapped folder, int width, string cropAlias, string alternativeText, string figCaption, IHtmlContent inlineStyle,
-        IPublishedMediaCache PublishedMediaCache,
-        IMediaNavigationQueryService MediaNavigationQueryService)
-    {
-        if (folder == null)
+        if (!string.IsNullOrEmpty(content.CaptionColor?.Color))
         {
-            return;
+            <figcaption style="color: @(content.CaptionColor?.Color ?? "#000")">
+                @content.FigCaption
+            </figcaption>
         }
-        MediaNavigationQueryService.TryGetChildrenKeys(folder.Key, out IEnumerable<Guid> imageKeys);
-        if (imageKeys.Count() == 0)
+        else
         {
-            <text><span class="text-danger">Folder "@(folder.Name)" does not contain images!</span></text>
-        }
-        foreach (var key in imageKeys)
-        {
-            var mediaItem = PublishedMediaCache.GetById(key);
-            if (mediaItem != null && mediaItem.ContentType.Alias == Conventions.MediaTypes.Image)
-            {
-                IPublishedValueFallback noopFallback = new NoopPublishedValueFallback();
-                var localCropsPropery = mediaItem.GetProperty(Conventions.Media.File);
-                if (localCropsPropery == null || !localCropsPropery.HasValue())
-                {
-                    <text><span class="text-danger">Image "@(mediaItem.Name)" does not have a crop!</span></text>
-                    continue;
-                }
-                if (localCropsPropery.Value<ImageCropperValue>(noopFallback) is ImageCropperValue localCrops)
-                {
-                    MediaWithSelectedCrop image = new MediaWithSelectedCrop(mediaItem, noopFallback, localCrops);
-                    RenderImage(image, width, cropAlias, alternativeText, figCaption, inlineStyle);
-                }
-            }
+            <figcaption>
+                @content.FigCaption
+            </figcaption>
         }
     }
-}
+</figure>

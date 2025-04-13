@@ -723,8 +723,6 @@ export type CropUrlData = {
     query?: {
         cropAlias?: string;
         mediaItemId?: string;
-        selectedCrop?: string;
-        selectedFocalPoint?: string;
         width?: number;
     };
 };
@@ -760,3 +758,21 @@ export type MediaTypesError = (unknown | Array<(MediaTypeModel)>);
 export type UnInstallResponse = (string);
 
 export type UnInstallError = (unknown);
+
+export type GetUpdateStatusCodeResponse = (number);
+
+export type GetUpdateStatusCodeError = (unknown | number);
+
+export type V2CropUrlData = {
+    query?: {
+        cropAlias?: string;
+        mediaItemId?: string;
+        selectedCrop?: string;
+        selectedFocalPoint?: string;
+        width?: number;
+    };
+};
+
+export type V2CropUrlResponse = (string);
+
+export type V2CropUrlError = (unknown | string);

@@ -6,19 +6,19 @@ using static Umbraco.Cms.Core.PropertyEditors.ValueConverters.ColorPickerValueCo
 
 namespace WysiwgUmbracoCommunityExtensions.ViewModels
 {
-    public class Wysiwg65_pictureWithCrop
+    public class Wysiwg65_croppedPicture
     {
-        public Wysiwg65_pictureWithCrop() { }
+        public Wysiwg65_croppedPicture() { }
 
-        public Wysiwg65_pictureWithCrop(IPublishedElement? element) {
-            MediaItem = element?.Value<MediaWithCrops>("mediaItem");
+        public Wysiwg65_croppedPicture(IPublishedElement? element) {
+            MediaItem = element?.Value<MediaWithSelectedCrop>("mediaItem");
             AlternativeText = element?.Value<string>("alternativeText");
             FigCaption = element?.Value<string>("figCaption");
             CropAlias = element?.Value<string>("cropAlias");
             CaptionColor = element?.Value<PickedColor>("captionColor");
         }
 
-        public MediaWithCrops? MediaItem { get; set; }
+        public MediaWithSelectedCrop? MediaItem { get; set; }
         public string? AlternativeText { get; set; }
         public string? FigCaption { get; set; }
         public PickedColor? CaptionColor { get; set; }

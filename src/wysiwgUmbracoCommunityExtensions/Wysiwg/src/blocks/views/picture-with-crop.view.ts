@@ -14,8 +14,8 @@ import { ColorType, PictureWithCropCustomViewProps } from "./types";
 @customElement("wysiwg-picturewithcrop-view")
 export class PictureWithCropCustomView
   extends UmbElementMixin(LitElement)
-  implements UmbBlockEditorCustomViewElement {
-  private debugLocalize: boolean = false;
+  implements UmbBlockEditorCustomViewElement
+{
   defaultColor: ColorType = { label: "Black", value: "#000" };
 
   @property({ attribute: false })
@@ -24,27 +24,24 @@ export class PictureWithCropCustomView
   render() {
     const pictureWithCrop = this.content as PictureWithCropCustomViewProps;
     if (!pictureWithCrop) {
-      return html`<div class="error">
-        <umb-localize key="wysiwg_invalidData" .debug=${this.debugLocalize}
-          >invalid data</umb-localize
-        >
-      </div>`;
+      return html`<div class="error">Invalid data</div>`; //ToDo: get message from localized language file
     }
-    const mediaCropItems = pictureWithCrop?.mediaItem ?? [];
-    const mediaCropItem = mediaCropItems[0] ?? null;
-    const mediaKey = mediaCropItem ? mediaCropItem.mediaKey : "";
-    if (!mediaKey) {
-      return html`<div class="error">
-        <umb-localize key="wysiwg_noImageSelected" .debug=${this.debugLocalize}
-          >No image selected or found</umb-localize
-        >
-      </div>`;
-    } else {
-      const img = html`<wysiwg-image-crop .mediaItem=${mediaCropItem}></wysiwg-image-crop>`;
+    const mediaItems = pictureWithCrop?.mediaItem ?? [];
+    const mediaKey = mediaItems.length ? mediaItems[0].mediaKey : "";
+    const cropAlias = pictureWithCrop?.cropAlias[0] ?? "";
+    const captionColor =
+      pictureWithCrop?.captionColor?.value ?? this.defaultColor.value;
+    const caption = pictureWithCrop?.figCaption;
 
-      const captionColor =
-        pictureWithCrop?.captionColor?.value ?? this.defaultColor.value;
-      const caption = pictureWithCrop?.figCaption;
+    if (!mediaKey) {
+      return html`<div class="error">No Image selected or found</div>`; //ToDo: get message from localized language file
+    } else {
+      const img = html`<wysiwg-image-crop
+        mediaKey="${mediaKey}"
+        alt="${this.content?.alternativeText ?? ""}"
+        cropAlias="${cropAlias}"
+      ></wysiwg-image-crop>`;
+
       const inlineStyle = `style="color: ${captionColor};"`;
       const figCaption = caption
         ? unsafeHTML(`<figcaption ${inlineStyle}>${caption}</figcaption>`)
@@ -60,9 +57,9 @@ export class PictureWithCropCustomView
         display: block;
         height: auto;
         box-sizing: border-box;
-        margin: 0;
+        background-color: transparent;
+        /* border-radius: 9px; */
         padding: 0;
-        font-family: var(--wysiwg-font-family, initial);
       }
       .error {
         color: red;
@@ -73,9 +70,6 @@ export class PictureWithCropCustomView
         margin: 0;
         padding: 0;
         display: block;
-      }
-      figcaption {
-        font-style: var(--wysiwg-figcaption-font-style, italic);
       }
     `,
   ];

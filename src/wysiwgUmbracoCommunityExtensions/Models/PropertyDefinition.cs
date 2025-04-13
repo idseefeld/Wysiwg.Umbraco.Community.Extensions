@@ -6,19 +6,17 @@ using System.Threading.Tasks;
 
 namespace WysiwgUmbracoCommunityExtensions.Models
 {
-    internal class PropertyDefinition
+    internal class PropertyDefinition : PropertyDefinitionBase
     {
         public PropertyDefinition() { }
 
-        public PropertyDefinition(string name, string dataTypeName, string? description = null)
+        public PropertyDefinition(string name, string dataTypeName, int sortOrder, string? description = null)
+            : base(name, dataTypeName, description)
         {
-            Name = name;
-            DataTypeName = dataTypeName;
-            Description = description ?? string.Empty;
+            SortOrder = sortOrder;
         }
 
-        public string Name { get; set; } = string.Empty;
-        public string DataTypeName { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
+
+        public int SortOrder { get; set; } = 1;
     }
 }
