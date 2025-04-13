@@ -9,7 +9,7 @@
     var backgroundStyle = Model.Settings?.GetBackgroundStyle();
 }
 
-<div class="umb-block-grid__area-container"
+<div class="wysiwg umb-block-grid__area-container"
      style="--umb-block-grid--area-grid-columns: @(Model.AreaGridColumns?.ToString() ?? Model.GridColumns?.ToString() ?? "12");@backgroundStyle">
     @foreach (var area in Model.Areas)
     {

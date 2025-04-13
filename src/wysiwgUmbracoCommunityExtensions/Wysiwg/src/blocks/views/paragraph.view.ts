@@ -83,7 +83,7 @@ export class WysiwgBlockParagraphView
     }
     var property = this.content?.text as { blocks: {}; markup: string };
     var markup = property?.markup;
-    const innerHtml = `<div ${inlineStyle}>${markup}</div>`;
+    const innerHtml = `<div class="paragraph" ${inlineStyle}>${markup}</div>`;
     return html`${unsafeHTML(innerHtml)}`;
   }
 
@@ -96,20 +96,27 @@ export class WysiwgBlockParagraphView
         box-sizing: border-box;
         margin: 0;
         padding: 0;
+        font-family: var(--wysiwg-font-family, initial);
       }
 
       h2 {
-        font-size: 18px;
-        line-height: 24px;
+        font-size: var(--wysiwg-font-size-24, 24px);
+        line-height: var(--wysiwg-line-height-28, 28px);
+        margin: var(--wysiwg-headline-paragraph-2-margin, 0);
       }
 
       h3 {
-        font-size: 1.17em;
-        line-height: 24px;
-        margin-block-start: 1em;
-        margin-block-end: 1em;
-        margin-inline-start: 0;
-        margin-inline-end: 0;
+        font-size: var(--wysiwg-font-size-16, 16px);
+        line-height: var(--wysiwg-line-height-24, 24px);
+        margin: var(--wysiwg-headline-paragraph-3-margin, 0);
+      }
+
+      p
+      {
+        font-size: var(--wysiwg-font-size-16, 16px);
+        line-height: var(--wysiwg-line-height-24, 24px);
+        margin: var(--wysiwg-p-paragraph-margin, 0);
+        padding: var(--wysiwg-p-paragraph-padding, 0);
       }
     `,
   ];

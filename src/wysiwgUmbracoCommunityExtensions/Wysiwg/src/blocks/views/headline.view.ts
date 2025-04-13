@@ -107,7 +107,25 @@ export class WysiwgBlockHeadlineView
         box-sizing: border-box;
         padding: 0;
         margin: 0;
-        padding-bottom: 1.2%;
+        font-family: var(--wysiwg-font-family, initial);
+      }
+      h1, h2, h3 {
+        margin: 0;
+      }
+      h1 {
+        font-size: var(--wysiwg-headline-1-font-size, 32px);
+        line-height: var(--wysiwg-headline-1-line-height, 1.2em);
+        margin: var(--wysiwg-headline-1-margin, 0);
+      }
+      h2 {
+        font-size: var(--wysiwg-headline-2-font-size, 28px);
+        line-height: var(--wysiwg-headline-2-line-height, 1.2em);
+        margin: var(--wysiwg-headline-2-margin, 0);
+      }
+      h3 {
+        font-size: var(--wysiwg-headline-3-font-size , 24px);
+        line-height: var(--wysiwg-headline-3-line-height, 1.2em);
+        margin: var(--wysiwg-headline-3-margin, 0);
       }
     `,
   ];

@@ -151,7 +151,7 @@ export class WysiwgBlockLayoutView
   }
 
   override render() {
-    return html`<umb-ref-grid-block
+    return html`<umb-ref-grid-block class="wysiwg"
       standalone
       href=${(this.config?.showContentEdit
         ? this.config?.editContentPath
@@ -184,7 +184,6 @@ export class WysiwgBlockLayoutView
     css`
       :host {
         display: flex;
-        max-width: 1172px;
         height: 100%;
         box-sizing: border-box;
       }
