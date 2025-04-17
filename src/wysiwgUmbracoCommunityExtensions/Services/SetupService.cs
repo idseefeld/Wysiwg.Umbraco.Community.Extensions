@@ -56,6 +56,11 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             $"{Constants.Prefix}paragraphSettings",
             $"{Constants.Prefix}rowSettings"
         ];
+        private readonly string[] _needUpdateContentTypes = [
+            $"{Constants.Prefix}headline",
+            $"{Constants.Prefix}paragraph",
+            $"{Constants.Prefix}croppedPicture"
+        ];
         private string[] _depricatedContentTypes = [];
         private readonly string _dtContainerName = $"{Constants.Prefix.ToFirstUpper()}DataTypes";
         private readonly string[] _requiredDataTypes = [
@@ -826,7 +831,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     {
                         foreach (var area in block.Areas)
                         {
-                            if(area.SpecifiedAllowance != null && area.SpecifiedAllowance.Any())
+                            if (area.SpecifiedAllowance != null && area.SpecifiedAllowance.Any())
                             {
                                 var specifiedAllowance = new List<BGSpecfiedAllowanceModel>{
                                     new()
@@ -905,9 +910,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             var requiredExists = _allContentTypes
                 .Select(t => t.Alias)
                 .Intersect(_requiredContentTypes)
-                .Count() == _requiredContentTypes.Length;
+                .Count() == _requiredContentTypes.Length + _needUpdateContentTypes.Length;
             var missingRequired = _requiredContentTypes
-                .Except(_allContentTypes.Select(t => t.Alias));
+                .Except(_allContentTypes.Select(t => t.Alias))
+                .Concat(_needUpdateContentTypes);
             if (_allContentTypes.Length == 0 || !requiredExists)
             {
                 foreach (var elementTypeAlias in missingRequired)
@@ -1107,7 +1113,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     new ("Background Image", "Media Picker", 2),
                     new ("Padding", "Textstring", 3)
                 };
-                    await CreateContentElementProperties(type, propertyDefinitions);
+                    await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
                 }
             }
         }
@@ -1141,7 +1147,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 {
                     new ("Color", $"{Constants.Prefix}CustomerColors", 1)
                 };
-                    await CreateContentElementProperties(type, propertyDefinitions);
+                    await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
                 }
             }
         }
@@ -1177,7 +1183,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     new ("Margin", "Textstring", 2),
                     new ("Size", $"{Constants.Prefix}HeadlineSizes", 3)
                 };
-                    await CreateContentElementProperties(type, propertyDefinitions);
+                    await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
                 }
             }
         }
@@ -1239,11 +1245,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             { return; }
 
             var type = contentTypeService.Get(alias);
-            if (type != null)
-            {
-
-            }
-            else
+            if (type == null)
             {
                 type = new ContentType(shortStringHelper, elementContainer.Id)
                 {
@@ -1256,15 +1258,16 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 };
 
                 var ctAttempt = await contentTypeService.CreateAsync(type, _userKey);
-                if (ctAttempt.Success)
+                if (!ctAttempt.Success)
                 {
-                    var propertyDefinitions = new List<PropertyDefinition>()
-                    {
-                        new ("Text", $"{Constants.Prefix}ParagaphRTE",1)
-                    };
-                    await CreateContentElementProperties(type, propertyDefinitions);
+                    throw new Exception($"{type.Name} [{alias}] creation failed.");
                 }
             }
+            var propertyDefinitions = new List<PropertyDefinition>()
+            {
+                new ("Text", $"{Constants.Prefix}ParagaphRTE",1, variations: ContentVariation.Culture)
+            };
+            await CreateOrUpdateContentElementProperties(type, propertyDefinitions);            
         }
 
         private async Task CreateOrUpdateCroppedPictureElementType(string elementTypeAlias, string alias, EntityContainer elementContainer)
@@ -1272,29 +1275,35 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             if (elementTypeAlias != alias)
             { return; }
 
-            var type = new ContentType(shortStringHelper, elementContainer.Id)
+            var type = contentTypeService.Get(alias);
+            if (type == null)
             {
-                Alias = alias,
-                Name = "Cropped Picture",
-                Icon = "icon-document-image",
-                IsElement = true,
-                AllowedAsRoot = false,
-                Variations = ContentVariation.CultureAndSegment,
-            };
+                type = new ContentType(shortStringHelper, elementContainer.Id)
+                {
+                    Alias = alias,
+                    Name = "Cropped Picture",
+                    Icon = "icon-document-image",
+                    IsElement = true,
+                    AllowedAsRoot = false,
+                    Variations = ContentVariation.CultureAndSegment,
+                };
+                var ctAttempt = await contentTypeService.CreateAsync(type, _userKey);
+                if (!ctAttempt.Success)
+                {
+                    throw new Exception($"{type.Name} [{alias}] creation failed.");
+                }
+            }
 
             var propertyDefinitions = new List<PropertyDefinition>()
             {
                 new ("Media Item", $"{Constants.Prefix}ImageAndCropPicker", 1),
-                new ("Alternative Text", "Textstring", 2),
-                new ("Fig Caption", "Textstring", 3),
+                new ("Alternative Text", "Textstring", 2, variations : ContentVariation.Culture),
+                new ("Fig Caption", "Textstring", 3, variations : ContentVariation.Culture),
                 new ("Caption Color", $"{Constants.Prefix}CustomerColors", 5)
             };
 
-            var ctAttempt = await contentTypeService.CreateAsync(type, _userKey);
-            if (ctAttempt.Success)
-            {
-                await CreateContentElementProperties(type, propertyDefinitions);
-            }
+            await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
+
         }
 
         private async Task CreateOrUpdatePictureWithCropElementType(string elementTypeAlias, string alias, EntityContainer elementContainer, IContentType? current)
@@ -1314,8 +1323,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             var propertyDefinitions = new List<PropertyDefinition>()
             {
                 new ("Media Item", $"{Constants.Prefix}ImageMediaPicker", 1),
-                new ("Alternative Text", "Textstring", 2),
-                new ("Fig Caption", "Textstring", 3),
+                new ("Alternative Text", "Textstring", 2, variations: ContentVariation.Culture),
+                new ("Fig Caption", "Textstring", 3, variations: ContentVariation.Culture),
                 new ("Crop Alias", $"{Constants.Prefix}CropNames", 4),
                 new ("Caption Color", $"{Constants.Prefix}CustomerColors", 5)
             };
@@ -1326,7 +1335,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 ctAttempt = await contentTypeService.CreateAsync(type, _userKey);
                 if (ctAttempt.Success)
                 {
-                    await CreateContentElementProperties(type, propertyDefinitions);
+                    await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
                 }
             }
             else
@@ -1345,28 +1354,33 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             if (elementTypeAlias != alias)
             { return; }
 
-            var type = new ContentType(shortStringHelper, elementContainer.Id)
+            var type = contentTypeService.Get(alias);
+            if (type == null)
             {
-                Alias = alias,
-                Name = "Headline",
-                Icon = "icon-heading-1",
-                IsElement = true,
-                AllowedAsRoot = false,
-                Variations = ContentVariation.CultureAndSegment,
-            };
-
-            var ctAttempt = await contentTypeService.CreateAsync(type, _userKey);
-            if (ctAttempt.Success)
-            {
-                var propertyDefinitions = new List<PropertyDefinition>()
+                type = new ContentType(shortStringHelper, elementContainer.Id)
                 {
-                    new ("Text", $"{Constants.Prefix}LimitedHeadline", 1, "The text of the headline")
+                    Alias = alias,
+                    Name = "Headline",
+                    Icon = "icon-heading-1",
+                    IsElement = true,
+                    AllowedAsRoot = false,
+                    Variations = ContentVariation.CultureAndSegment,
                 };
-                await CreateContentElementProperties(type, propertyDefinitions);
+
+                var ctAttempt = await contentTypeService.CreateAsync(type, _userKey);
+                if (!ctAttempt.Success)
+                {
+                    throw new Exception($"{type.Name} [{alias}] creation failed.");
+                }
             }
+            var propertyDefinitions = new List<PropertyDefinition>()
+            {
+                new ("Text", $"{Constants.Prefix}LimitedHeadline", 1, "The text of the headline", ContentVariation.Culture)
+            };
+            await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
         }
 
-        private async Task CreateContentElementProperties(IContentType type, IEnumerable<PropertyDefinition> propertyDefinitions)
+        private async Task CreateOrUpdateContentElementProperties(IContentType type, IEnumerable<PropertyDefinition> propertyDefinitions)
         {
             if (type == null)
             { return; }
@@ -1385,11 +1399,12 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                         Description = definition.Description,
                         Mandatory = false,
                         SortOrder = definition.SortOrder,
-                        DataTypeId = dt.Id
+                        DataTypeId = dt.Id,
+                        Variations = definition.Variations
                     });
             }
 
-            await AddProperties(type, propItems, "Content");
+            await AddOrUpdateProperties(type, propItems, "Content");
         }
 
         private async Task UpdateContentElementProperties(IContentType type, IEnumerable<PropertyDefinition> propertyUpdateDefinitions)
@@ -1423,11 +1438,12 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                             Description = definition.Description,
                             Mandatory = false,
                             SortOrder = definition.SortOrder,
-                            DataTypeId = dt.Id
+                            DataTypeId = dt.Id,
+                            Variations = definition.Variations
                         });
                 }
                 if (propItems.Count != 0)
-                { await AddProperties(type, propItems, "Content", updateType: false); }
+                { await AddOrUpdateProperties(type, propItems, "Content", updateType: false); }
             }
             #endregion
 
@@ -1458,16 +1474,20 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             }
         }
 
-        private async Task AddProperties(IContentType type, IEnumerable<PropertyType> propItems, string groupName, int groupSortOrder = 1, bool updateType = true)
+        private async Task AddOrUpdateProperties(IContentType type, IEnumerable<PropertyType> propItems, string groupName, int groupSortOrder = 1, bool updateType = true)
         {
             var propertyCollection = new PropertyTypeCollection(true, propItems);
-            type.PropertyGroups.Add(new PropertyGroup(isPublishing: true)
+            var group = new PropertyGroup(isPublishing: true)
             {
                 Alias = groupName.ToLower(),
                 Name = groupName,
                 SortOrder = groupSortOrder,
                 PropertyTypes = propertyCollection
-            });
+            };
+            if (!type.PropertyGroups.Contains(group))
+            {
+                type.PropertyGroups.Add(group);
+            }
 
             if (updateType)
             {
