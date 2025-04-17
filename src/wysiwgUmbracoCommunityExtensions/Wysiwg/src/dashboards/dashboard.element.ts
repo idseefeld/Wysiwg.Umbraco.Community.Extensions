@@ -17,15 +17,20 @@ import {
 } from "@umbraco-cms/backoffice/current-user";
 import { WysiwgUmbracoCommunityExtensionsService } from "../api";
 import { VersionStatus } from "./versionStatusEnum";
+import { umbConfirmModal, UmbConfirmModalData } from "@umbraco-cms/backoffice/modal";
 
 @customElement("wysiwg-dashboard")
 export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
+
+
   @state()
   private _contextCurrentUser: UmbCurrentUserModel | undefined = undefined;
   @state()
   private _updateStatus: VersionStatus | undefined = undefined;
 
   private _debug: boolean = true;
+
+  #notificationContext: UmbNotificationContext | undefined = undefined;
 
   constructor() {
     super();
@@ -44,11 +49,9 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     });
   }
 
-  #notificationContext: UmbNotificationContext | undefined = undefined;
-
   #onClickInstall = async (ev: Event) => {
     const buttonElement = ev.target as UUIButtonElement;
-    if(!buttonElement || buttonElement.state === "waiting") return;
+    if (!buttonElement || buttonElement.state === "waiting") return;
     buttonElement.state = "waiting";
 
     const { data, error } = await WysiwgUmbracoCommunityExtensionsService.install();
@@ -85,9 +88,22 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     }
   };
 
+  confirmUninstall = async () => {
+
+  }
+
   #onClickUninstall = async (ev: Event) => {
+    const modalData: UmbConfirmModalData = {
+      color: 'danger',
+      headline: this.localize.term("wysiwg_unistallConfirmHeadline", { debug: this._debug, }),
+      content: html`${this.localize.term("wysiwg_uninstallConfirmDescription", { debug: this._debug, })}`,
+      confirmLabel: this.localize.term("wysiwg_okConfirmButtonLabel", { debug: this._debug, }),
+      cancelLabel: this.localize.term("wysiwg_cancelConfirmButtonLabel", { debug: this._debug, }),
+    };
+    await umbConfirmModal(this, modalData)
+
     const buttonElement = ev.target as UUIButtonElement;
-    if(!buttonElement || buttonElement.state === "waiting") return;
+    if (!buttonElement || buttonElement.state === "waiting") return;
     buttonElement.state = "waiting";
 
     const { data, error } = await WysiwgUmbracoCommunityExtensionsService.unInstall();

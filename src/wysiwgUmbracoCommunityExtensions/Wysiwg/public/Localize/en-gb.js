@@ -25,5 +25,9 @@ export default {
     uninstallErrorDescription: "Uninstall error: ",
     versionError: "Version error",
     versionErrorDescription: "Could not find the version of the WYSIWYG block editor.",
+    unistallConfirmHeadline: "Uninstall WYSIWYG",
+    uninstallConfirmDescription: "All WYSIWYG data types and document types will be removed and all content that depends on them. Are you sure?",
+    cancelConfirmButtonLabel: "Cancel",
+    okConfirmButtonLabel: "Yes, uninstall",
   },
 };
