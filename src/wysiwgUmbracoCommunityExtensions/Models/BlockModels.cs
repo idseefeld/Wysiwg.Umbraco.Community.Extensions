@@ -25,7 +25,7 @@ namespace WysiwgUmbracoCommunityExtensions.Models
         public Guid? GroupKey { get; set; }
 
         [JsonPropertyName("areas")]
-        public IEnumerable<BGAreaModel> Areas { get; set; } = [];
+        public IEnumerable<BGAreaModel> Areas { get; set; } = [];//IMPORTANT to init with an empty collection!
     }
     public class BGAreaModel
     {
@@ -45,7 +45,7 @@ namespace WysiwgUmbracoCommunityExtensions.Models
         public int MinAllowed { get; set; }
 
         [JsonPropertyName("specifiedAllowance")]
-        public IEnumerable<BGSpecfiedAllowanceModel>? SpecifiedAllowance { get; set; }
+        public IEnumerable<BGSpecfiedAllowanceModel> SpecifiedAllowance { get; set; } = [];//IMPORTANT to init with an empty collection!
     }
     public class BGSpecfiedAllowanceModel
     {
