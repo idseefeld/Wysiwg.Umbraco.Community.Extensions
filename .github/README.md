@@ -24,76 +24,11 @@ Add the package to an existing Umbraco website (v15+) from nuget:
 
 `dotnet add package Umbraco.Community.wysiwgUmbracoCommunityExtensions`
 
-Start (Debug) the website and login to the backoffice. Go to the settings section and you should find a new dashboard **_WYSIWG_**.
+## Documentation
 
-![Screenshot: WYSIWG DDashboard](../docs/screenshots/wysiwg-dashboard.jpg)
+You find further details in the [Wiki](https://github.com/idseefeld/Wysiwg.Umbraco.Community.Extensions/wiki).
 
-Setup WYSIWG by clicking the button, wait until the success notification and refresh the page.<br>
-Now you should find new Document and Data types: 
-
-![Screenshot: document and data types](../docs/screenshots/doc-data-types.jpg)
-
-Before you proceed in your IDE, you should create the page model with ModelsBuilder. 
-
-_**Otherwise you will get an complie time error regarding `'Umbraco.Cms.Web.Common.PublishedModels.SimplePage'` when you use the following markup.**_
-
-## CSS & HTLM
-
-Place the Datatype "wysiwg65_BlockGrid" on a document type and create a new content node. You should see the new Block Grid view in the backoffice!
-
-An example markup for the page could be:
-```html
-@using Umbraco.Cms.Web.Common.PublishedModels;
-@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<SimplePage>
-@{
-    Layout = null;
-}
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <title>Simple Page</title>
-
-    <link rel="shortcut icon" type="image/png" href="/favicon.png" />
-
-    <link href="~/styles/customblockgrid.min.css" rel="stylesheet" />
-
-    <style>
-        figure{
-            margin: 0
-        }
-        figure img{
-            width: 100%;
-        }
-        body, html{
-            margin: 0;
-        }
-        #canvas{
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-    </style>
-</head>
-<body id="top">
-    <div id="canvas">
-        @await Html.GetBlockGridHtmlAsync(Model.Grid)
-
-        <footer>
-            <a href="/umbraco" target="_blank">BO</a>
-        </footer>
-
-    </div>
-</body>
-</html>
-```
-
-The referenced customblockgrid.min.css could be extracted from the backoffice data type:
-![Screenshot: wysiwg65_BlockGrid data type](../docs/screenshots/blockgrid-css.jpg)
-
-Just click the [Link to default layout stylesheet]() and copy the content into file `wwwroot/styles/customblockgrid.min.css`.
-
+[How to use the package and how to set up the Block Grid views](https://github.com/idseefeld/Wysiwg.Umbraco.Community.Extensions/wiki/Setup-of-WYSIWG-Block-Grid-Elements).
 
 ## Contributing
 

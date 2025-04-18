@@ -34,8 +34,7 @@ import {
 } from "./types";
 import { CropsData, CropsResponse, MediaTypeModel, MediaTypesResponse, WysiwgUmbracoCommunityExtensionsService } from "../../api";
 import { UmbNumberRangeValueType } from "@umbraco-cms/backoffice/models";
-import { WysiwgBlocksImageCropElement } from "./wysiwg-image-crop.element.js";
-
+import { WysiwgCroppedImageElement } from "./wysiwg-image-crop.element";
 /**
  * based on @element umb-property-editor-ui-media-picker
  */
@@ -284,7 +283,7 @@ export class WysiwgImageAndCropPickerElement
     });
   }
 
-  #onChangePreview(event: CustomEvent & { target: WysiwgBlocksImageCropElement }) {
+  #onChangePreview(event: CustomEvent & { target: WysiwgCroppedImageElement }) {
     if (event?.target?.value?.length > 0) {
 
       console.log("onChangePreview", event?.target?.value);
@@ -332,7 +331,7 @@ export class WysiwgImageAndCropPickerElement
 
     const media = this.value[0];
 
-    return html`<wysiwg-image-crop .mediaItem=${media} @change=${this.#onChangePreview}></wysiwg-image-crop>`;
+    return html`<wysiwg-cropped-image .mediaItem=${media} @change=${this.#onChangePreview}></wysiwg-cropped-image>`;
   }
 
   #renderEditImage() {

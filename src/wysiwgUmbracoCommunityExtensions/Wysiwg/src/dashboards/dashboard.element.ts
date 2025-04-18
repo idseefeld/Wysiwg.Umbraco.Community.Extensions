@@ -16,12 +16,21 @@ import {
   UmbCurrentUserModel,
 } from "@umbraco-cms/backoffice/current-user";
 import { WysiwgUmbracoCommunityExtensionsService } from "../api";
+import { VersionStatus } from "./versionStatusEnum";
+import { umbConfirmModal, UmbConfirmModalData } from "@umbraco-cms/backoffice/modal";
 
 @customElement("wysiwg-dashboard")
 export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
+
+
   @state()
   private _contextCurrentUser: UmbCurrentUserModel | undefined = undefined;
+  @state()
+  private _updateStatus: VersionStatus | undefined = undefined;
+
   private _debug: boolean = true;
+
+  #notificationContext: UmbNotificationContext | undefined = undefined;
 
   constructor() {
     super();
@@ -40,20 +49,16 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     });
   }
 
-  #notificationContext: UmbNotificationContext | undefined = undefined;
-
   #onClickInstall = async (ev: Event) => {
     const buttonElement = ev.target as UUIButtonElement;
+    if (!buttonElement || buttonElement.state === "waiting") return;
     buttonElement.state = "waiting";
-    // buttonElement.state = "success";
-    // buttonElement.state = "failed";
 
-    const { data, error } =
-      await WysiwgUmbracoCommunityExtensionsService.install();
+    const { data, error } = await WysiwgUmbracoCommunityExtensionsService.install();
 
     if (error) {
       if (this.#notificationContext) {
-        this.#notificationContext.peek("danger", {
+        this.#notificationContext.stay("danger", {
           data: {
             headline: this.localize.term("wysiwg_installError"),
             message: `${this.localize.term("wysiwg_installErrorDescription")} ${error}`,
@@ -66,53 +71,98 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     }
 
     if (data !== undefined) {
-      if (this.#notificationContext) {
-        this.#notificationContext.peek("positive", {
-          data: {
-            headline: this.localize.term("wysiwg_installSuccess"),
-            message: this.localize.term("wysiwg_installSuccessDescription"),
-          },
-        });
+      if (data === "Installed") {
+        if (this.#notificationContext) {
+          this.#notificationContext.peek("positive", {
+            data: {
+              headline: this.localize.term("wysiwg_installSuccess"),
+              message: this.localize.term("wysiwg_installSuccessDescription"),
+            },
+          });
+        }
+        this._updateStatus = VersionStatus.UpToDate;
+        buttonElement.state = "success";
+      } else {
+        buttonElement.state = "failed";
       }
-      buttonElement.state = "success";
-      return data;
     }
   };
 
+  confirmUninstall = async () => {
+
+  }
+
   #onClickUninstall = async (ev: Event) => {
+    const modalData: UmbConfirmModalData = {
+      color: 'danger',
+      headline: this.localize.term("wysiwg_unistallConfirmHeadline", { debug: this._debug, }),
+      content: html`${this.localize.term("wysiwg_uninstallConfirmDescription", { debug: this._debug, })}`,
+      confirmLabel: this.localize.term("wysiwg_okConfirmButtonLabel", { debug: this._debug, }),
+      cancelLabel: this.localize.term("wysiwg_cancelConfirmButtonLabel", { debug: this._debug, }),
+    };
+    await umbConfirmModal(this, modalData)
+
     const buttonElement = ev.target as UUIButtonElement;
+    if (!buttonElement || buttonElement.state === "waiting") return;
     buttonElement.state = "waiting";
 
-    const { data, error } =
-      await WysiwgUmbracoCommunityExtensionsService.unInstall();
+    const { data, error } = await WysiwgUmbracoCommunityExtensionsService.unInstall();
 
     if (error) {
       if (this.#notificationContext) {
-        this.#notificationContext.peek("danger", {
+        this.#notificationContext.stay("danger", {
           data: {
             headline: this.localize.term("wysiwg_uninstallError"),
             message: `${this.localize.term("wysiwg_uninstallErrorDescription")} ${error}`,
           },
         });
+        buttonElement.state = "failed";
       }
-      buttonElement.state = "failed";
       console.error(error);
       return "error";
     }
 
     if (data !== undefined) {
+      if (data === "Uninstalled") {
+        if (this.#notificationContext) {
+          this.#notificationContext.peek("positive", {
+            data: {
+              headline: this.localize.term("wysiwg_uninstallSuccessTitle"),
+              message: this.localize.term("wysiwg_uninstallSuccessDescription")
+            },
+          });
+        }
+        buttonElement.state = "success";
+      } else {
+        buttonElement.state = "failed";
+      }
+      this._updateStatus = undefined;
+    }
+  };
+
+
+  private async getUpdateStatus() {
+    if (this._updateStatus) return;
+
+    const { data, error } =
+      await WysiwgUmbracoCommunityExtensionsService.getUpdateStatusCode();
+
+    if (error) {
+      console.error(error);
       if (this.#notificationContext) {
-        this.#notificationContext.peek("positive", {
+        this.#notificationContext.stay("danger", {
           data: {
-            headline: this.localize.term("wysiwg_uninstallSuccessTitle"),
-            message: this.localize.term("wysiwg_uninstallSuccessDescription")
+            headline: this.localize.term("wysiwg_versionError"),
+            message: `${this.localize.term("wysiwg_versionErrorDescription")} ${error}`,
           },
         });
       }
-      buttonElement.state = "success";
-      return data;
     }
-  };
+
+    if (data !== undefined) {
+      this._updateStatus = data;
+    }
+  }
 
   render() {
     if (!this._contextCurrentUser?.isAdmin) {
@@ -121,18 +171,30 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
       </umb-localize>`;
     }
 
+    this.getUpdateStatus();
+
+    return html`${this.renderSetupBox()} ${this.renderUninstallBox()}`;
+  }
+
+  private renderSetupBox() {
+    if (this._updateStatus === undefined) { return; }
+
+    if (this._updateStatus === VersionStatus.UpToDate) { return; }
+
+    const buttonLabel = this._updateStatus === VersionStatus.Install
+      ? this.localize.term("wysiwg_setupButtonLabel", { debug: this._debug, })
+      : this.localize.term("wysiwg_updateButtonLabel", { debug: this._debug, });
+
     return html`
       <uui-box headline=${this.localize.term("wysiwg_setupTitle", {
-              debug: this._debug,
-            })}>
+      debug: this._debug,
+    })}>
         <uui-button
           color="positive"
           look="primary"
           @click="${this.#onClickInstall}"
         >
-        <umb-localize key="wysiwg_setupButtonLabel" .debug=${this._debug}>
-          Setup document and data types
-        </umb-localize>
+        ${buttonLabel}
         </uui-button>
         <div slot="header"></div>
         <umb-localize key="wysiwg_setupButtonDescription" .debug=${this._debug}>
@@ -142,17 +204,24 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
           </p>
         </umb-localize>
       </uui-box>
+    `;
+  }
+
+  private renderUninstallBox() {
+    if (this._updateStatus === undefined) { return; }
+    if (this._updateStatus === VersionStatus.Install) { return; }
+
+    const buttonLabel = this.localize.term("wysiwg_uninstallButtonLabel", { debug: this._debug, });
+    return html`
       <uui-box headline=${this.localize.term("wysiwg_uninstallTitle", {
-              debug: this._debug,
-            })}>
+      debug: this._debug,
+    })}>
         <uui-button
           color="danger"
           look="primary"
           @click="${this.#onClickUninstall}"
         >
-        <umb-localize key="wysiwg_uninstallButtonLabel" .debug=${this._debug}>
-          Remove document and data types
-        </umb-localize>
+        ${buttonLabel}
         </uui-button>
         <div slot="header"></div>
         <umb-localize key="wysiwg_uninstallButtonDescription" .debug=${this._debug}>

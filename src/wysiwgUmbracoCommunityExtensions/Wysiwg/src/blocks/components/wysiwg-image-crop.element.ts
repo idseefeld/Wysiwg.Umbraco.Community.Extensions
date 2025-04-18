@@ -7,19 +7,21 @@ import {
 } from "@umbraco-cms/backoffice/external/lit";
 import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
 import { UmbTextStyles } from "@umbraco-cms/backoffice/style";
-import { V2CropUrlData, WysiwgUmbracoCommunityExtensionsService } from "../..";
-import { WysiwgMediaPickerPropertyValueEntry } from "../../property-editors/picture/types";
-import { UmbPropertyEditorUiElement, UmbPropertyValueChangeEvent } from "@umbraco-cms/backoffice/property-editor";
+import { CropUrlData, WysiwgUmbracoCommunityExtensionsService } from "../..";
 
-const elementName = "wysiwg-cropped-image";
+const elementName = "wysiwg-image-crop";
 @customElement(elementName)
-export class WysiwgCroppedImageElement extends UmbLitElement implements UmbPropertyEditorUiElement {
+export class WysiwgBlocksImageCropElement extends UmbLitElement {
   //#region Properties
-  @property({ type: String })
-  value: string = "";
 
-  @property({ type: Object })
-  mediaItem?: WysiwgMediaPickerPropertyValueEntry | null = null;
+  @property({ type: String })
+  mediaKey?: string;
+
+  @property({ type: String })
+  alt?: string;
+
+  @property({ type: String })
+  cropAlias? = "";
 
   @property({ type: Number })
   width = 1200;
@@ -37,29 +39,36 @@ export class WysiwgCroppedImageElement extends UmbLitElement implements UmbPrope
   //#endregion
 
   //#region state
-
   @state()
   private _isLoading = true;
 
-  //#endregion
+  @state()
+  private _imageUrl: string | undefined = "";
 
-  private _prevImgSrc: string = "";
+  //#endregion
 
   #intersectionObserver?: IntersectionObserver;
 
   override render() {
+    //console.debug("wysiwg-image-crop.render", this._imageUrl, this._isLoading);
+
     const img = this.#renderImageCrop();
     const loading = this.#renderLoading();
+    //console.debug("wysiwg-image-crop.render img: ", img);
+    //console.debug("wysiwg-image-crop.render loading: ", loading);
     return html` ${img} ${loading} `;
   }
 
   override connectedCallback() {
     super.connectedCallback();
+    //console.debug("wysiwg-image-crop.connectedCallback");
 
     this.loadImage();
   }
 
   override disconnectedCallback() {
+    //console.debug("wysiwg-image-crop.disconnectedCallback");
+
     super.disconnectedCallback();
     this.#intersectionObserver?.disconnect();
   }
@@ -67,14 +76,13 @@ export class WysiwgCroppedImageElement extends UmbLitElement implements UmbPrope
   override updated(changedProperties: Map<string | number | symbol, unknown>) {
     super.updated(changedProperties);
 
-    if (changedProperties.has("mediaItem")) {
+    if (
+      changedProperties.has("mediaKey") ||
+      changedProperties.has("cropAlias")
+    ) {
       this.loadImage();
-    }
-    if (changedProperties.has("value")) {
-      if (this._prevImgSrc !== this.value) {
-        this.dispatchEvent(new UmbPropertyValueChangeEvent());
-        this._prevImgSrc = this.value;
-      }
+    } else if (changedProperties.has("_imageUrl")) {
+      //console.debug("wysiwg-image-crop.updated", this._imageUrl);
     }
   }
 
@@ -100,14 +108,14 @@ export class WysiwgCroppedImageElement extends UmbLitElement implements UmbPrope
 
   #renderImageCrop() {
     try {
-      if (!this.value) {
+      if (!this._imageUrl) {
         return html`<div id="icon" part="img"></div>`;
       } else {
         return html`<img
           id="figure-image"
           part="img"
-          src="${this.value ?? ""}"
-          alt="${this.mediaItem?.mediaKey ?? ""}"
+          src="${this._imageUrl ?? ""}"
+          alt="${this.alt ?? ""}"
           loading="${this.loading}"
           draggable="false"
         />`;
@@ -118,29 +126,19 @@ export class WysiwgCroppedImageElement extends UmbLitElement implements UmbPrope
   }
 
   private async requestCropUrl(width: number): Promise<string | undefined> {
-    if (!this.mediaItem?.mediaKey) {
+    if (!this.mediaKey) {
       return;
     }
-    const cropAlias = this.mediaItem.selectedCropAlias?.toLowerCase() ?? "";
-    const crop = this.mediaItem.crops?.find((c) => c.alias === cropAlias);
-    const selectedCrop = !crop
-      ? ""
-      : JSON.stringify(crop);
-    const selectedFocalPoint = !this.mediaItem.focalPoint
-      ? ""
-      : JSON.stringify(this.mediaItem.focalPoint);
-    const options: V2CropUrlData = {
+    const options: CropUrlData = {
       query: {
-        mediaItemId: this.mediaItem.mediaKey,
-        cropAlias: cropAlias,
+        mediaItemId: this.mediaKey,
+        cropAlias: this.cropAlias,
         width,
-        selectedCrop: selectedCrop,
-        selectedFocalPoint: selectedFocalPoint
       },
     };
 
     const { data, error } =
-      await WysiwgUmbracoCommunityExtensionsService.v2CropUrl(options);
+      await WysiwgUmbracoCommunityExtensionsService.cropUrl(options);
 
     this._isLoading = false;
 
@@ -159,13 +157,13 @@ export class WysiwgCroppedImageElement extends UmbLitElement implements UmbPrope
   private async generateImageUrl(width: number) {
     await this.requestCropUrl(width).then((data) => {
       if (data === "error") {
-        this.value = "";
+        this._imageUrl = undefined;
         return;
       } else if (data === "no data") {
-        this.value = "";
+        this._imageUrl = undefined;
         return;
       }
-      this.value = data ?? "";
+      this._imageUrl = data;
     });
   }
 
@@ -188,7 +186,7 @@ export class WysiwgCroppedImageElement extends UmbLitElement implements UmbPrope
         width: 100%;
       }
 
-      /* ::part(img) {
+      ::part(img) {
         display: block;
         width: 100%;
         height: auto;
@@ -197,9 +195,8 @@ export class WysiwgCroppedImageElement extends UmbLitElement implements UmbPrope
         background-image: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill-opacity=".1"><path d="M50 0h50v50H50zM0 50h50v50H0z"/></svg>');
         background-size: 10px 10px;
         background-repeat: repeat;
-      } */
+      }
       img {
-        display: flex;
         width: 100%;
         height: auto;
       }
@@ -215,6 +212,6 @@ export class WysiwgCroppedImageElement extends UmbLitElement implements UmbPrope
 
 declare global {
   interface HTMLElementTagNameMap {
-    [elementName]: WysiwgCroppedImageElement;
+    [elementName]: WysiwgBlocksImageCropElement;
   }
 }

@@ -8,12 +8,12 @@ export const manifest: ManifestPropertyEditorSchema = {
 		defaultPropertyEditorUiAlias: 'wysiwg.PropertyEditorUi.ImageAndCropPicker',
 		settings: {
 			properties: [
-				// {
-				// 	alias: 'filter',
-				// 	label: 'Accepted types',
-				// 	description: 'Limit to specific types. Currently only Image and Folder types are supported.',
-				// 	propertyEditorUiAlias: 'Umb.PropertyEditorUi.MediaTypePicker',
-				// },
+				 {
+				 	alias: 'filter',
+				 	label: 'Accepted types',
+				 	description: 'Limit to specific types. Currently only Image and Folder types are supported.',
+				 	propertyEditorUiAlias: 'Umb.PropertyEditorUi.MediaTypePicker',
+				 },
 				{
 					alias: 'startNodeId',
 					label: 'Start node',

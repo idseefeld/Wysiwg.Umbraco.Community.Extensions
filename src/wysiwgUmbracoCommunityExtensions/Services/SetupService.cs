@@ -1,31 +1,40 @@
-using System.Text.Json.Nodes;
-using Json.More;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using StackExchange.Profiling.Internal;
-using Umbraco.Cms.Api.Management.Factories;
 using Umbraco.Cms.Api.Management.ViewModels.DataType;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.Membership;
+using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Cms.Core.Security;
+using Umbraco.Cms.Core.Serialization;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Services.OperationStatus;
 using Umbraco.Cms.Core.Strings;
 using Umbraco.Extensions;
 using WysiwgUmbracoCommunityExtensions.Extensions;
 using WysiwgUmbracoCommunityExtensions.Models;
+using uReferenceByIdModel = Umbraco.Cms.Api.Management.ViewModels.ReferenceByIdModel;
 
 namespace WysiwgUmbracoCommunityExtensions.Services
 {
+    public enum VersionStatus
+    {
+        Unknown,
+        UpToDate,
+        Update,
+        Install
+    }
     public class SetupService(
         ILogger<SetupService> logger,
         IContentTypeService contentTypeService,
+        IDataValueEditorFactory dataValueEditorFactory,
         IDataTypeService dataTypeService,
         IDataTypeContainerService dataTypeContainerService,
-        IDataTypePresentationFactory dataTypePresentationFactory,
         IShortStringHelper shortStringHelper,
         IBackOfficeSecurityAccessor backOfficeSecurityAccessor,
-        IPartialViewService partialViewService
+        IPartialViewService partialViewService,
+        IConfigurationEditorJsonSerializer jsonSerializer
         ) : ISetupService
     {
         #region properties
@@ -34,10 +43,11 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         private readonly string _errorMsgDataTypeNotFoundStart = $"{ErrorMsgPrefix} Could not find data type:";
         private readonly string _errorMsgUpdateContentTypeStart = $"{ErrorMsgPrefix} Could not update content type";
         private readonly string _contentElementsRootContainer = $"{Constants.Prefix.ToFirstUpper()}Content Elements";
+
         private readonly string[] _requiredContentTypes = [
             $"{Constants.Prefix}headline",
             $"{Constants.Prefix}paragraph",
-            $"{Constants.Prefix}pictureWithCrop",
+            $"{Constants.Prefix}croppedPicture",
             $"{Constants.Prefix}layout1",
             $"{Constants.Prefix}layout2",
             $"{Constants.Prefix}layout3",
@@ -46,25 +56,41 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             $"{Constants.Prefix}paragraphSettings",
             $"{Constants.Prefix}rowSettings"
         ];
+        private readonly string[] _needUpdateContentTypes = [
+            $"{Constants.Prefix}headline",
+            $"{Constants.Prefix}paragraph",
+            $"{Constants.Prefix}croppedPicture"
+        ];
+        private string[] _depricatedContentTypes = [];
         private readonly string _dtContainerName = $"{Constants.Prefix.ToFirstUpper()}DataTypes";
         private readonly string[] _requiredDataTypes = [
-            $"{Constants.Prefix}ImageMediaPicker",
-            $"{Constants.Prefix}CustomerColors",
+            $"{Constants.Prefix}HeadlineSizes",
             $"{Constants.Prefix}LimitedHeadline",
             $"{Constants.Prefix}ParagaphRTE",
-            $"{Constants.Prefix}CropNames",
-            $"{Constants.Prefix}HeadlineSizes"
+            $"{Constants.Prefix}CustomerColors",
+            $"{Constants.Prefix}ImageAndCropPicker"
         ];
+        // Do not remove previus data types without deprication phase and documentation
+        private readonly string[] _removedDataTypes = [
+            //$"{Constants.Prefix}ImageMediaPicker",
+            //$"{Constants.Prefix}CropNames"
+        ];
+
         private readonly string _requiredBlockGridName = $"{Constants.Prefix}BlockGrid";
         private const string BlockElementsName = "Block Elements";
         private const string BlockLayoutsName = "Block Layouts";
         private const string BlockSettingsName = "Block Settings";
+        private const string DepricatedElementsName = "Depricated Elements";
         private readonly string[] _level2ContainerNames = [BlockElementsName, BlockLayoutsName, BlockSettingsName];
         private readonly Dictionary<string, EntityContainer> _blockContainers = [];
+
         private readonly Guid _userKey = CurrentUserKey(backOfficeSecurityAccessor);
-        private IEnumerable<IContentType> _allContentTypes = [];
-        private IEnumerable<IDataType>? _existingDataTypes;
-        private Guid? _containerId;
+        private IContentType[] _allContentTypes = [];
+        private IDataType[] _existingDataTypes = [];
+        private EntityContainer? _dataTypeContainer;
+
+        private bool _isInstalling = false;
+        private bool _isUninstalling = false;
         #endregion
 
         #region install
@@ -72,21 +98,37 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         {
             try
             {
+                var versionStatus = await GetVersionStatus();
+                if (_isInstalling || _isUninstalling || versionStatus == VersionStatus.UpToDate)
+                { return; }
+
+                _isInstalling = true;
                 _resetExisting = resetExisting;
 
-                _containerId = await CreateDataTypeContainer();
-                if (_containerId == null)
-                { throw new Exception($"{ErrorMsgPrefix} Could not find data type container."); }
+                _dataTypeContainer ??= (await CreateDataTypeContainer())
+                    ?? throw new Exception($"{ErrorMsgPrefix} Could not find data type container.");
 
-                _existingDataTypes = await GetAllWysiwgDataTypes();
+                var parent = uReferenceByIdModel.ReferenceOrNull(_dataTypeContainer?.Key)
+                    ?? throw new Exception($"{ErrorMsgPrefix} could not get ReferenceByIdModel for {_dataTypeContainer?.Name}!");
 
-                await CreateDataTypesForBlockElements();
+
+                var pictureWithCropElement = contentTypeService.Get($"{Constants.Prefix}pictureWithCrop");
+                if (!string.IsNullOrEmpty(pictureWithCropElement?.Alias))
+                {
+                    _depricatedContentTypes = [pictureWithCropElement.Alias];
+                }
+
+                await CreateOrUpdateDataTypesForBlockElements(parent);
 
                 await CreateBlockElements();
 
-                await CreateDataTypeBlockGrid();
+                await CreateDataTypeBlockGrid(parent);
+
+                await RemoveDataTypes();
 
                 await SwitchPartialViews();
+
+                CompleteUpdate();
 
                 logger.LogInformation("Successfully installed of WYSIWG Umbraco Community Extensions.");
             }
@@ -95,17 +137,65 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 logger.LogError(ex, "Installation of WYSIWG Umbraco Community Extensions failded.");
                 throw;
             }
-
+            finally
+            {
+                _existingDataTypes = [];
+                _dataTypeContainer = null;
+                _isInstalling = false;
+            }
         }
 
         #region miscellaneous
-        private async Task<IEnumerable<IDataType>?> GetAllWysiwgDataTypes()
+        private void CompleteUpdate()
         {
-            var allDtTypes = (await dataTypeService
-                .GetAllAsync())
-                .Where(d => d.Name != null && d.Name.StartsWith(Constants.Prefix));
 
-            return allDtTypes;
+            //ToDo: use package migrations
+        }
+
+        public async Task<VersionStatus> GetVersionStatus()
+        {
+            //ToDo: use package migrations
+
+            _dataTypeContainer ??= await GetDataTypeContainer();
+            var install = _dataTypeContainer == null;
+            if (install)
+            { return VersionStatus.Install; }
+
+            var allRequiredDataTypes = new List<string>(_requiredDataTypes) { _requiredBlockGridName };
+            _existingDataTypes = await GetAllWysiwgDataTypes();
+            var notAllRequiredInstalled = allRequiredDataTypes.Any(d => _existingDataTypes.FirstOrDefault(e => e.Name != null && e.Name.Equals(d)) == null);
+            if (notAllRequiredInstalled)
+            { return VersionStatus.Update; }
+
+            var requiredContentTypesExists = _allContentTypes
+               .Select(t => t.Alias)
+               .Intersect(_requiredContentTypes)
+               .Count() == _requiredContentTypes.Length;
+            if (!requiredContentTypesExists)
+            { return VersionStatus.Update; }
+
+            var notAllRemoved = _removedDataTypes.Any(d => _existingDataTypes.FirstOrDefault(e => e.Name != null && e.Name.Equals(d)) != null);
+            if (notAllRemoved)
+            { return VersionStatus.Update; }
+
+            return VersionStatus.UpToDate;
+        }
+
+        public async Task<int> GetVersionStatusCode()
+        {
+            var status = await GetVersionStatus();
+            return (int)status;
+        }
+
+        private async Task<IDataType[]> GetAllWysiwgDataTypes()
+        {
+            var allDtTypes = await dataTypeService.GetAllAsync();
+
+            var rVal = allDtTypes
+                .Where(d => d.Name != null && d.Name.StartsWith(Constants.Prefix))
+                .ToArray();
+
+            return rVal;
         }
 
         private static string GetErrorMessage(string name, bool isDataType = false)
@@ -127,47 +217,62 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             return backOfficeSecurityAccessor.BackOfficeSecurity?.CurrentUser
                 ?? throw new InvalidOperationException("No backoffice user found");
         }
+
+        private string GetElementKeyByName(string name)
+        {
+            return GetElementKeyGuidByName(name).ToString();
+        }
+
+        private Guid GetElementKeyGuidByName(string name)
+        {
+            var prefixedName = $"{Constants.Prefix}{name}";
+            var type = _allContentTypes
+                .FirstOrDefault(t => t.Alias.Equals(prefixedName));
+            if (type == null)
+            {
+                throw new Exception($"{_errorMsgDataTypeNotFoundStart} {prefixedName}");
+            }
+            else
+            {
+                return type.Key;
+            }
+        }
         #endregion
 
-        #region daty types
-        private async Task CreateDataTypesForBlockElements()
+        #region data types
+        private async Task CreateOrUpdateDataTypesForBlockElements(uReferenceByIdModel parent)
         {
-            var missingRequiredDataTypes = _requiredDataTypes
-                .Except(_existingDataTypes?.Select(d => d.Name) ?? []);
-
-            foreach (var name in missingRequiredDataTypes)
+            foreach (var name in _requiredDataTypes)
             {
                 switch (name)
                 {
-                    case $"{Constants.Prefix}CropNames":
-                        await CreateDataTypeCropNames(name);
-                        break;
-                    case $"{Constants.Prefix}CustomerColors":
-                        await CreateDataTypeCustomerColors(name);
-                        break;
-                    case $"{Constants.Prefix}ImageMediaPicker":
-                        await CreateDataTypeImageMediaPicker(name);
-                        break;
-                    case $"{Constants.Prefix}LimitedHeadline":
-                        await CreateDataTypeLimitedHeadline(name);
+                    case $"{Constants.Prefix}HeadlineSizes":
+                        await CreateDataTypeHeadlineSizes(name, parent);
                         break;
                     case $"{Constants.Prefix}ParagaphRTE":
-                        await CreateDataTypeParagaphRTE(name);
+                        await CreateDataTypeParagaphRTE(name, parent);
                         break;
-                    case $"{Constants.Prefix}HeadlineSizes":
-                        await CreateDataTypeHeadlineSizes(name);
+                    case $"{Constants.Prefix}LimitedHeadline":
+                        await CreateDataTypeLimitedHeadline(name, parent);
+                        break;
+                    case $"{Constants.Prefix}ImageAndCropPicker":
+                        await CreateDataTypeImageMediaPicker(name, parent);
+                        break;
+                    case $"{Constants.Prefix}CustomerColors":
+                        await CreateDataTypeCustomerColors(name, parent);
                         break;
                     default:
                         break;
                 }
             }
+            _existingDataTypes = [.. await GetAllWysiwgDataTypes()];
         }
 
-        private async Task CreateDataTypeHeadlineSizes(string name)
+        private async Task CreateDataTypeHeadlineSizes(string name, uReferenceByIdModel parent)
         {
             var createDataTypeRequestModel = new CreateDataTypeRequestModel
             {
-                Parent = new Umbraco.Cms.Api.Management.ViewModels.ReferenceByIdModel(_containerId.GetValueOrDefault()),
+                Parent = parent,
                 Name = name,
                 EditorAlias = "Umbraco.RadioButtonList",
                 EditorUiAlias = "Umb.PropertyEditorUi.RadioButtonList",
@@ -178,32 +283,14 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     }
                 ]
             };
-            await CreateDataType(createDataTypeRequestModel, name);
+            await CreateOrUpdateDataType(createDataTypeRequestModel);
         }
 
-        private async Task CreateDataTypeCropNames(string name)
+        private async Task CreateDataTypeParagaphRTE(string name, uReferenceByIdModel parent)
         {
             var createDataTypeRequestModel = new CreateDataTypeRequestModel
             {
-                Parent = new Umbraco.Cms.Api.Management.ViewModels.ReferenceByIdModel(_containerId.GetValueOrDefault()),
-                Name = name,
-                EditorAlias = "Umbraco.DropDown.Flexible",
-                EditorUiAlias = "Umb.PropertyEditorUi.Dropdown",
-                Values = [
-                    new DataTypePropertyPresentationModel {
-                        Alias = "items",
-                        Value = new string[] { "Square", "Landscape", "Portrait", "Original [none]" }
-                    }
-                ]
-            };
-            await CreateDataType(createDataTypeRequestModel, name);
-        }
-
-        private async Task CreateDataTypeParagaphRTE(string name)
-        {
-            var createDataTypeRequestModel = new CreateDataTypeRequestModel
-            {
-                Parent = new Umbraco.Cms.Api.Management.ViewModels.ReferenceByIdModel(_containerId.GetValueOrDefault()),
+                Parent = parent,
                 Name = name,
                 EditorAlias = "Umbraco.RichText",
                 EditorUiAlias = "Umb.PropertyEditorUi.Tiptap",
@@ -270,14 +357,14 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     }
                 ]
             };
-            await CreateDataType(createDataTypeRequestModel, name);
+            await CreateOrUpdateDataType(createDataTypeRequestModel);
         }
 
-        private async Task CreateDataTypeLimitedHeadline(string name)
+        private async Task CreateDataTypeLimitedHeadline(string name, uReferenceByIdModel parent)
         {
             var createDataTypeRequestModel = new CreateDataTypeRequestModel
             {
-                Parent = new Umbraco.Cms.Api.Management.ViewModels.ReferenceByIdModel(_containerId.GetValueOrDefault()),
+                Parent = parent,
                 Name = name,
                 EditorAlias = "Umbraco.TextBox",
                 EditorUiAlias = "Umb.PropertyEditorUi.TextBox",
@@ -292,14 +379,14 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     }
                     ]
             };
-            await CreateDataType(createDataTypeRequestModel, name);
+            await CreateOrUpdateDataType(createDataTypeRequestModel);
         }
 
-        private async Task CreateDataTypeCustomerColors(string name)
+        private async Task CreateDataTypeCustomerColors(string name, uReferenceByIdModel parent)
         {
             var createDataTypeRequestModel = new CreateDataTypeRequestModel
             {
-                Parent = new Umbraco.Cms.Api.Management.ViewModels.ReferenceByIdModel(_containerId.GetValueOrDefault()),
+                Parent = parent,
                 Name = name,
                 EditorAlias = "Umbraco.ColorPicker",
                 EditorUiAlias = "Umb.PropertyEditorUi.ColorPicker",
@@ -321,17 +408,19 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     }
                 ]
             };
-            await CreateDataType(createDataTypeRequestModel, name);
+            await CreateOrUpdateDataType(createDataTypeRequestModel);
         }
 
-        private async Task CreateDataTypeImageMediaPicker(string name)
+        private async Task CreateDataTypeImageMediaPicker(string name, uReferenceByIdModel parent)
         {
+            IDataType? previous = _existingDataTypes?.FirstOrDefault(d => d.Name != null && d.Name.Equals("wysiwg65_ImageMediaPicker"));
+
             var createDataTypeRequestModel = new CreateDataTypeRequestModel
             {
-                Parent = new Umbraco.Cms.Api.Management.ViewModels.ReferenceByIdModel(_containerId.GetValueOrDefault()),
+                Parent = parent,
                 Name = name,
-                EditorAlias = "Umbraco.MediaPicker3",
-                EditorUiAlias = "Umb.PropertyEditorUi.MediaPicker",
+                EditorAlias = "Wysiwg.ImageAndCropPicker",
+                EditorUiAlias = "wysiwg.PropertyEditorUi.ImageAndCropPicker",
                 Values = [
                     new DataTypePropertyPresentationModel {
                             Alias = "multiple",
@@ -345,236 +434,337 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                         Alias = "crops",
                         Value = @"
 [
-    {""label"":""Square"",""alias"":""square"",""width"":1200,""height"":1200},
-    {""label"":""Portrait"",""alias"":""portrait"",""width"":800,""height"":1200},
-    {""label"":""Landscape"",""alias"":""landscape"",""width"":1200,""height"":800}
+    {""label"":""Square"",""alias"":""1485x1485"",""width"":1485,""height"":1485},
+    {""label"":""Portrait"",""alias"":""1050x1485"",""width"":1050,""height"":1485},
+    {""label"":""Landscape"",""alias"":""1485x1050"",""width"":1485,""height"":1050}
 ]".GetJsonArrayFromString()
+                    },
+                    new DataTypePropertyPresentationModel {
+                            Alias = "enableLocalFocalPoint",
+                            Value = true
                     }
                 ]
             };
-            await CreateDataType(createDataTypeRequestModel, name);
+            await CreateOrUpdateDataType(createDataTypeRequestModel);
         }
 
-        private string GetElementKeyByName(string name)
+        private async Task CreateOrUpdateDataType(DataTypeModelBase dataTypeRequestModel, IDataType? dataType = null)
         {
-            var prefixedName = $"{Constants.Prefix}{name}";
-            var type = _allContentTypes
-                .FirstOrDefault(t => t.Alias.Equals(prefixedName));
-            if (type == null)
+            if (dataTypeRequestModel == null)
+            { return; }
+
+            var msg = GetErrorMessage(dataTypeRequestModel.Name, true);
+            Attempt<IDataType, DataTypeOperationStatus> attempt;
+
+            dataType ??= await dataTypeService.GetAsync(dataTypeRequestModel.Name);
+
+            if (dataType == null)
             {
-                throw new Exception($"{_errorMsgDataTypeNotFoundStart} {prefixedName}");
+                var configuration = dataTypeRequestModel
+                    .Values.ToDictionary(v => v.Alias, v => v.Value ?? new object())
+                    ?? [];
+
+                IDataEditor? editor = new DataEditor(dataValueEditorFactory)
+                {
+                    Alias = dataTypeRequestModel.EditorAlias,
+                    DefaultConfiguration = configuration
+                };
+
+                dataType = new DataType(editor, jsonSerializer, _dataTypeContainer?.Id ?? -1)
+                {
+                    Name = dataTypeRequestModel.Name,
+                    EditorUiAlias = dataTypeRequestModel.EditorUiAlias,
+                    Key = Guid.NewGuid()
+                };
+
+                attempt = await dataTypeService.CreateAsync(dataType, _userKey);
+                if (!attempt.Success)
+                {
+                    throw new Exception($"{msg} Status: {attempt.Status} Exception: {attempt.Exception?.Message}");
+                }
             }
             else
             {
-                return type.Key.ToString();
+                var values = dataTypeRequestModel.Values
+                    .ToDictionary(v => v.Alias, v => v.Value ?? new object())
+                    ?? [];
+
+                dataType.Name = dataTypeRequestModel.Name;
+                dataType.Editor = new DataEditor(dataValueEditorFactory)
+                {
+                    Alias = dataTypeRequestModel.EditorAlias,
+                    DefaultConfiguration = values
+                };
+                dataType.EditorUiAlias = dataTypeRequestModel.EditorUiAlias;
+                dataType.ConfigurationData = values;
+
+                attempt = await dataTypeService.UpdateAsync(dataType, _userKey);
+            }
+
+            _existingDataTypes = await GetAllWysiwgDataTypes();
+        }
+
+        private async Task<EntityContainer?> GetDataTypeContainer()
+        {
+            return (await dataTypeContainerService
+                .GetAllAsync())
+                .FirstOrDefault(c => c.Name != null && c.Name.InvariantEquals(_dtContainerName));
+        }
+
+        private async Task<EntityContainer?> CreateDataTypeContainer()
+        {
+            EntityContainer? container = await GetDataTypeContainer();
+            if (container == null)
+            {
+                var newGuid = Guid.NewGuid();
+                var attempt = await dataTypeContainerService.CreateAsync(newGuid, _dtContainerName, null, _userKey);
+                if (attempt.Success)
+                {
+                    container = attempt.Result;
+                }
+            }
+
+            if (container == null)
+            {
+                throw new Exception($"{ErrorMsgPrefix} Could not create data type container: {_dtContainerName}");
+            }
+
+            return container;
+        }
+
+        private async Task RemoveDataTypes()
+        {
+            foreach (var name in _removedDataTypes)
+            {
+                IDataType? previous = _existingDataTypes?.FirstOrDefault(d => d.Name != null && d.Name.Equals(name));
+                if (previous != null)
+                {
+                    var attempt = await dataTypeService.DeleteAsync(previous.Key, _userKey);
+                    if (!attempt.Success)
+                    {
+                        logger.LogWarning($"Data type {name} could not be deleted");
+                    }
+                }
             }
         }
-        private async Task CreateDataTypeBlockGrid()
+
+        #endregion
+
+        #region Block Grid Data Type
+        private async Task CreateDataTypeBlockGrid(uReferenceByIdModel parent)
         {
             UpdateContentTypes();
 
-            _existingDataTypes = await dataTypeService.GetAllAsync();
-            if (_existingDataTypes.FirstOrDefault(t => t.Name != null && t.Name.Equals(_requiredBlockGridName)) != null)
-            { return; }
-
-            var blockGroupKey = Guid.NewGuid();
-            var blockGroupsValue = @$"
-            [
-                {{
-                    ""name"":""Layouts"",
-                    ""key"":""{blockGroupKey}""
-                }}
-            ]".GetJsonArrayFromString();
-            var rowSettingsKey = GetElementKeyByName("rowSettings");
-            var paragraphKey = GetElementKeyByName("paragraph");
-            var pictureWithCropKey = GetElementKeyByName("pictureWithCrop");
-            var blocksValue = @$"
-            [
-                {{
-                    ""contentElementTypeKey"":""{GetElementKeyByName("headline")}"",
-                    ""allowAtRoot"": false,
-                    ""allowInAreas"": true,
-                    ""settingsElementTypeKey"":""{GetElementKeyByName("headlineSettings")}""
-                }},
-                {{
-                    ""contentElementTypeKey"":""{paragraphKey}"",
-                    ""allowAtRoot"":false,
-                    ""allowInAreas"":true,
-                    ""settingsElementTypeKey"":""{GetElementKeyByName("paragraphSettings")}""
-                }},
-                {{
-                    ""contentElementTypeKey"":""{pictureWithCropKey}"",
-                    ""allowAtRoot"":false,
-                    ""allowInAreas"":true
-                }},
-                {{
-                    ""contentElementTypeKey"":""{GetElementKeyByName("layout1")}"",
-                    ""allowAtRoot"":true,
-                    ""allowInAreas"":false,
-                    ""groupKey"":""{blockGroupKey}"",
-                    ""settingsElementTypeKey"":""{rowSettingsKey}"",
-                    ""areas"":
-                    [
-                        {{
-                            ""key"":""{Guid.NewGuid()}"",
-                            ""alias"":""Full Row"",
-                            ""columnSpan"":12,
-                            ""rowSpan"":1,
-                            ""minAllowed"":0,
-                            ""specifiedAllowance"":[]
-                        }}
-                    ]
-                }},
-                {{
-                    ""contentElementTypeKey"":""{GetElementKeyByName("layout2")}"",
-                    ""allowAtRoot"":true,
-                    ""allowInAreas"":false,
-                    ""groupKey"":""{blockGroupKey}"",
-                    ""settingsElementTypeKey"":""{rowSettingsKey}"",
-                    ""areas"":
-                    [
-                        {{
-                            ""key"":""{Guid.NewGuid()}"",
-                            ""alias"":
-                            ""left"",
-                            ""columnSpan"":6,
-                            ""rowSpan"":1,
-                            ""minAllowed"":0,
-                            ""specifiedAllowance"":
-                            [
-                                {{
-                                ""minAllowed"":0,
-                                ""elementTypeKey"":""{paragraphKey}""
-                                }},
-                                {{
-                                ""minAllowed"":0,
-                                ""elementTypeKey"":""{pictureWithCropKey}""
-                                }}
-                            ]
-                        }},
-                        {{
-                            ""key"":""{Guid.NewGuid()}"",
-                            ""alias"":""right"",
-                            ""columnSpan"":6,
-                            ""rowSpan"":1,
-                            ""minAllowed"":0,
-                            ""specifiedAllowance"":
-                            [
-                                {{
-                                ""minAllowed"":0,
-                                ""elementTypeKey"":""{paragraphKey}""
-                                }},
-                                {{
-                                ""minAllowed"":0,
-                                ""elementTypeKey"":""{pictureWithCropKey}""
-                                }}
-                            ]
-                        }}
-                    ]
-                }},
-                {{
-                    ""contentElementTypeKey"":""{GetElementKeyByName("layout3")}"",
-                    ""allowAtRoot"":true,
-                    ""allowInAreas"":false,
-                    ""groupKey"":""{blockGroupKey}"",
-                    ""settingsElementTypeKey"":""{rowSettingsKey}"",
-                    ""areas"":
-                    [
-                        {{
-                            ""key"":""{Guid.NewGuid()}"",
-                            ""alias"":""left"",
-                            ""columnSpan"":4,
-                            ""rowSpan"":1,
-                            ""minAllowed"":0,
-                            ""specifiedAllowance"":
-                            [
-                                {{
-                                ""minAllowed"":0,
-                                ""elementTypeKey"":""{paragraphKey}""
-                                }},
-                                {{
-                                ""minAllowed"":0,
-                                ""elementTypeKey"":""{pictureWithCropKey}""
-                                }}
-                            ]
-                        }},
-                        {{
-                            ""key"":""{Guid.NewGuid()}"",
-                            ""alias"":""right"",
-                            ""columnSpan"":8,
-                            ""rowSpan"":1,
-                            ""minAllowed"":0,
-                            ""specifiedAllowance"":
-                            [
-                                {{
-                                ""minAllowed"":0,
-                                ""elementTypeKey"":""{paragraphKey}""
-                                }},
-                                {{
-                                ""minAllowed"":0,
-                                ""elementTypeKey"":""{pictureWithCropKey}""
-                                }}
-                            ]
-                        }}
-                    ]
-                }},
-                {{
-                    ""contentElementTypeKey"":""{GetElementKeyByName("layout4")}"",
-                    ""allowAtRoot"":true,
-                    ""allowInAreas"":false,
-                    ""groupKey"":""{blockGroupKey}"",
-                    ""settingsElementTypeKey"":""{rowSettingsKey}"",
-                    ""areas"":
-                    [
-                        {{
-                            ""key"":""{Guid.NewGuid()}"",
-                            ""alias"":""left"",
-                            ""columnSpan"":8,
-                            ""rowSpan"":1,
-                            ""minAllowed"":0,
-                            ""specifiedAllowance"":
-                            [
-                                {{
-                                ""minAllowed"":0,
-                                ""elementTypeKey"":""{paragraphKey}""
-                                }},
-                                {{
-                                ""minAllowed"":0,
-                                ""elementTypeKey"":""{pictureWithCropKey}""
-                                }}
-                            ]
-                        }},
-                        {{
-                            ""key"":""{Guid.NewGuid()}"",
-                            ""alias"":""right"",
-                            ""columnSpan"":4,
-                            ""rowSpan"":1,
-                            ""minAllowed"":0,
-                            ""specifiedAllowance"":
-                            [
-                                {{
-                                ""minAllowed"":0,
-                                ""elementTypeKey"":""{paragraphKey}""
-                                }},
-                                {{
-                                ""minAllowed"":0,
-                                ""elementTypeKey"":""{pictureWithCropKey}""
-                                }}
-                            ]
-                        }}
-                    ]
-                }}
-            ]".GetJsonArrayFromString();
-
-            var createDataTypeRequestModel = new CreateDataTypeRequestModel
+            _existingDataTypes = [.. await dataTypeService.GetAllAsync()];
+            var current = _existingDataTypes?.FirstOrDefault(d => d.Name != null && d.Name.Equals(_requiredBlockGridName));
+            if (current == null)
             {
-                Parent = new Umbraco.Cms.Api.Management.ViewModels.ReferenceByIdModel(_containerId.GetValueOrDefault()),
-                Name = _requiredBlockGridName,
-                EditorAlias = "Umbraco.BlockGrid",
-                EditorUiAlias = "Umb.PropertyEditorUi.BlockGrid",
-                Values =
+                var blockGroupKey = Guid.NewGuid();
+                var rowSettingsKey = GetElementKeyByName("rowSettings");
+                var paragraphKey = GetElementKeyByName("paragraph");
+                var paragraphSettingsKey = GetElementKeyByName("paragraphSettings");
+                var imageAndCropPickerKey = GetElementKeyByName("croppedPicture");
+                var headlineKey = GetElementKeyByName("headline");
+                var headlineSettingsKey = GetElementKeyByName("headlineSettings");
+                var layoutKeys = new string[] { "layout1", "layout2", "layout3", "layout4" }
+                    .Select(l => GetElementKeyByName(l))
+                    .ToArray();
+                var blocksValueJson = @$"
                 [
-                    new DataTypePropertyPresentationModel {
+                    {{
+                        ""contentElementTypeKey"":""{headlineKey}"",
+                        ""allowAtRoot"": false,
+                        ""allowInAreas"": true,
+                        ""settingsElementTypeKey"":""{headlineSettingsKey}""
+                    }},
+                    {{
+                        ""contentElementTypeKey"":""{paragraphKey}"",
+                        ""allowAtRoot"":false,
+                        ""allowInAreas"":true,
+                        ""settingsElementTypeKey"":""{paragraphSettingsKey}""
+                    }},
+                    {{
+                        ""contentElementTypeKey"":""{imageAndCropPickerKey}"",
+                        ""allowAtRoot"":false,
+                        ""allowInAreas"":true
+                    }},
+                    {{
+                        ""contentElementTypeKey"":""{layoutKeys[0]}"",
+                        ""allowAtRoot"":true,
+                        ""allowInAreas"":false,
+                        ""groupKey"":""{blockGroupKey}"",
+                        ""settingsElementTypeKey"":""{rowSettingsKey}"",
+                        ""areas"":
+                        [
+                            {{
+                                ""key"":""{Guid.NewGuid()}"",
+                                ""alias"":""Full Row"",
+                                ""columnSpan"":12,
+                                ""rowSpan"":1,
+                                ""minAllowed"":0,
+                                ""specifiedAllowance"":[]
+                            }}
+                        ]
+                    }},
+                    {{
+                        ""contentElementTypeKey"":""{layoutKeys[1]}"",
+                        ""allowAtRoot"":true,
+                        ""allowInAreas"":false,
+                        ""groupKey"":""{blockGroupKey}"",
+                        ""settingsElementTypeKey"":""{rowSettingsKey}"",
+                        ""areas"":
+                        [
+                            {{
+                                ""key"":""{Guid.NewGuid()}"",
+                                ""alias"":
+                                ""left"",
+                                ""columnSpan"":6,
+                                ""rowSpan"":1,
+                                ""minAllowed"":0,
+                                ""specifiedAllowance"":
+                                [
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{paragraphKey}""
+                                    }},
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{imageAndCropPickerKey}""
+                                    }}
+                                ]
+                            }},
+                            {{
+                                ""key"":""{Guid.NewGuid()}"",
+                                ""alias"":""right"",
+                                ""columnSpan"":6,
+                                ""rowSpan"":1,
+                                ""minAllowed"":0,
+                                ""specifiedAllowance"":
+                                [
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{paragraphKey}""
+                                    }},
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{imageAndCropPickerKey}""
+                                    }}
+                                ]
+                            }}
+                        ]
+                    }},
+                    {{
+                        ""contentElementTypeKey"":""{layoutKeys[2]}"",
+                        ""allowAtRoot"":true,
+                        ""allowInAreas"":false,
+                        ""groupKey"":""{blockGroupKey}"",
+                        ""settingsElementTypeKey"":""{rowSettingsKey}"",
+                        ""areas"":
+                        [
+                            {{
+                                ""key"":""{Guid.NewGuid()}"",
+                                ""alias"":""left"",
+                                ""columnSpan"":4,
+                                ""rowSpan"":1,
+                                ""minAllowed"":0,
+                                ""specifiedAllowance"":
+                                [
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{paragraphKey}""
+                                    }},
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{imageAndCropPickerKey}""
+                                    }}
+                                ]
+                            }},
+                            {{
+                                ""key"":""{Guid.NewGuid()}"",
+                                ""alias"":""right"",
+                                ""columnSpan"":8,
+                                ""rowSpan"":1,
+                                ""minAllowed"":0,
+                                ""specifiedAllowance"":
+                                [
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{paragraphKey}""
+                                    }},
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{imageAndCropPickerKey}""
+                                    }}
+                                ]
+                            }}
+                        ]
+                    }},
+                    {{
+                        ""contentElementTypeKey"":""{layoutKeys[3]}"",
+                        ""allowAtRoot"":true,
+                        ""allowInAreas"":false,
+                        ""groupKey"":""{blockGroupKey}"",
+                        ""settingsElementTypeKey"":""{rowSettingsKey}"",
+                        ""areas"":
+                        [
+                            {{
+                                ""key"":""{Guid.NewGuid()}"",
+                                ""alias"":""left"",
+                                ""columnSpan"":8,
+                                ""rowSpan"":1,
+                                ""minAllowed"":0,
+                                ""specifiedAllowance"":
+                                [
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{paragraphKey}""
+                                    }},
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{imageAndCropPickerKey}""
+                                    }}
+                                ]
+                            }},
+                            {{
+                                ""key"":""{Guid.NewGuid()}"",
+                                ""alias"":""right"",
+                                ""columnSpan"":4,
+                                ""rowSpan"":1,
+                                ""minAllowed"":0,
+                                ""specifiedAllowance"":
+                                [
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{paragraphKey}""
+                                    }},
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{imageAndCropPickerKey}""
+                                    }}
+                                ]
+                            }}
+                        ]
+                    }}
+                ]";
+                var blocksValue = blocksValueJson.GetJsonArrayFromString();
+
+                var blockGroupsValue = @$"
+                [
+                    {{
+                        ""name"":""Layouts"",
+                        ""key"":""{Guid.NewGuid()}""
+                    }}
+                ]".GetJsonArrayFromString();
+
+                var createDataTypeRequestModel = new CreateDataTypeRequestModel
+                {
+                    Parent = parent,
+                    Name = _requiredBlockGridName,
+                    EditorAlias = "Umbraco.BlockGrid",
+                    EditorUiAlias = "Umb.PropertyEditorUi.BlockGrid",
+                    Values =
+                    [
+                        new DataTypePropertyPresentationModel {
                         Alias = "gridColumns",
                         Value = 12
                     },
@@ -587,61 +777,120 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                         Value = blockGroupsValue
                     },
                     new DataTypePropertyPresentationModel {
-                        Alias = "layoutStylesheet",
-                        Value = "/wwwroot/styles/customBlockGrid.min.css"
-                    },
-                    new DataTypePropertyPresentationModel {
                         Alias = "maxPropertyWidth",
-                        Value = "1200px"
+                        Value = "1204px"
                     }
-                ]
-            };
-            await CreateDataType(createDataTypeRequestModel, _requiredBlockGridName);
-        }
-
-        private async Task CreateDataType(CreateDataTypeRequestModel createDataTypeRequestModel, string name)
-        {
-            var msg = GetErrorMessage(name, true);
-            var attempt = await dataTypePresentationFactory.CreateAsync(createDataTypeRequestModel);
-
-            if (!attempt.Success)
-            {
-                throw new Exception($"{msg} - {attempt.Status}");
-            }
-
-            Attempt<IDataType, DataTypeOperationStatus> result = await dataTypeService.CreateAsync(attempt.Result, _userKey);
-            if (!result.Success)
-            {
-                throw new Exception(msg);
-            }
-        }
-
-        private async Task<Guid> CreateDataTypeContainer()
-        {
-            Guid? containerId = null;
-            var container = dataTypeContainerService
-                .GetAllAsync()
-                .Result
-                .Where(c => c.Name != null && c.Name.InvariantEquals(_dtContainerName));
-            if (!container.Any())
-            {
-                var attempt = await dataTypeContainerService.CreateAsync(Guid.NewGuid(), _dtContainerName, null, _userKey);
-                if (attempt.Success)
-                {
-                    containerId = attempt.Result?.Key;
-                }
+                    ]
+                };
+                await CreateOrUpdateDataType(createDataTypeRequestModel);
             }
             else
             {
-                containerId = container.FirstOrDefault()?.Key;
-            }
+                var config = current.ConfigurationData;
+                var layoutStylesheet = config.FirstOrDefault(v => v.Key == "layoutStylesheet").Value;
+                var blockGroupsJson = config.FirstOrDefault(v => v.Key == "blockGroups")
+                    .Value.ToJson();
+                var blockGroups = JsonSerializer.Deserialize<IEnumerable<BGBlockGroupModel>>(blockGroupsJson);
 
-            if (containerId == null)
-            {
-                throw new Exception($"{ErrorMsgPrefix} Could not create data type container.");
-            }
+                var currentblockLayoutGroupKey = blockGroups?.FirstOrDefault(g => g.Name.Equals("Layouts"))?.Key.ToString();
+                if (string.IsNullOrEmpty(currentblockLayoutGroupKey))
+                {
+                    throw new Exception($"{_errorMsgUpdateContentTypeStart} CreateDataTypeBlockGrid: no layout group found!");
+                }
+                var newDepricatedGroupKey = Guid.NewGuid();
+                var blockGroupsValue = @$"
+                [
+                    {{
+                        ""name"":""Layouts"",
+                        ""key"":""{currentblockLayoutGroupKey}""
+                    }},
+                    {{
+                        ""name"":""Deprecated"",
+                        ""key"":""{newDepricatedGroupKey}""
+                    }}
+                ]".GetJsonArrayFromString();
 
-            return containerId.GetValueOrDefault();
+                var blocksJson = config.FirstOrDefault(v => v.Key == "blocks")
+                    .Value.ToJson();
+
+                var blockModels = new List<BGBlockModel>
+                {
+                    new()
+                    {
+                        ContentElementTypeKey = GetElementKeyGuidByName("croppedPicture"),
+                        AllowAtRoot = false,
+                        AllowInAreas = true,
+                        SettingsElementTypeKey = null
+                    }
+                };
+                blockModels.AddRange(JsonSerializer.Deserialize<IEnumerable<BGBlockModel>>(blocksJson) ?? []);
+
+                foreach (var block in blockModels)
+                {
+                    if (block.Areas.Count() > 0)
+                    {
+                        foreach (var area in block.Areas)
+                        {
+                            if (area.SpecifiedAllowance != null && area.SpecifiedAllowance.Any())
+                            {
+                                var specifiedAllowance = new List<BGSpecfiedAllowanceModel>{
+                                    new()
+                                    {
+                                        ElementTypeKey = GetElementKeyGuidByName("croppedPicture"),
+                                        MinAllowed = 0
+                                    }
+                                };
+                                specifiedAllowance.AddRange(area.SpecifiedAllowance);
+                                area.SpecifiedAllowance = specifiedAllowance;
+                            }
+                        }
+                    }
+                }
+
+                var pictureWithCropBlock = blockModels
+                        .FirstOrDefault(b => b.ContentElementTypeKey != null
+                            && b.ContentElementTypeKey.Equals(GetElementKeyGuidByName("pictureWithCrop")));
+                if (pictureWithCropBlock != null)
+                {
+                    pictureWithCropBlock.GroupKey = newDepricatedGroupKey;
+                }
+
+                var blocksValue = JsonSerializer.Serialize(blockModels).GetJsonArrayFromString();
+
+                var updateDataTypeRequestModel = new UpdateDataTypeRequestModel
+                {
+                    Name = _requiredBlockGridName,
+                    EditorAlias = "Umbraco.BlockGrid",
+                    EditorUiAlias = "Umb.PropertyEditorUi.BlockGrid",
+                    Values =
+                    [
+                        new DataTypePropertyPresentationModel {
+                            Alias = "gridColumns",
+                            Value = 12
+                        },
+                        new DataTypePropertyPresentationModel {
+                            Alias = "blocks",
+                            Value = blocksValue
+                        },
+                        new DataTypePropertyPresentationModel {
+                            Alias = "blockGroups",
+                            Value = blockGroupsValue
+                        },
+                        new DataTypePropertyPresentationModel {
+                            Alias = "maxPropertyWidth",
+                            Value = "1204px"
+                        },
+                        new DataTypePropertyPresentationModel {
+                            Alias = "layoutStylesheet",
+                            Value = layoutStylesheet
+                        }
+                    ]
+                };
+                await CreateOrUpdateDataType(updateDataTypeRequestModel, current);
+
+                _existingDataTypes = [.. await dataTypeService.GetAllAsync()];
+                var updated = _existingDataTypes?.FirstOrDefault(d => d.Name != null && d.Name.Equals(_requiredBlockGridName));
+            }
         }
 
         #endregion
@@ -649,47 +898,50 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         #region block elements
         private void UpdateContentTypes()
         {
-            _allContentTypes = contentTypeService.GetAll()
-                .Where(t => t.Alias.StartsWith(Constants.Prefix));
+            _allContentTypes = [.. contentTypeService.GetAll().Where(t => t.Alias.StartsWith(Constants.Prefix))];
         }
+
         private async Task CreateBlockElements()
         {
-            CreateContentElementContainers();
+            CreateOrUpdateContentElementContainers();
 
             UpdateContentTypes();
 
-            var requiredExists = _allContentTypes.Select(t => t.Alias)
+            var requiredExists = _allContentTypes
+                .Select(t => t.Alias)
                 .Intersect(_requiredContentTypes)
-                .Count() == _requiredContentTypes.Length;
+                .Count() == _requiredContentTypes.Length + _needUpdateContentTypes.Length;
             var missingRequired = _requiredContentTypes
-                .Except(_allContentTypes.Select(t => t.Alias));
-            if (!_allContentTypes.Any() || !requiredExists)
+                .Except(_allContentTypes.Select(t => t.Alias))
+                .Concat(_needUpdateContentTypes);
+            if (_allContentTypes.Length == 0 || !requiredExists)
             {
-                foreach (var elemntTypeAlias in missingRequired)
+                foreach (var elementTypeAlias in missingRequired)
                 {
                     #region create new
                     #region Block Elements
                     var elementContainer = _blockContainers[BlockElementsName];
-                    await CreateHeadlineElementType(elemntTypeAlias, $"{Constants.Prefix}headline", elementContainer);
-                    await CreateParagraphElementType(elemntTypeAlias, $"{Constants.Prefix}paragraph", elementContainer);
-                    await CreatePictureWithCropElementType(elemntTypeAlias, $"{Constants.Prefix}pictureWithCrop", elementContainer);
+                    await CreateOrUpdateHeadlineElementType(elementTypeAlias, $"{Constants.Prefix}headline", elementContainer);
+                    await CreateOrUpdateParagraphElementType(elementTypeAlias, $"{Constants.Prefix}paragraph", elementContainer);
+                    await CreateOrUpdateCroppedPictureElementType(elementTypeAlias, $"{Constants.Prefix}croppedPicture", elementContainer);
                     #endregion
 
                     #region Block Layouts
                     elementContainer = _blockContainers[BlockLayoutsName];
                     for (var index = 1; index <= 4; index++)
                     {
-                        await CreateLayoutElementType(elemntTypeAlias, $"{Constants.Prefix}layout{index}", elementContainer, index);
+                        await CreateOrUpdateLayoutElementType(elementTypeAlias, $"{Constants.Prefix}layout{index}", elementContainer, index);
                     }
                     #endregion
 
                     #region Block Settings
                     elementContainer = _blockContainers[BlockSettingsName];
-                    await CreateHeadlineSettingsElementType(elemntTypeAlias, $"{Constants.Prefix}headlineSettings", elementContainer);
-                    await CreateParagraphSettingsElementType(elemntTypeAlias, $"{Constants.Prefix}paragraphSettings", elementContainer);
-                    await CreateRowSettingsElementType(elemntTypeAlias, $"{Constants.Prefix}rowSettings", elementContainer);
+                    await CreateOrUpdateHeadlineSettingsElementType(elementTypeAlias, $"{Constants.Prefix}headlineSettings", elementContainer);
+                    await CreateOrUpdateParagraphSettingsElementType(elementTypeAlias, $"{Constants.Prefix}paragraphSettings", elementContainer);
+                    await CreateOrUpdateRowSettingsElementType(elementTypeAlias, $"{Constants.Prefix}rowSettings", elementContainer);
 
                     #endregion
+
                     #endregion
                 }
             }
@@ -710,7 +962,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                         case "paragraph":
                             //properties: text
                             break;
-                        case "pictureWithCrop":
+                        //case "pictureWithCrop":
+                        //    //properties: mediaItem
+                        //    break;
+                        case "croppedPicture":
                             //properties: mediaItem
                             break;
                         default:
@@ -761,9 +1016,24 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 #endregion
                 #endregion
             }
+
+            #region Depricated
+            if (_depricatedContentTypes.Length > 0)
+            {
+                foreach (var elementTypeAlias in _depricatedContentTypes)
+                {
+                    var current = contentTypeService.Get(elementTypeAlias);
+                    if (current != null)
+                    {
+                        var elementContainer = _blockContainers[DepricatedElementsName];
+                        await CreateOrUpdatePictureWithCropElementType(elementTypeAlias, elementTypeAlias, elementContainer, current);
+                    }
+                }
+            }
+            #endregion
         }
 
-        private void CreateContentElementContainers()
+        private void CreateOrUpdateContentElementContainers()
         {
             Attempt<OperationResult<OperationResultType, EntityContainer>?> containerAttempt;
             var containerName = _contentElementsRootContainer;
@@ -781,11 +1051,21 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 throw new Exception($"{ErrorMsgPrefix} Could not create root content type folder.");
             }
 
-            foreach (var name in _level2ContainerNames)
+
+            var _containerNames = new List<string>(_level2ContainerNames);
+            if (_depricatedContentTypes.Length > 0)
+            {
+                _containerNames.Add(DepricatedElementsName);
+            }
+
+            foreach (var name in _containerNames)
             {
                 var container = contentTypeService.GetContainers(name, 2).FirstOrDefault();
                 if (container != null)
-                { continue; }
+                {
+                    _ = _blockContainers.TryAdd(name, container);
+                    continue;
+                }
 
                 containerAttempt = contentTypeService.CreateContainer(rootContainer.Id, Guid.NewGuid(), name);
                 if (containerAttempt.Success)
@@ -802,160 +1082,233 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             }
         }
 
-        private async Task CreateRowSettingsElementType(string elemntTypeAlias, string alias, EntityContainer elementContainer)
+        private async Task CreateOrUpdateRowSettingsElementType(string elementTypeAlias, string alias, EntityContainer elementContainer)
         {
-            if (elemntTypeAlias != alias)
+            if (elementTypeAlias != alias)
             { return; }
 
-            var type = new ContentType(shortStringHelper, elementContainer.Id)
+            var type = contentTypeService.Get(alias);
+            if (type != null)
             {
-                Alias = alias,
-                Name = "Row Settings",
-                Icon = "icon-settings color-red",
-                IsElement = true,
-                AllowedAsRoot = false,
-                Variations = ContentVariation.Nothing,
-            };
 
-            var ctAttempt = await contentTypeService.CreateAsync(type, _userKey);
-            if (ctAttempt.Success)
+            }
+            else
             {
-                var propertyDefinitions = new List<PropertyDefinition>()
+                type = new ContentType(shortStringHelper, elementContainer.Id)
                 {
-                    new ("Background Color", $"{Constants.Prefix}CustomerColors"),
-                    new ("Background Image", "Media Picker"),
-                    new ("Padding", "Textstring")
+                    Alias = alias,
+                    Name = "Row Settings",
+                    Icon = "icon-settings color-red",
+                    IsElement = true,
+                    AllowedAsRoot = false,
+                    Variations = ContentVariation.Nothing,
                 };
-                await CreateContentElementProperties(type, propertyDefinitions);
+
+                var ctAttempt = await contentTypeService.CreateAsync(type, _userKey);
+                if (ctAttempt.Success)
+                {
+                    var propertyDefinitions = new List<PropertyDefinition>()
+                {
+                    new ("Background Color", $"{Constants.Prefix}CustomerColors", 1),
+                    new ("Background Image", "Media Picker", 2),
+                    new ("Padding", "Textstring", 3)
+                };
+                    await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
+                }
             }
         }
 
-        private async Task CreateParagraphSettingsElementType(string elemntTypeAlias, string alias, EntityContainer elementContainer)
+        private async Task CreateOrUpdateParagraphSettingsElementType(string elementTypeAlias, string alias, EntityContainer elementContainer)
         {
-            if (elemntTypeAlias != alias)
+            if (elementTypeAlias != alias)
             { return; }
 
-            var type = new ContentType(shortStringHelper, elementContainer.Id)
+            var type = contentTypeService.Get(alias);
+            if (type != null)
             {
-                Alias = alias,
-                Name = "Paragraph Settings",
-                Icon = "icon-settings color-red",
-                IsElement = true,
-                AllowedAsRoot = false,
-                Variations = ContentVariation.Nothing,
-            };
 
-            var ctAttempt = await contentTypeService.CreateAsync(type, _userKey);
-            if (ctAttempt.Success)
+            }
+            else
             {
-                var propertyDefinitions = new List<PropertyDefinition>()
+                type = new ContentType(shortStringHelper, elementContainer.Id)
                 {
-                    new ("Color", $"{Constants.Prefix}CustomerColors")
+                    Alias = alias,
+                    Name = "Paragraph Settings",
+                    Icon = "icon-settings color-red",
+                    IsElement = true,
+                    AllowedAsRoot = false,
+                    Variations = ContentVariation.Nothing,
                 };
-                await CreateContentElementProperties(type, propertyDefinitions);
+
+                var ctAttempt = await contentTypeService.CreateAsync(type, _userKey);
+                if (ctAttempt.Success)
+                {
+                    var propertyDefinitions = new List<PropertyDefinition>()
+                {
+                    new ("Color", $"{Constants.Prefix}CustomerColors", 1)
+                };
+                    await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
+                }
             }
         }
 
-        private async Task CreateHeadlineSettingsElementType(string elemntTypeAlias, string alias, EntityContainer elementContainer)
+        private async Task CreateOrUpdateHeadlineSettingsElementType(string elementTypeAlias, string alias, EntityContainer elementContainer)
         {
-            if (elemntTypeAlias != alias)
+            if (elementTypeAlias != alias)
             { return; }
 
-            var type = new ContentType(shortStringHelper, elementContainer.Id)
+            var type = contentTypeService.Get(alias);
+            if (type != null)
             {
-                Alias = alias,
-                Name = "Headline Settings",
-                Icon = "icon-heading-1 color-red",
-                IsElement = true,
-                AllowedAsRoot = false,
-                Variations = ContentVariation.Nothing,
-            };
 
-            var ctAttempt = await contentTypeService.CreateAsync(type, _userKey);
-            if (ctAttempt.Success)
+            }
+            else
             {
-                var propertyDefinitions = new List<PropertyDefinition>()
+                type = new ContentType(shortStringHelper, elementContainer.Id)
                 {
-                    new ("Color", $"{Constants.Prefix}CustomerColors"),
-                    new ("Margin", "Textstring"),
-                    new ("Size", $"{Constants.Prefix}HeadlineSizes")
+                    Alias = alias,
+                    Name = "Headline Settings",
+                    Icon = "icon-heading-1 color-red",
+                    IsElement = true,
+                    AllowedAsRoot = false,
+                    Variations = ContentVariation.Nothing,
                 };
-                await CreateContentElementProperties(type, propertyDefinitions);
+
+                var ctAttempt = await contentTypeService.CreateAsync(type, _userKey);
+                if (ctAttempt.Success)
+                {
+                    var propertyDefinitions = new List<PropertyDefinition>()
+                {
+                    new ("Color", $"{Constants.Prefix}CustomerColors", 1),
+                    new ("Margin", "Textstring", 2),
+                    new ("Size", $"{Constants.Prefix}HeadlineSizes", 3)
+                };
+                    await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
+                }
             }
         }
 
-        private async Task CreateLayoutElementType(string elemntTypeAlias, string alias, EntityContainer elementContainer, int index)
+        private async Task CreateOrUpdateLayoutElementType(string elementTypeAlias, string alias, EntityContainer elementContainer, int index)
         {
-            if (elemntTypeAlias != alias)
+            if (elementTypeAlias != alias)
             { return; }
 
             var iconColor = "color-light-blue";
-            var type = new ContentType(shortStringHelper, elementContainer.Id)
+            var type = contentTypeService.Get(alias);
+            if (type != null)
             {
-                Alias = alias,
-                Name = "?",
-                Icon = $"icon-layout {iconColor}",
-                IsElement = true,
-                AllowedAsRoot = false,
-                Variations = ContentVariation.Nothing,
-            };
-            switch (index)
-            {
-                case 1:
-                    type.Name = "Full Row";
-                    type.Icon = $"icon-fullscreen {iconColor}";
-                    break;
-                case 2:
-                    type.Name = "Two Column Row";
-                    type.Icon = $"icon-table {iconColor}";
-                    break;
-                case 3:
-                    type.Name = "Article";
-                    type.Icon = $"icon-article {iconColor}";
-                    break;
-                default:
-                    var layoutIndex = alias.Replace($"{Constants.Prefix}layout", string.Empty);
-                    type.Name = $"Layout {layoutIndex}";
-                    type.Icon = $"icon-layout {iconColor}";
-                    break;
-            }
 
-            var ctAttempt = await contentTypeService.CreateAsync(type, _userKey);
-            if (!ctAttempt.Success)
+            }
+            else
             {
-                throw new Exception($"{ErrorMsgPrefix} Could not create content type {type.Name} [{alias}].");
+                type = new ContentType(shortStringHelper, elementContainer.Id)
+                {
+                    Alias = alias,
+                    Name = "?",
+                    Icon = $"icon-layout {iconColor}",
+                    IsElement = true,
+                    AllowedAsRoot = false,
+                    Variations = ContentVariation.Nothing,
+                };
+                switch (index)
+                {
+                    case 1:
+                        type.Name = "Full Row";
+                        type.Icon = $"icon-fullscreen {iconColor}";
+                        break;
+                    case 2:
+                        type.Name = "Two Column Row";
+                        type.Icon = $"icon-table {iconColor}";
+                        break;
+                    case 3:
+                        type.Name = "Article";
+                        type.Icon = $"icon-article {iconColor}";
+                        break;
+                    default:
+                        var layoutIndex = alias.Replace($"{Constants.Prefix}layout", string.Empty);
+                        type.Name = $"Layout {layoutIndex}";
+                        type.Icon = $"icon-layout {iconColor}";
+                        break;
+                }
+
+                var ctAttempt = await contentTypeService.CreateAsync(type, _userKey);
+                if (!ctAttempt.Success)
+                {
+                    throw new Exception($"{ErrorMsgPrefix} Could not create content type {type.Name} [{alias}].");
+                }
             }
         }
 
-        private async Task CreateParagraphElementType(string elemntTypeAlias, string alias, EntityContainer elementContainer)
+        private async Task CreateOrUpdateParagraphElementType(string elementTypeAlias, string alias, EntityContainer elementContainer)
         {
-            if (elemntTypeAlias != alias)
+            if (elementTypeAlias != alias)
             { return; }
 
-            var type = new ContentType(shortStringHelper, elementContainer.Id)
+            var type = contentTypeService.Get(alias);
+            if (type == null)
             {
-                Alias = alias,
-                Name = "Paragraph",
-                Icon = "icon-document-html",
-                IsElement = true,
-                AllowedAsRoot = false,
-                Variations = ContentVariation.CultureAndSegment,
-            };
-
-            var ctAttempt = await contentTypeService.CreateAsync(type, _userKey);
-            if (ctAttempt.Success)
-            {
-                var propertyDefinitions = new List<PropertyDefinition>()
+                type = new ContentType(shortStringHelper, elementContainer.Id)
                 {
-                    new ("Text", $"{Constants.Prefix}ParagaphRTE")
+                    Alias = alias,
+                    Name = "Paragraph",
+                    Icon = "icon-document-html",
+                    IsElement = true,
+                    AllowedAsRoot = false,
+                    Variations = ContentVariation.CultureAndSegment,
                 };
-                await CreateContentElementProperties(type, propertyDefinitions);
+
+                var ctAttempt = await contentTypeService.CreateAsync(type, _userKey);
+                if (!ctAttempt.Success)
+                {
+                    throw new Exception($"{type.Name} [{alias}] creation failed.");
+                }
             }
+            var propertyDefinitions = new List<PropertyDefinition>()
+            {
+                new ("Text", $"{Constants.Prefix}ParagaphRTE",1, variations: ContentVariation.Culture)
+            };
+            await CreateOrUpdateContentElementProperties(type, propertyDefinitions);            
         }
 
-        private async Task CreatePictureWithCropElementType(string elemntTypeAlias, string alias, EntityContainer elementContainer)
+        private async Task CreateOrUpdateCroppedPictureElementType(string elementTypeAlias, string alias, EntityContainer elementContainer)
         {
-            if (elemntTypeAlias != alias)
+            if (elementTypeAlias != alias)
+            { return; }
+
+            var type = contentTypeService.Get(alias);
+            if (type == null)
+            {
+                type = new ContentType(shortStringHelper, elementContainer.Id)
+                {
+                    Alias = alias,
+                    Name = "Cropped Picture",
+                    Icon = "icon-document-image",
+                    IsElement = true,
+                    AllowedAsRoot = false,
+                    Variations = ContentVariation.CultureAndSegment,
+                };
+                var ctAttempt = await contentTypeService.CreateAsync(type, _userKey);
+                if (!ctAttempt.Success)
+                {
+                    throw new Exception($"{type.Name} [{alias}] creation failed.");
+                }
+            }
+
+            var propertyDefinitions = new List<PropertyDefinition>()
+            {
+                new ("Media Item", $"{Constants.Prefix}ImageAndCropPicker", 1),
+                new ("Alternative Text", "Textstring", 2, variations : ContentVariation.Culture),
+                new ("Fig Caption", "Textstring", 3, variations : ContentVariation.Culture),
+                new ("Caption Color", $"{Constants.Prefix}CustomerColors", 5)
+            };
+
+            await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
+
+        }
+
+        private async Task CreateOrUpdatePictureWithCropElementType(string elementTypeAlias, string alias, EntityContainer elementContainer, IContentType? current)
+        {
+            if (elementTypeAlias != alias)
             { return; }
 
             var type = new ContentType(shortStringHelper, elementContainer.Id)
@@ -967,53 +1320,72 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 AllowedAsRoot = false,
                 Variations = ContentVariation.CultureAndSegment,
             };
-
-            var ctAttempt = await contentTypeService.CreateAsync(type, _userKey);
-            if (ctAttempt.Success)
+            var propertyDefinitions = new List<PropertyDefinition>()
             {
-                var propertyDefinitions = new List<PropertyDefinition>()
-                {
-                    new ("Media Item", $"{Constants.Prefix}ImageMediaPicker"),
-                    new ("Alternative Text", "Textstring"),
-                    new ("Crop Alias", $"{Constants.Prefix}CropNames"),
-                    new ("Fig Caption", "Textstring"),
-                    new ("Crop Alias", $"{Constants.Prefix}CropNames"),
-                    new ("Caption Color", $"{Constants.Prefix}CustomerColors")
-                };
-                await CreateContentElementProperties(type, propertyDefinitions);
-            }
-        }
-
-        private async Task CreateHeadlineElementType(string elemntTypeAlias, string alias, EntityContainer elementContainer)
-        {
-            if (elemntTypeAlias != alias)
-            { return; }
-
-            var type = new ContentType(shortStringHelper, elementContainer.Id)
-            {
-                Alias = alias,
-                Name = "Headline",
-                Icon = "icon-heading-1",
-                IsElement = true,
-                AllowedAsRoot = false,
-                Variations = ContentVariation.CultureAndSegment,
+                new ("Media Item", $"{Constants.Prefix}ImageMediaPicker", 1),
+                new ("Alternative Text", "Textstring", 2, variations: ContentVariation.Culture),
+                new ("Fig Caption", "Textstring", 3, variations: ContentVariation.Culture),
+                new ("Crop Alias", $"{Constants.Prefix}CropNames", 4),
+                new ("Caption Color", $"{Constants.Prefix}CustomerColors", 5)
             };
 
-            var ctAttempt = await contentTypeService.CreateAsync(type, _userKey);
-            if (ctAttempt.Success)
+            Attempt<ContentTypeOperationStatus> ctAttempt;
+            if (current == null)
             {
-                var propertyDefinitions = new List<PropertyDefinition>()
+                ctAttempt = await contentTypeService.CreateAsync(type, _userKey);
+                if (ctAttempt.Success)
                 {
-                    new ("Text", $"{Constants.Prefix}LimitedHeadline", "The text of the headline")
-                };
-                await CreateContentElementProperties(type, propertyDefinitions);
+                    await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
+                }
+            }
+            else
+            {
+                current.SetParent(elementContainer);
+                ctAttempt = await contentTypeService.UpdateAsync(current, _userKey);
+                if (!ctAttempt.Success)
+                {
+                    logger.LogWarning("Content type {alias} could not be updated", alias);
+                }
             }
         }
 
-        private async Task CreateContentElementProperties(ContentType type, IEnumerable<PropertyDefinition> propertyDefinitions)
+        private async Task CreateOrUpdateHeadlineElementType(string elementTypeAlias, string alias, EntityContainer elementContainer)
         {
+            if (elementTypeAlias != alias)
+            { return; }
+
+            var type = contentTypeService.Get(alias);
+            if (type == null)
+            {
+                type = new ContentType(shortStringHelper, elementContainer.Id)
+                {
+                    Alias = alias,
+                    Name = "Headline",
+                    Icon = "icon-heading-1",
+                    IsElement = true,
+                    AllowedAsRoot = false,
+                    Variations = ContentVariation.CultureAndSegment,
+                };
+
+                var ctAttempt = await contentTypeService.CreateAsync(type, _userKey);
+                if (!ctAttempt.Success)
+                {
+                    throw new Exception($"{type.Name} [{alias}] creation failed.");
+                }
+            }
+            var propertyDefinitions = new List<PropertyDefinition>()
+            {
+                new ("Text", $"{Constants.Prefix}LimitedHeadline", 1, "The text of the headline", ContentVariation.Culture)
+            };
+            await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
+        }
+
+        private async Task CreateOrUpdateContentElementProperties(IContentType type, IEnumerable<PropertyDefinition> propertyDefinitions)
+        {
+            if (type == null)
+            { return; }
+
             var propItems = new List<PropertyType>();
-            var sortOrder = 0;
             IDataType dt;
             foreach (var definition in propertyDefinitions)
             {
@@ -1026,31 +1398,107 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                         Name = definition.Name,
                         Description = definition.Description,
                         Mandatory = false,
-                        SortOrder = sortOrder,
-                        DataTypeId = dt.Id
+                        SortOrder = definition.SortOrder,
+                        DataTypeId = dt.Id,
+                        Variations = definition.Variations
                     });
-                sortOrder++;
             }
 
-            await AddProperties(type, propItems, "Content");
+            await AddOrUpdateProperties(type, propItems, "Content");
         }
 
-        private async Task AddProperties(ContentType type, IEnumerable<PropertyType> propItems, string groupName, int groupSortOrder = 1)
+        private async Task UpdateContentElementProperties(IContentType type, IEnumerable<PropertyDefinition> propertyUpdateDefinitions)
         {
-            var propertyCollection = new PropertyTypeCollection(true, propItems);
-            type.PropertyGroups.Add(new PropertyGroup(isPublishing: true)
+            if (type == null)
+            { return; }
+
+            var typeProperties = type.PropertyTypes;
+            var removedPropertyAlias = typeProperties
+                .Where(p => !propertyUpdateDefinitions.Any(d => d.Name.InvariantEquals(p.Name)))
+                .Select(p => p.Alias);
+            var addedProperties = propertyUpdateDefinitions
+                .Where(d => !typeProperties.Any(p => d.Name.InvariantEquals(p.Name)));
+            var updateProperties = propertyUpdateDefinitions
+                .Where(d => typeProperties.Any(p => d.Name.InvariantEquals(p.Name)));
+
+            #region add
+            if (addedProperties.Any())
             {
-                Alias = groupName.ToLower(),
-                Name = groupName,
-                SortOrder = groupSortOrder,
-                PropertyTypes = propertyCollection
-            });
+                var propItems = new List<PropertyType>();
+                IDataType dt;
+                foreach (var definition in addedProperties)
+                {
+                    dt = await dataTypeService.GetAsync(definition.DataTypeName)
+                        ?? throw new Exception($"{_errorMsgDataTypeNotFoundStart} {definition.DataTypeName}");
+                    propItems.Add(
+                        new(shortStringHelper, dt)
+                        {
+                            Alias = definition.Name.ToFirstLower().Replace(" ", string.Empty),
+                            Name = definition.Name,
+                            Description = definition.Description,
+                            Mandatory = false,
+                            SortOrder = definition.SortOrder,
+                            DataTypeId = dt.Id,
+                            Variations = definition.Variations
+                        });
+                }
+                if (propItems.Count != 0)
+                { await AddOrUpdateProperties(type, propItems, "Content", updateType: false); }
+            }
+            #endregion
+
+            #region remove
+            foreach (var alias in removedPropertyAlias)
+            {
+                type.RemovePropertyType(alias);
+            }
+            #endregion
+
+            #region update
+            foreach (var definition in updateProperties)
+            {
+                var prop = typeProperties.FirstOrDefault(p => p.Name.InvariantEquals(definition.Name));
+                if (prop != null)
+                {
+                    prop.Name = definition.Name;
+                    prop.Description = definition.Description;
+                    prop.SortOrder = definition.SortOrder;
+                }
+            }
+            #endregion
+
             var attempt = await contentTypeService.UpdateAsync(type, _userKey);
             if (!attempt.Success)
             {
                 throw new Exception($"{_errorMsgUpdateContentTypeStart} {type.Name}.");
             }
         }
+
+        private async Task AddOrUpdateProperties(IContentType type, IEnumerable<PropertyType> propItems, string groupName, int groupSortOrder = 1, bool updateType = true)
+        {
+            var propertyCollection = new PropertyTypeCollection(true, propItems);
+            var group = new PropertyGroup(isPublishing: true)
+            {
+                Alias = groupName.ToLower(),
+                Name = groupName,
+                SortOrder = groupSortOrder,
+                PropertyTypes = propertyCollection
+            };
+            if (!type.PropertyGroups.Contains(group))
+            {
+                type.PropertyGroups.Add(group);
+            }
+
+            if (updateType)
+            {
+                var attempt = await contentTypeService.UpdateAsync(type, _userKey);
+                if (!attempt.Success)
+                {
+                    throw new Exception($"{_errorMsgUpdateContentTypeStart} {type.Name}.");
+                }
+            }
+        }
+
         private async Task SwitchPartialViews(bool restoreOriginal = false)
         {
             var allPartialViews = await partialViewService.GetAllAsync();
@@ -1066,7 +1514,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
             var updateModel = new PartialViewRenameModel
             {
-                Name = $"{(restoreOriginal ? "": prefix)}items.cshtml"
+                Name = $"{(restoreOriginal ? "" : prefix)}items.cshtml"
             };
             var attempt = await partialViewService.RenameAsync(itemsPartialViews.Path, updateModel, _userKey);
             if (!attempt.Success)
@@ -1081,45 +1529,50 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         #region uninstall
         public async Task Uninstall()
         {
-            var errorStart = "Error during uninstallation of WYSIWG Umbraco Community Extensions:";
+            if (_isInstalling || _isUninstalling)
+            { return; }
 
-            await DeleteContentElementTypes(errorStart);
+            _isUninstalling = true;
 
-            DeleteContentTypeContainers(errorStart);
-
-            await DeleteDataTypes(errorStart);
-
-            await DeleteDataTypeContainer(errorStart);
-
-            await RecoverPartialViews();
-        }
-
-        private async Task DeleteDataTypeContainer(string errorStart)
-        {
-            EntityContainer? container = dataTypeContainerService
-                .GetAllAsync()
-                .Result
-                .FirstOrDefault(c => c.Name != null && c.Name.InvariantEquals(_dtContainerName));
-            if (container != null)
+            try
             {
-                var dtcAttempt = await dataTypeContainerService.DeleteAsync(container.Key, _userKey);
-                if (!dtcAttempt.Success)
-                {
-                    throw new Exception($"{errorStart} Could not delete data type container.");
-                }
+                var errorStart = "Error during uninstallation of WYSIWG Umbraco Community Extensions:";
+
+                await DeleteContentElementTypes(errorStart);
+
+                DeleteContentTypeContainers(errorStart);
+
+                await DeleteDataTypes(errorStart);
+
+                await DeleteDataTypeContainer(errorStart);
+
+                await RecoverPartialViews();
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                _dataTypeContainer = null;
+                _isUninstalling = false;
             }
         }
 
-        private async Task DeleteDataTypes(string errorStart)
+        private async Task DeleteContentElementTypes(string errorStart)
         {
-            var existingDataTypes = (await GetAllWysiwgDataTypes())?
-                            .Where(d => d.Name != null && d.Name.StartsWith(Constants.Prefix));
-            foreach (var dt in existingDataTypes ?? [])
+            var allContentTypes = contentTypeService.GetAll()
+                .Where(t => t.Alias.StartsWith(Constants.Prefix));
+
+            foreach (var type in allContentTypes ?? [])
             {
-                var result = await dataTypeService.DeleteAsync(dt.Key, _userKey);
-                if (!result.Success)
+                if (type == null)
+                { continue; }
+
+                var result = await contentTypeService.DeleteAsync(type.Key, _userKey);
+                if (result != ContentTypeOperationStatus.Success)
                 {
-                    throw new Exception($"{errorStart} Could not delete data type: {dt.Name}");
+                    throw new Exception($"{errorStart} Could not delete content type:  {type.Name}");
                 }
             }
         }
@@ -1128,7 +1581,13 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         {
             Attempt<OperationResult?> attempt;
             EntityContainer? container;
-            foreach (var name in _level2ContainerNames)
+
+            var _containerNames = new List<string>(_level2ContainerNames)
+            {
+                DepricatedElementsName
+            };
+
+            foreach (var name in _containerNames)
             {
                 container = contentTypeService.GetContainers(name, 2).FirstOrDefault();
                 if (container != null)
@@ -1156,20 +1615,32 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             }
         }
 
-        private async Task DeleteContentElementTypes(string errorStart)
+        private async Task DeleteDataTypes(string errorStart)
         {
-            var allContentTypes = contentTypeService.GetAll()
-                            .Where(t => t.Alias.StartsWith(Constants.Prefix));
-
-            foreach (var type in allContentTypes ?? [])
+            var existingDataTypes = (await GetAllWysiwgDataTypes())?
+                            .Where(d => d.Name != null && d.Name.StartsWith(Constants.Prefix));
+            foreach (var dt in existingDataTypes ?? [])
             {
-                if (type == null)
-                { continue; }
-
-                var result = await contentTypeService.DeleteAsync(type.Key, _userKey);
-                if (result != ContentTypeOperationStatus.Success)
+                var result = await dataTypeService.DeleteAsync(dt.Key, _userKey);
+                if (!result.Success)
                 {
-                    throw new Exception($"{errorStart} Could not delete content type:  {type.Name}");
+                    throw new Exception($"{errorStart} Could not delete data type: {dt.Name}");
+                }
+            }
+        }
+
+        private async Task DeleteDataTypeContainer(string errorStart)
+        {
+            EntityContainer? container = dataTypeContainerService
+                .GetAllAsync()
+                .Result
+                .FirstOrDefault(c => c.Name != null && c.Name.InvariantEquals(_dtContainerName));
+            if (container != null)
+            {
+                var dtcAttempt = await dataTypeContainerService.DeleteAsync(container.Key, _userKey);
+                if (!dtcAttempt.Success)
+                {
+                    throw new Exception($"{errorStart} Could not delete data type container.");
                 }
             }
         }
