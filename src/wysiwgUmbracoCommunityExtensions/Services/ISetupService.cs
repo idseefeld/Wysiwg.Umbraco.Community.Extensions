@@ -4,5 +4,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
     {
         public Task Install(bool resetExisting);
         public Task Uninstall();
+        public Task<VersionStatus> GetVersionStatus();
+        public Task<int> GetVersionStatusCode();
     }
 }

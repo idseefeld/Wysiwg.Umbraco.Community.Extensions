@@ -1,0 +1,29 @@
+@using Umbraco.Cms.Core.Models.Blocks
+@using Umbraco.Extensions
+@using WysiwgUmbracoCommunityExtensions.ViewModels
+@model BlockListItem
+@{
+    var content = new Wysiwg65_pictureWithCrop(Model.Content);
+    if (content?.MediaItem == null) return;
+
+    var src = content.MediaItem.GetCropUrl(width: 400, cropAlias: content.CropAlias);
+}
+<figure>
+    <img id="@content.MediaItem.Id" src="@src" alt="@content.AlternativeText" />
+
+    @if (!string.IsNullOrEmpty(content.FigCaption))
+    {
+        if (!string.IsNullOrEmpty(content.CaptionColor?.Color))
+        {
+            <figcaption style="color: @(content.CaptionColor?.Color ?? "#000")">
+                @content.FigCaption
+            </figcaption>
+        }
+        else
+        {
+            <figcaption>
+                @content.FigCaption
+            </figcaption>
+        }
+    }
+</figure>

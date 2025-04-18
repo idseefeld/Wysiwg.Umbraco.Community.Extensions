@@ -1,6 +1,7 @@
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Extensions;
+using WysiwgUmbracoCommunityExtensions.Models;
 using static Umbraco.Cms.Core.PropertyEditors.ValueConverters.ColorPickerValueConverter;
 
 namespace WysiwgUmbracoCommunityExtensions.ViewModels

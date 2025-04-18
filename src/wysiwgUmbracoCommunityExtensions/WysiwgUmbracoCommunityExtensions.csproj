@@ -19,9 +19,9 @@
     <RepositoryUrl>https://github.com/idseefeld/Wysiwg.Umbraco.Community.Extensions</RepositoryUrl>
     <PackageReadmeFile>README_nuget.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>logo.png</PackageIcon>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
   
   <ItemGroup>
@@ -29,7 +29,6 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-    <None Include="compilerconfig.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,17 +36,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Umbraco.Cms.Web.Website" Version="15.3.0" />
-    <PackageReference Include="Umbraco.Cms.Web.Common" Version="15.3.0" />
-    <PackageReference Include="Umbraco.Cms.Api.Common" Version="15.3.0" />
-    <PackageReference Include="Umbraco.Cms.Api.Management" Version="15.3.0" />
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="15.3.1" />
+    <PackageReference Include="Umbraco.Cms.Web.Common" Version="15.3.1" />
+    <PackageReference Include="Umbraco.Cms.Api.Common" Version="15.3.1" />
+    <PackageReference Include="Umbraco.Cms.Api.Management" Version="15.3.1" />
   </ItemGroup>
   
   <ItemGroup>
     <!-- Dont include the client folder as part of packaging nuget build -->
     <Content Remove="Wysiwg\**" />
+    <Compile Remove="Models\CropModel.cs" />
+    <Compile Remove="Models\ImageCropperCropExtended.cs" />
     <Content Remove="compilerconfig.json" />
-    <None Remove="pack.cmd" />
+    <Content Remove="Views\Partials\blockgrid\area.cshtml" />
+    <Content Remove="Views\Partials\blockgrid\default.cshtml" />
+    <None Remove="manually-pack.cmd" />
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
 
     <!-- However make the Umbraco-package.json included for dotnet pack or nuget package and visible to the solution -->
     <None Include="Wysiwg\public\umbraco-package.json" Pack="false" />

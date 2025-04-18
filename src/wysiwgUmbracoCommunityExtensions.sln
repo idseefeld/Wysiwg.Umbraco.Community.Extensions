@@ -25,7 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "screenshots", "screenshots"
 		..\docs\screenshots\blockgrid-css.jpg = ..\docs\screenshots\blockgrid-css.jpg
 		..\docs\screenshots\BOvsFrontend.jpg = ..\docs\screenshots\BOvsFrontend.jpg
 		..\docs\screenshots\doc-data-types.jpg = ..\docs\screenshots\doc-data-types.jpg
-		..\docs\screenshots\swagger-install.jpg = ..\docs\screenshots\swagger-install.jpg
+		..\docs\screenshots\wysiwg-dashboard.jpg = ..\docs\screenshots\wysiwg-dashboard.jpg
 	EndProjectSection
 EndProject
 Global

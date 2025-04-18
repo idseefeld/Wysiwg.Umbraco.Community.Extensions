@@ -151,7 +151,7 @@ export class WysiwgBlockLayoutView
   }
 
   override render() {
-    return html`<umb-ref-grid-block
+    return html`<umb-ref-grid-block class="wysiwg"
       standalone
       href=${(this.config?.showContentEdit
         ? this.config?.editContentPath
@@ -168,8 +168,8 @@ export class WysiwgBlockLayoutView
         ? html`<uui-tag
             slot="name"
             look="secondary"
-            title=${this.localize.term("blockEditor_notExposedDescription")}
-            ><umb-localize key="blockEditor_notExposedLabel"></umb-localize
+            title=${this.localize.term("wysiwg_notExposedDescription")}
+            ><umb-localize key="wysiwg_notExposedLabel"></umb-localize
           ></uui-tag>`
         : nothing}
       <umb-block-grid-areas-container
@@ -184,7 +184,6 @@ export class WysiwgBlockLayoutView
     css`
       :host {
         display: flex;
-        max-width: 1172px;
         height: 100%;
         box-sizing: border-box;
       }

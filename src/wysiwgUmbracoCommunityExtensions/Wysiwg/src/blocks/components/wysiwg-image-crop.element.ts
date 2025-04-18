@@ -9,7 +9,8 @@ import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
 import { UmbTextStyles } from "@umbraco-cms/backoffice/style";
 import { CropUrlData, WysiwgUmbracoCommunityExtensionsService } from "../..";
 
-@customElement("wysiwg-image-crop")
+const elementName = "wysiwg-image-crop";
+@customElement(elementName)
 export class WysiwgBlocksImageCropElement extends UmbLitElement {
   //#region Properties
 
@@ -211,6 +212,6 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "wysiwg-image-crop": WysiwgBlocksImageCropElement;
+    [elementName]: WysiwgBlocksImageCropElement;
   }
 }

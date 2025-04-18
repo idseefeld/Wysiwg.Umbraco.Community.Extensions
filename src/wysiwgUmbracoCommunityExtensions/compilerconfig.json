@@ -1,6 +1,6 @@
-[
+﻿[
   {
-    "outputFile": "wwwroot/styles/wysiwgblockgrid.css",
-    "inputFile": "wwwroot/styles/wysiwgblockgrid.scss"
+    "outputFile": "assets/styles/customblockgrid.css",
+    "inputFile": "assets/styles/customblockgrid.scss"
   }
 ]

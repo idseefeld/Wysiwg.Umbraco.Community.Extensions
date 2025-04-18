@@ -27,7 +27,7 @@ export type CropModel = {
 	};
 };
 
-export interface FocalPointModel {
+export type FocalPointModel = {
 	left: number;
 	top: number;
 }
