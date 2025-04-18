@@ -19,9 +19,9 @@
     <RepositoryUrl>https://github.com/idseefeld/Wysiwg.Umbraco.Community.Extensions</RepositoryUrl>
     <PackageReadmeFile>README_nuget.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>logo.png</PackageIcon>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
   
   <ItemGroup>
@@ -51,6 +51,10 @@
     <Content Remove="Views\Partials\blockgrid\area.cshtml" />
     <Content Remove="Views\Partials\blockgrid\default.cshtml" />
     <None Remove="manually-pack.cmd" />
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
 
     <!-- However make the Umbraco-package.json included for dotnet pack or nuget package and visible to the solution -->
     <None Include="Wysiwg\public\umbraco-package.json" Pack="false" />
