@@ -54,7 +54,12 @@
     <Content Remove="compilerconfig.json" />
     <Content Remove="Views\Partials\blockgrid\area.cshtml" />
     <Content Remove="Views\Partials\blockgrid\default.cshtml" />
+    <None Remove="assets\styles\_custom-base.scss" />
     <None Remove="manually-pack.cmd" />
+    <Content Include="assets\styles\_custom-base.scss">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
 
     <!-- However make the Umbraco-package.json included for dotnet pack or nuget package and visible to the solution -->
     <None Include="Wysiwg\public\umbraco-package.json" Pack="false" />
@@ -68,7 +73,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Folder Include="assets\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

@@ -22,6 +22,10 @@ body, html {
     display: flex;
     max-width: 1172px;
 
+    h1, h2, h3 {
+      margin: 0;
+    }
+
     h1 {
       font-size: var(--wysiwg-headline-1-font-size, 32px);
       line-height: var(--wysiwg-headline-1-line-height, 1.2em);
