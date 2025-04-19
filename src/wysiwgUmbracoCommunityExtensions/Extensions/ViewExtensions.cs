@@ -5,6 +5,7 @@ using Umbraco.Cms.Core.Strings;
 using Umbraco.Extensions;
 using WysiwgUmbracoCommunityExtensions.Models;
 using WysiwgUmbracoCommunityExtensions.ViewModels;
+using static Umbraco.Cms.Core.PropertyEditors.ValueConverters.ColorPickerValueConverter;
 
 namespace WysiwgUmbracoCommunityExtensions.Extensions
 {
@@ -16,29 +17,31 @@ namespace WysiwgUmbracoCommunityExtensions.Extensions
             if (rowSettings == null)
             { return null; }
 
-            var backgroundColor = rowSettings.BackgroundColor;
-            var row = new Row
+            string? colorStyle = null;
+            string? imageStyle = null;
+            string? paddingStyle = null;
+
+            if (rowSettings.BackgroundColor is PickedColor color && !string.IsNullOrWhiteSpace(color.Color))
             {
-                BackgroundColor = backgroundColor,
-                BackgroundImageSrc = rowSettings.BackgroundImage?.MediaUrl(),
-                Padding = rowSettings.Padding
-            };
-            var style = new StringBuilder();
-            var pickedColor = row.BackgroundColor;
-            if (!string.IsNullOrWhiteSpace(pickedColor?.Color) && !pickedColor.Color.InvariantEquals("#fff")
-                && (string.IsNullOrWhiteSpace(pickedColor?.Label) || !pickedColor.Label.InvariantEquals("transparent")))
-            {
-                _ = style.Append($"background-color: {pickedColor?.Color};");
+                // work-a-round for missing tranparent definition in default ColorPicker data type
+                var isTransparent = color.Color.InvariantEquals("#fff")
+                        || (!string.IsNullOrWhiteSpace(color.Label)
+                            && rowSettings.BackgroundColor.Label.InvariantEquals("transparent"));
+
+                if (!isTransparent)
+                { colorStyle = $"background-color: {color.Color};"; }
             }
-            if (!string.IsNullOrWhiteSpace(row.BackgroundImageSrc))
-            {
-                _ = style.Append($"background-image: url('{row.BackgroundImageSrc}');");
-            }
-            if (!string.IsNullOrWhiteSpace(row.Padding))
-            {
-                _ = style.Append($"padding: {row.Padding};");
-            }
-            return style.ToString();
+
+            var src = rowSettings.BackgroundImage?.MediaUrl();
+            if (!string.IsNullOrWhiteSpace(src))
+            { imageStyle = $"background-image: url('{src}');"; }
+
+            var padding = string.IsNullOrEmpty(rowSettings.Padding) && (colorStyle != null || imageStyle != null)
+                ? "10px" : rowSettings.Padding;
+            if (!string.IsNullOrEmpty(padding))
+            { paddingStyle = $"padding: {padding};"; }
+
+            return $"{paddingStyle}{colorStyle}{imageStyle}";
         }
 
         public static HtmlString GetHtml(this IHtmlEncodedString text)

@@ -10,6 +10,12 @@
     var pageTitle = string.IsNullOrEmpty(Model.MetaTitle) ? Model.Name : Model.MetaTitle;
     var root = Model.AncestorsOrSelf<RootPage>()?.FirstOrDefault();
     string siteName = root?.SiteName ?? authority ?? "?";
+
+    string pageBackgroundColor = "inherit";
+    if (Model is IPageSettings pageSettings)
+    {
+        pageBackgroundColor = pageSettings.PageBackgroundColor ?? pageBackgroundColor;
+    }
 }
 <!DOCTYPE html>
 <html>
@@ -24,6 +30,12 @@
 
     <link href="~/styles/customblockgrid.min.css?v=@v" rel="stylesheet" />
     <link href="~/styles/customer.min.css?v=@v" rel="stylesheet" />
+
+    <style>
+        #canvas {
+            background: @pageBackgroundColor;
+        }
+    </style>
 </head>
 <body id="top" class="uui-font">
 

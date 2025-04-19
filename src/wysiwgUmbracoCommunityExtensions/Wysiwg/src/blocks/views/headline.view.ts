@@ -13,7 +13,7 @@ import type {
   UmbBlockDataModel,
   UmbBlockDataType,
 } from "@umbraco-cms/backoffice/block";
-import type { UmbBlockEditorCustomViewElement } from "@umbraco-cms/backoffice/block-custom-view";
+import type { UmbBlockEditorCustomViewConfiguration, UmbBlockEditorCustomViewElement } from "@umbraco-cms/backoffice/block-custom-view";
 import {
   UMB_PROPERTY_DATASET_CONTEXT,
   UmbPropertyDatasetContext,
@@ -31,6 +31,9 @@ export class WysiwgBlockHeadlineView
 
   @property({ attribute: false })
   content?: UmbBlockDataType;
+
+  @property({ attribute: false })
+  config?: UmbBlockEditorCustomViewConfiguration;
 
   @property({ attribute: false })
   settings?: UmbBlockDataType;
@@ -54,10 +57,35 @@ export class WysiwgBlockHeadlineView
       async (properties) => {
         const pageProperties = properties as Array<UmbPropertyValueDataPotentiallyWithEditorAlias>;
         if (pageProperties?.length) {
-          const valueValue = pageProperties.find((v) => v.editorAlias === "Umbraco.BlockGrid")// && v.alias === "main")
-            ?.value as UmbBlockGridValueModel;
-          this.datasetSettings = valueValue.settingsData;
+          const allGridValues = pageProperties
+            .filter((v) => v.editorAlias === "Umbraco.BlockGrid") as Array<UmbPropertyValueDataPotentiallyWithEditorAlias>;
+
+          const editSettingsPath = this.config?.editSettingsPath ?? "";
+          console.debug("editSettingsPath: ", editSettingsPath);
+
+          let thisGrid = allGridValues[0];
+          if (allGridValues.length > 1) {
+            for (let i = 0; i < allGridValues.length; i++) {
+              const grid = allGridValues[i];
+              if (grid.alias && (editSettingsPath.indexOf(grid.alias) >= 0)) {
+                thisGrid = grid;
+                break;
+              }
+            }
+          }
+          const gridValues = thisGrid.value as UmbBlockGridValueModel;
+          console.debug("thisGrid.alias: ", thisGrid.alias);
+
+          if (gridValues.settingsData?.length) {
+            // headline specific
+            // const valueValue = pageProperties.find((v) => v.editorAlias === "Umbraco.BlockGrid")// && v.alias === "main")
+            //   ?.value as UmbBlockGridValueModel;
+            // this.datasetSettings = valueValue.settingsData;
+
+            this.datasetSettings = gridValues.settingsData;
+          }
         }
+
       },
       "_observeProperties"
     );

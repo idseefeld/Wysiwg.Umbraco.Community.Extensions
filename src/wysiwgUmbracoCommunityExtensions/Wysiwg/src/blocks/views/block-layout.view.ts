@@ -107,14 +107,30 @@ export class WysiwgBlockLayoutView
             label: string;
             value: string;
           }
-          if (pageBackgroundColor.value) {
+          if (pageBackgroundColor?.value) {
             this.pageBackroundColor = pageBackgroundColor.value;
           }
 
-          const gridValues = pageProperties
-            .find((v) => v.editorAlias === "Umbraco.BlockGrid")// && v.alias === "main")
-            ?.value as UmbBlockGridValueModel;
-          if (gridValues?.settingsData?.length) {
+          const allGridValues = pageProperties
+            .filter((v) => v.editorAlias === "Umbraco.BlockGrid") as Array<UmbPropertyValueDataPotentiallyWithEditorAlias>;
+
+          const editSettingsPath = this.config?.editSettingsPath ?? "";
+          console.debug("editSettingsPath: ", editSettingsPath);
+
+          let thisGrid = allGridValues[0];
+          if (allGridValues.length > 1) {
+            for(let i = 0; i < allGridValues.length; i++) {
+              const grid = allGridValues[i];
+              if (grid.alias && (editSettingsPath.indexOf(grid.alias) >= 0)) {
+                thisGrid = grid;
+                break;
+              }
+            }
+          }
+          const gridValues = thisGrid.value as UmbBlockGridValueModel;
+          console.debug("thisGrid.alias: ", thisGrid.alias);
+
+          if (gridValues.settingsData?.length) {
             const viewElement = this as UmbBlockEditorCustomViewElement;
             const layout = gridValues.layout["Umbraco.BlockGrid"]?.find(
               (l) => l.contentKey === viewElement.contentKey
