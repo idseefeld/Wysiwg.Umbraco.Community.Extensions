@@ -17,6 +17,7 @@ import type { UmbBlockEditorCustomViewElement } from "@umbraco-cms/backoffice/bl
 import {
   UMB_PROPERTY_DATASET_CONTEXT,
   UmbPropertyDatasetContext,
+  UmbPropertyValueDataPotentiallyWithEditorAlias,
 } from "@umbraco-cms/backoffice/property";
 import { UmbBlockGridValueModel } from "@umbraco-cms/backoffice/block-grid";
 import { ColorType } from "./types";
@@ -25,8 +26,7 @@ const customElementName = "wysiwg-block-headline-view";
 @customElement(customElementName)
 export class WysiwgBlockHeadlineView
   extends UmbElementMixin(LitElement)
-  implements UmbBlockEditorCustomViewElement
-{
+  implements UmbBlockEditorCustomViewElement {
   defaultColor: ColorType = { label: "Black", value: "#000" };
 
   @property({ attribute: false })
@@ -51,9 +51,11 @@ export class WysiwgBlockHeadlineView
     this.#datasetContext = context;
     this.observe(
       this.#datasetContext?.properties,
-      (value) => {
-        if (value?.length) {
-          const valueValue = value[0].value as UmbBlockGridValueModel;
+      async (properties) => {
+        const pageProperties = properties as Array<UmbPropertyValueDataPotentiallyWithEditorAlias>;
+        if (pageProperties?.length) {
+          const valueValue = pageProperties.find((v) => v.editorAlias === "Umbraco.BlockGrid")// && v.alias === "main")
+            ?.value as UmbBlockGridValueModel;
           this.datasetSettings = valueValue.settingsData;
         }
       },

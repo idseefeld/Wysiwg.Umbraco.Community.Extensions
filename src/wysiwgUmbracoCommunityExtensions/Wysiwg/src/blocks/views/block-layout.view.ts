@@ -7,6 +7,8 @@ import {
   css,
   nothing,
   state,
+  styleMap,
+  StyleInfo,
 } from "@umbraco-cms/backoffice/external/lit";
 import { UmbElementMixin } from "@umbraco-cms/backoffice/element-api";
 import type { UmbBlockDataType } from "@umbraco-cms/backoffice/block";
@@ -17,6 +19,7 @@ import type {
 import {
   UMB_PROPERTY_DATASET_CONTEXT,
   UmbPropertyDatasetContext,
+  UmbPropertyValueDataPotentiallyWithEditorAlias,
 } from "@umbraco-cms/backoffice/property";
 import { UmbBlockGridValueModel } from "@umbraco-cms/backoffice/block-grid";
 import { BlockGridLayoutModel, MediaPickerValueModel } from "../types";
@@ -26,12 +29,21 @@ import { ImageUrlData, WysiwgUmbracoCommunityExtensionsService } from "../..";
 // Umbraco-CMS\src\
 //   Umbraco.Web.UI.Client\src\packages\
 //      block\block-grid\components\block-grid-block\block-grid-block.element.ts
+
+const blockLayoutInlineStyleDefaults: StyleInfo = {
+  backgroundImage: "none",
+  backgroundPosition: "inherit",
+  backgroundRepeat: "no-repeat",
+  backgroundColor: "transparent",
+  padding: "0",
+}
+const transparentBackgroundColor = "#fff";//work-a-round: color picker does not support transparent
+
 const customElementName = "wysiwg-block-layout-view";
 @customElement(customElementName)
 export class WysiwgBlockLayoutView
   extends UmbElementMixin(LitElement)
-  implements UmbBlockEditorCustomViewElement
-{
+  implements UmbBlockEditorCustomViewElement {
   //#region properties & ctor
   @property({ attribute: false })
   content?: UmbBlockDataType;
@@ -51,15 +63,30 @@ export class WysiwgBlockLayoutView
   @property({ attribute: false })
   settings?: UmbBlockDataType;
 
-  @state()
-  properties?: UmbBlockGridValueModel;
+  private pageBackroundColor = blockLayoutInlineStyleDefaults.backgroundColor;
 
   @state()
-  backgroundStyle: string = "";
+  backgroundStyleMap: StyleInfo = blockLayoutInlineStyleDefaults;
 
-  @state()
-  private _imageUrl?: string;
+  private get backgroundStyles() {
+    return {
+      backgroundImage: this.backgroundStyleMap.backgroundImage,
+      backgroundRepeat: this.backgroundStyleMap.backgroundRepeat,
+      backgroundPosition: this.backgroundStyleMap.backgroundPosition,
+      backgroundColor: this.backgroundStyleMap.backgroundColor,
+      padding: this.backgroundStyleMap.padding,
+    } as StyleInfo;
+  }
 
+  private get backgroundStyleDefaults() {
+    return {
+      backgroundImage: blockLayoutInlineStyleDefaults.backgroundImage,
+      backgroundRepeat: blockLayoutInlineStyleDefaults.backgroundRepeat,
+      backgroundPosition: blockLayoutInlineStyleDefaults.backgroundPosition,
+      backgroundColor: blockLayoutInlineStyleDefaults.backgroundColor,
+      padding: blockLayoutInlineStyleDefaults.padding,
+    } as StyleInfo;
+  }
   #datasetContext?: UmbPropertyDatasetContext;
 
   constructor() {
@@ -73,11 +100,41 @@ export class WysiwgBlockLayoutView
     this.#datasetContext = context;
     this.observe(
       this.#datasetContext?.properties,
-      (value) => {
-        if (value?.length) {
-          const valueValue = value[0].value as UmbBlockGridValueModel;
-          this.properties = valueValue;
-          this.getBackgroudStyle();
+      async (properties) => {
+        const pageProperties = properties as Array<UmbPropertyValueDataPotentiallyWithEditorAlias>;
+        if (pageProperties?.length) {
+          let pageBackgroundColor = pageProperties.find((v) => v.alias === "pageBackgroundColor")?.value as {
+            label: string;
+            value: string;
+          }
+          if (pageBackgroundColor.value) {
+            this.pageBackroundColor = pageBackgroundColor.value;
+          }
+
+          const gridValues = pageProperties
+            .find((v) => v.editorAlias === "Umbraco.BlockGrid")// && v.alias === "main")
+            ?.value as UmbBlockGridValueModel;
+          if (gridValues?.settingsData?.length) {
+            const viewElement = this as UmbBlockEditorCustomViewElement;
+            const layout = gridValues.layout["Umbraco.BlockGrid"]?.find(
+              (l) => l.contentKey === viewElement.contentKey
+            );
+            const setting = gridValues?.settingsData?.find(
+              (s) => s.key === layout?.settingsKey
+            );
+            const properties = setting?.values as BlockGridLayoutModel[] ?? [];
+            this.getBackgroudStyle(properties);
+            const backgroundImage = properties?.find((v) => v.alias === "backgroundImage")?.value as MediaPickerValueModel;
+            const mediaKey = backgroundImage?.length
+              ? backgroundImage[0].mediaKey
+              : "";
+            await this.#requestImageUrl(mediaKey)
+              .then((data) => {
+                if (data !== undefined && data !== "error") {
+                  this.getBackgroudImageStyle(data);
+                }
+              });
+          }
         }
       },
       "_observeProperties"
@@ -85,47 +142,49 @@ export class WysiwgBlockLayoutView
   }
   //#endregion
 
-  async getBackgroudStyle() {
-    let inlineStyles = "";
+  getBackgroudStyle(properties: BlockGridLayoutModel[]) {
+    const inlineStyles = this.backgroundStyleDefaults;
 
-    if (this.properties?.settingsData?.length) {
-      const viewElement = this as UmbBlockEditorCustomViewElement;
-      const layout = this.properties.layout["Umbraco.BlockGrid"]?.find(
-        (l) => l.contentKey === viewElement.contentKey
-      );
-      const setting = this.properties?.settingsData?.find(
-        (s) => s.key === layout?.settingsKey
-      );
-      const values = setting?.values as BlockGridLayoutModel[];
-
+    if (properties?.length) {
       const backgroundColor = (
-        (values?.find((v) => v.alias === "backgroundColor")?.value ?? {}) as {
+        (properties?.find((v) => v.alias === "backgroundColor")?.value ?? {}) as {
           label: string;
           value: string;
         }
       ).value;
+      const transparentBackground = backgroundColor === transparentBackgroundColor;
       if (backgroundColor) {
-        inlineStyles += `background-color: ${backgroundColor};`;
+        inlineStyles.backgroundColor = transparentBackground ? "transparent" : backgroundColor;
       }
 
-      const padding =
-        values?.find((v) => v.alias === "padding")?.value ?? "";
-      if (padding) {
-        inlineStyles += `padding: ${padding};`;
+      let padding =
+        properties?.find((v) => v.alias === "padding")?.value;
+      if (!padding) {
+        padding = (backgroundColor && !transparentBackground) ? "10px" : "0";
+        console.debug("padding: ", padding);
       }
-
-      const backgroundImage = values?.find((v) => v.alias === "backgroundImage")
-        ?.value as MediaPickerValueModel;
-      const mediaKey = backgroundImage?.length
-        ? backgroundImage[0].mediaKey
-        : "";
-      await this.#requestImageUrl(mediaKey);
-      if (this._imageUrl) {
-        inlineStyles += `background-image: url('${this._imageUrl}');`;
-      }
+      inlineStyles.padding = `${padding}`;
     }
 
-    this.backgroundStyle = inlineStyles;
+    this.backgroundStyleMap = inlineStyles;
+  }
+
+  getBackgroudImageStyle(imageUrl?: String) {
+    const inlineStyles = this.backgroundStyles;
+
+    const padding = inlineStyles.padding ?? blockLayoutInlineStyleDefaults.padding;
+    if (imageUrl) {
+      inlineStyles.backgroundImage = `url('${imageUrl}')`;
+      inlineStyles.backgroundPosition = "inherit";
+      inlineStyles.padding = padding === blockLayoutInlineStyleDefaults.padding
+        ? "10px"
+        : padding;
+    } else {
+      inlineStyles.backgroundImage = "none";
+      inlineStyles.backgroundPosition = "-10000px";
+    }
+
+    this.backgroundStyleMap = inlineStyles;
   }
 
   async #requestImageUrl(mediaItemId: string) {
@@ -142,16 +201,22 @@ export class WysiwgBlockLayoutView
 
     if (error) {
       console.error(error);
-      return;
+      return "error";
     }
 
     if (data !== undefined) {
-      this._imageUrl = data;
+      return data;
     }
   }
 
   override render() {
+    const pageStyles = { backgroundColor: this.pageBackroundColor } as Readonly<StyleInfo>;;
+    const styles = this.backgroundStyleMap as Readonly<StyleInfo>;
+
+    // console.debug(styles);
+
     return html`<umb-ref-grid-block class="wysiwg"
+      style=${styleMap(pageStyles)}
       standalone
       href=${(this.config?.showContentEdit
         ? this.config?.editContentPath
@@ -174,7 +239,7 @@ export class WysiwgBlockLayoutView
         : nothing}
       <umb-block-grid-areas-container
         slot="areas"
-        style="${this.backgroundStyle}"
+        style="${styleMap(styles)}"
       ></umb-block-grid-areas-container>
     </umb-ref-grid-block>`;
   }
