@@ -15,11 +15,5 @@
   "Tags": [ "package starter", "tutorial", "inspiration" ],
   "Title": "WYSIWG in the Umbraco Backoffice",
   "AlternatePackageNames": [ "wysiwgUmbracoCommunityExtensions" ],
-  "LookingForContributors": true,
-  "Screenshots": [
-    {
-      "Description": "Block Grid View - backoffice vs frontend",
-      "ImageUrl": ""
-    }
-  ]
+  "LookingForContributors": true
 }
