@@ -25,7 +25,7 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		/// <summary>Page Background Color</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.1+06a2a50")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
-		string PageBackgroundColor { get; }
+		global::Umbraco.Cms.Core.PropertyEditors.ValueConverters.ColorPickerValueConverter.PickedColor PageBackgroundColor { get; }
 
 		/// <summary>Umbraco Navi Hide</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.1+06a2a50")]
@@ -74,12 +74,12 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.1+06a2a50")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
 		[ImplementPropertyType("pageBackgroundColor")]
-		public virtual string PageBackgroundColor => GetPageBackgroundColor(this, _publishedValueFallback);
+		public virtual global::Umbraco.Cms.Core.PropertyEditors.ValueConverters.ColorPickerValueConverter.PickedColor PageBackgroundColor => GetPageBackgroundColor(this, _publishedValueFallback);
 
 		/// <summary>Static getter for Page Background Color</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.1+06a2a50")]
 		[return: global::System.Diagnostics.CodeAnalysis.MaybeNull]
-		public static string GetPageBackgroundColor(IPageSettings that, IPublishedValueFallback publishedValueFallback) => that.Value<string>(publishedValueFallback, "pageBackgroundColor");
+		public static global::Umbraco.Cms.Core.PropertyEditors.ValueConverters.ColorPickerValueConverter.PickedColor GetPageBackgroundColor(IPageSettings that, IPublishedValueFallback publishedValueFallback) => that.Value<global::Umbraco.Cms.Core.PropertyEditors.ValueConverters.ColorPickerValueConverter.PickedColor>(publishedValueFallback, "pageBackgroundColor");
 
 		///<summary>
 		/// Umbraco Navi Hide

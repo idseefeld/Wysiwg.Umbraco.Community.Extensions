@@ -18,14 +18,14 @@ using Umbraco.Extensions;
 
 namespace Umbraco.Cms.Web.Common.PublishedModels
 {
-	/// <summary>Root Page</summary>
-	[PublishedModel("rootPage")]
-	public partial class RootPage : PublishedContentModel, IMetaSeo, IPageSettings
+	/// <summary>Picture with Crop</summary>
+	[PublishedModel("pictureWithCrop")]
+	public partial class PictureWithCrop : PublishedElementModel
 	{
 		// helpers
 #pragma warning disable 0109 // new is redundant
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.1+06a2a50")]
-		public new const string ModelTypeAlias = "rootPage";
+		public new const string ModelTypeAlias = "pictureWithCrop";
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.1+06a2a50")]
 		public new const PublishedItemType ModelItemType = PublishedItemType.Content;
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.1+06a2a50")]
@@ -34,14 +34,14 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 			=> PublishedModelUtility.GetModelContentType(contentTypeCache, ModelItemType, ModelTypeAlias);
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.1+06a2a50")]
 		[return: global::System.Diagnostics.CodeAnalysis.MaybeNull]
-		public static IPublishedPropertyType GetModelPropertyType<TValue>(IPublishedContentTypeCache contentTypeCache, Expression<Func<RootPage, TValue>> selector)
+		public static IPublishedPropertyType GetModelPropertyType<TValue>(IPublishedContentTypeCache contentTypeCache, Expression<Func<PictureWithCrop, TValue>> selector)
 			=> PublishedModelUtility.GetModelPropertyType(GetModelContentType(contentTypeCache), selector);
 #pragma warning restore 0109
 
 		private IPublishedValueFallback _publishedValueFallback;
 
 		// ctor
-		public RootPage(IPublishedContent content, IPublishedValueFallback publishedValueFallback)
+		public PictureWithCrop(IPublishedElement content, IPublishedValueFallback publishedValueFallback)
 			: base(content, publishedValueFallback)
 		{
 			_publishedValueFallback = publishedValueFallback;
@@ -50,58 +50,35 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		// properties
 
 		///<summary>
-		/// Another Property
+		/// Alternative Text
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.1+06a2a50")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
-		[ImplementPropertyType("anotherProperty")]
-		public virtual string AnotherProperty => this.Value<string>(_publishedValueFallback, "anotherProperty");
+		[ImplementPropertyType("alternativeText")]
+		public virtual string AlternativeText => this.Value<string>(_publishedValueFallback, "alternativeText");
 
 		///<summary>
-		/// Main
+		/// Crop Alias
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.1+06a2a50")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
-		[ImplementPropertyType("main")]
-		public virtual global::Umbraco.Cms.Core.Models.Blocks.BlockGridModel Main => this.Value<global::Umbraco.Cms.Core.Models.Blocks.BlockGridModel>(_publishedValueFallback, "main");
+		[ImplementPropertyType("cropAlias")]
+		public virtual string CropAlias => this.Value<string>(_publishedValueFallback, "cropAlias");
 
 		///<summary>
-		/// Site Name
+		/// Caption
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.1+06a2a50")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
-		[ImplementPropertyType("siteName")]
-		public virtual string SiteName => this.Value<string>(_publishedValueFallback, "siteName");
+		[ImplementPropertyType("figCaption")]
+		public virtual string FigCaption => this.Value<string>(_publishedValueFallback, "figCaption");
 
 		///<summary>
-		/// Meta Title
+		/// Media Item
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.1+06a2a50")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
-		[ImplementPropertyType("metaTitle")]
-		public virtual string MetaTitle => global::Umbraco.Cms.Web.Common.PublishedModels.MetaSeo.GetMetaTitle(this, _publishedValueFallback);
-
-		///<summary>
-		/// Page Background Color
-		///</summary>
-		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.1+06a2a50")]
-		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
-		[ImplementPropertyType("pageBackgroundColor")]
-		public virtual global::Umbraco.Cms.Core.PropertyEditors.ValueConverters.ColorPickerValueConverter.PickedColor PageBackgroundColor => global::Umbraco.Cms.Web.Common.PublishedModels.PageSettings.GetPageBackgroundColor(this, _publishedValueFallback);
-
-		///<summary>
-		/// Umbraco Navi Hide
-		///</summary>
-		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.1+06a2a50")]
-		[ImplementPropertyType("umbracoNaviHide")]
-		public virtual bool UmbracoNaviHide => global::Umbraco.Cms.Web.Common.PublishedModels.PageSettings.GetUmbracoNaviHide(this, _publishedValueFallback);
-
-		///<summary>
-		/// Umbraco Redirect
-		///</summary>
-		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "15.3.1+06a2a50")]
-		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
-		[ImplementPropertyType("umbracoRedirect")]
-		public virtual global::Umbraco.Cms.Core.Models.PublishedContent.IPublishedContent UmbracoRedirect => global::Umbraco.Cms.Web.Common.PublishedModels.PageSettings.GetUmbracoRedirect(this, _publishedValueFallback);
+		[ImplementPropertyType("mediaItem")]
+		public virtual global::Umbraco.Cms.Core.Models.MediaWithCrops MediaItem => this.Value<global::Umbraco.Cms.Core.Models.MediaWithCrops>(_publishedValueFallback, "mediaItem");
 	}
 }

@@ -639,17 +639,21 @@ header {
   width: 100%;
 }
 
-main {
-  padding: 1em;
-}
-
-/*figure {
-    margin: 1em 0;
-}*/
 footer {
   background-color: #ccc;
   padding: 0.5em 1em;
   margin: 0;
+  color: #fff;
+}
+footer a {
+  color: #fff;
+  text-decoration: none;
+}
+footer a strong {
+  color: #000;
+}
+footer a:hover {
+  color: #000;
 }
 
 /*#endregion*/

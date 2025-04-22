@@ -267,6 +267,7 @@ export class WysiwgBlockLayoutView
         display: flex;
         height: 100%;
         box-sizing: border-box;
+        background-color: #ccc;
       }
       .left,
       .right {

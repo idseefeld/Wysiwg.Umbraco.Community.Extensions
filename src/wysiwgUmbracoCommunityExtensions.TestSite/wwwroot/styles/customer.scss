@@ -52,18 +52,24 @@ header {
   width: 100%;
 }
 
-main {
-  padding: 1em;
-}
-
-/*figure {
-    margin: 1em 0;
-}*/
-
 footer {
   background-color: $footer-background-color;
   padding: 0.5em 1em;
   margin: 0;
+  color: #fff;
+
+  a {
+    color: #fff;
+    text-decoration: none;
+
+    strong {
+      color: #000;
+    }
+  }
+
+    a:hover {
+      color: #000;
+    }
 }
 /*#endregion*/
 

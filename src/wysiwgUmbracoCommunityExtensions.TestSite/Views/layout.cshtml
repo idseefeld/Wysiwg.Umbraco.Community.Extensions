@@ -32,8 +32,9 @@
     <link href="~/styles/customer.min.css?v=@v" rel="stylesheet" />
 
     <style>
-        #canvas {
-            background: @(pageBackgroundColor ?? "inherit");
+        body, html {
+            background-color: @(pageBackgroundColor ?? "inherit");
+            margin: 0;
         }
     </style>
 </head>
