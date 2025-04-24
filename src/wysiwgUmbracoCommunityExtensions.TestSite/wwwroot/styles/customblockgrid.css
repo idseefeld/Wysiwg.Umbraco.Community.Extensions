@@ -44,6 +44,9 @@ body, html {
   display: flex;
   max-width: 1172px;
 }
+.wysiwg .umb-block-grid__layout-item h1, .wysiwg .umb-block-grid__layout-item h2, .wysiwg .umb-block-grid__layout-item h3 {
+  margin: 0;
+}
 .wysiwg .umb-block-grid__layout-item h1 {
   font-size: var(--wysiwg-headline-1-font-size, 32px);
   line-height: var(--wysiwg-headline-1-line-height, 1.2em);
