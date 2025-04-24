@@ -167,9 +167,11 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             if (notAllRequiredInstalled)
             { return VersionStatus.Update; }
 
-            var requiredContentTypesExists = _allContentTypes
+            UpdateContentTypes();
+            var requiredContentTypes = _allContentTypes
                .Select(t => t.Alias)
-               .Intersect(_requiredContentTypes)
+               .Intersect(_requiredContentTypes);
+            var requiredContentTypesExists = requiredContentTypes
                .Count() == _requiredContentTypes.Length;
             if (!requiredContentTypesExists)
             { return VersionStatus.Update; }
