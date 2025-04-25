@@ -14,7 +14,7 @@
     string pageBackgroundColor = "inherit";
     if (Model is IPageSettings pageSettings)
     {
-        pageBackgroundColor = pageSettings.PageBackgroundColor ?? pageBackgroundColor;
+        pageBackgroundColor = pageSettings.PageBackgroundColor?.Color ?? pageBackgroundColor;
     }
 }
 <!DOCTYPE html>
