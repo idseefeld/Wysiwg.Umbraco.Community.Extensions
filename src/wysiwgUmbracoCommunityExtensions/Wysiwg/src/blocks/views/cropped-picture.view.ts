@@ -1,20 +1,18 @@
 import {
   html,
   customElement,
-  LitElement,
   property,
   css,
   unsafeHTML,
 } from "@umbraco-cms/backoffice/external/lit";
-import { UmbElementMixin } from "@umbraco-cms/backoffice/element-api";
 import type { UmbBlockDataType } from "@umbraco-cms/backoffice/block";
-import type { UmbBlockEditorCustomViewElement } from "@umbraco-cms/backoffice/block-custom-view";
 import { ColorType, CroppedPictureCustomViewProps } from "./types";
+import WysiwgBaseBlockEditorCustomViewElement from "./base-block-editor-custom.view";
 
 @customElement("wysiwg-croppedicture-view")
 export class CroppedPictureCustomView
-  extends UmbElementMixin(LitElement)
-  implements UmbBlockEditorCustomViewElement {
+  extends WysiwgBaseBlockEditorCustomViewElement {
+
   private debugLocalize: boolean = false;
   defaultColor: ColorType = { label: "Black", value: "#000" };
 

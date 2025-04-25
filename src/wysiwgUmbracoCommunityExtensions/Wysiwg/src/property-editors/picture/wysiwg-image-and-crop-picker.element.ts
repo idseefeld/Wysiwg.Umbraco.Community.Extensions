@@ -285,8 +285,6 @@ export class WysiwgImageAndCropPickerElement
 
   #onChangePreview(event: CustomEvent & { target: WysiwgCroppedImageElement }) {
     if (event?.target?.value?.length > 0) {
-
-      console.log("onChangePreview", event?.target?.value);
       this._updateValue({
         cropUrl: event?.target?.value,
       });

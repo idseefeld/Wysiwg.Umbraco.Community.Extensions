@@ -661,7 +661,6 @@ footer a:hover {
 #canvas {
   max-width: 1200px;
   margin: 0 auto;
-  background-color: #fff;
 }
 #canvas .content {
   display: flex;
