@@ -63,6 +63,7 @@ export class WysiwgBlockLayoutView
   @property({ attribute: false })
   settings?: UmbBlockDataType;
 
+  @state()
   private pageBackroundColor = blockLayoutInlineStyleDefaults.backgroundColor;
 
   @state()
@@ -103,14 +104,6 @@ export class WysiwgBlockLayoutView
       async (properties) => {
         const pageProperties = properties as Array<UmbPropertyValueDataPotentiallyWithEditorAlias>;
         if (pageProperties?.length) {
-          let pageBackgroundColor = pageProperties.find((v) => v.alias === "pageBackgroundColor")?.value as {
-            label: string;
-            value: string;
-          }
-          if (pageBackgroundColor?.value) {
-            this.pageBackroundColor = pageBackgroundColor.value;
-          }
-
           const allGridValues = pageProperties
             .filter((v) => v.editorAlias === "Umbraco.BlockGrid") as Array<UmbPropertyValueDataPotentiallyWithEditorAlias>;
 
@@ -119,7 +112,7 @@ export class WysiwgBlockLayoutView
 
           let thisGrid = allGridValues[0];
           if (allGridValues.length > 1) {
-            for(let i = 0; i < allGridValues.length; i++) {
+            for (let i = 0; i < allGridValues.length; i++) {
               const grid = allGridValues[i];
               if (grid.alias && (editSettingsPath.indexOf(grid.alias) >= 0)) {
                 thisGrid = grid;
@@ -150,6 +143,14 @@ export class WysiwgBlockLayoutView
                   this.getBackgroudImageStyle(data);
                 }
               });
+          }
+
+          let pageBackgroundColor = pageProperties.find((v) => v.alias === "pageBackgroundColor")?.value as {
+            label: string;
+            value: string;
+          }
+          if (pageBackgroundColor?.value) {
+            this.pageBackroundColor = pageBackgroundColor.value;
           }
         }
       },

@@ -27,7 +27,7 @@ const t = [
     type: "bundle",
     name: "wysiwg block components",
     alias: "wysiwg.block.components",
-    js: () => import("./index-aNZUTHo1.js")
+    js: () => import("./index-CZHrfTJk.js")
   }
 ], i = "wysiwg65_";
 function s() {
@@ -41,7 +41,7 @@ const n = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.Layouts",
     name: "Block Editor Custom View for Layouts",
-    element: () => import("./wysiwg-image-crop.element-DPB1PWCi.js").then((e) => e.b),
+    element: () => import("./wysiwg-image-crop.element-DLiYEZOu.js").then((e) => e.b),
     forContentTypeAlias: s(),
     forBlockEditor: "block-grid"
   },
