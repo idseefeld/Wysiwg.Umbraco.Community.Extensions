@@ -14,7 +14,7 @@ import {
 import { UmbBlockGridValueModel } from "@umbraco-cms/backoffice/block-grid";
 import { UmbBlockDataModel, UmbBlockDataType } from "@umbraco-cms/backoffice/block";
 
-export const transparentBackgroundColor = "#fff";//work-a-round: color picker does not support transparent color
+const transparentBackgroundColor = "#fff";//work-a-round: color picker does not support transparent color
 
 const customElementName = "wysiwg-base.block-editor-custom-view";
 @customElement(customElementName)
@@ -41,6 +41,10 @@ export class WysiwgBaseBlockEditorCustomViewElement
     this.consumeContext(UMB_PROPERTY_DATASET_CONTEXT, async (context) =>
       this.getSettings(context)
     );
+  }
+
+  isTransparentColor(color: string) {
+    return color === transparentBackgroundColor;
   }
 
   async getSettings(context: any) {

@@ -43,7 +43,7 @@ export class CroppedPictureCustomView
       const captionColor =
         pictureWithCrop?.captionColor?.value ?? this.defaultColor.value;
       const caption = pictureWithCrop?.figCaption;
-      const inlineStyle = `style="color: ${captionColor};"`;
+      const inlineStyle = this.isTransparentColor(captionColor) ? '' : `style="color: ${captionColor};"`;
       const figCaption = caption
         ? unsafeHTML(`<figcaption ${inlineStyle}>${caption}</figcaption>`)
         : "";

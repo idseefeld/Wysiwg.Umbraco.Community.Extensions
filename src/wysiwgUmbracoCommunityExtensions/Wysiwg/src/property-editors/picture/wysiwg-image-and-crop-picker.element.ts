@@ -1,6 +1,5 @@
 import {
   UMB_MEDIA_ENTITY_TYPE,
-  UmbInputRichMediaElement,
   UmbMediaPickerPropertyValueEntry,
 } from "@umbraco-cms/backoffice/media";
 import {
@@ -35,6 +34,10 @@ import {
 import { CropsData, CropsResponse, MediaTypeModel, MediaTypesResponse, WysiwgUmbracoCommunityExtensionsService } from "../../api";
 import { UmbNumberRangeValueType } from "@umbraco-cms/backoffice/models";
 import { WysiwgCroppedImageElement } from "./wysiwg-image-crop.element";
+
+import type { WysiwgInputRichMediaElement } from "./wysiwg-input-rich-media.element.js";
+import './wysiwg-input-rich-media.element.js';
+
 /**
  * based on @element umb-property-editor-ui-media-picker
  */
@@ -158,7 +161,7 @@ export class WysiwgImageAndCropPickerElement
   }
 
   override firstUpdated() {
-    this.addFormControlElement(this.shadowRoot!.querySelector("umb-input-rich-media")!);
+    this.addFormControlElement(this.shadowRoot!.querySelector("wysiwg-input-rich-media")!);
     const cropSelect = this.shadowRoot?.querySelector<UUISelectElement>("umb-input-dropdown-list");
     if (cropSelect) {
       this.addFormControlElement(this.shadowRoot!.querySelector("umb-input-dropdown-list")!);
@@ -167,7 +170,7 @@ export class WysiwgImageAndCropPickerElement
 
   override focus(options?: FocusOptions) {
     console.log("focus(options) options = ", options);
-    return this.shadowRoot?.querySelector<UmbInputRichMediaElement>("umb-input-rich-media")?.focus();
+    return this.shadowRoot?.querySelector<WysiwgInputRichMediaElement>("wysiwg-input-rich-media")?.focus();
   }
 
   private async getMediaTypes() {
@@ -244,7 +247,7 @@ export class WysiwgImageAndCropPickerElement
     return "no data";
   }
 
-  #onChangeImage(event: CustomEvent & { target: UmbInputRichMediaElement }) {
+  #onChangeImage(event: CustomEvent & { target: WysiwgInputRichMediaElement }) {
     if (this._imgSrc !== this._prevImgSrc) {
       console.debug("imgSrc changed", this._imgSrc, this._prevImgSrc);
       this._prevImgSrc = this._imgSrc;
@@ -334,7 +337,7 @@ export class WysiwgImageAndCropPickerElement
 
   #renderEditImage() {
     return html`
-    <umb-input-rich-media
+    <wysiwg-input-rich-media
       .alias=${this._alias}
       .allowedContentTypeIds=${this._allowedMediaTypes}
       .focalPointEnabled=${this._focalPointEnabled}
@@ -350,7 +353,7 @@ export class WysiwgImageAndCropPickerElement
       @change=${this.#onChangeImage}
       ?readonly=${this.readonly}
     >
-    </umb-input-rich-media>
+    </wysiwg-input-rich-media>
   `;
   }
 
