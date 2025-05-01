@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using StackExchange.Profiling.Internal;
@@ -14,6 +15,7 @@ using Umbraco.Cms.Core.Strings;
 using Umbraco.Extensions;
 using WysiwgUmbracoCommunityExtensions.Extensions;
 using WysiwgUmbracoCommunityExtensions.Models;
+using static Umbraco.Cms.Core.Services.OperationResult;
 using uReferenceByIdModel = Umbraco.Cms.Api.Management.ViewModels.ReferenceByIdModel;
 
 namespace WysiwgUmbracoCommunityExtensions.Services
@@ -1269,7 +1271,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             {
                 new ("Text", $"{Constants.Prefix}ParagaphRTE",1, variations: ContentVariation.Culture)
             };
-            await CreateOrUpdateContentElementProperties(type, propertyDefinitions);            
+            await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
         }
 
         private async Task CreateOrUpdateCroppedPictureElementType(string elementTypeAlias, string alias, EntityContainer elementContainer)
@@ -1501,26 +1503,96 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             }
         }
 
+        #region obsolete
+        //private async Task LegacySwitchPartialViews(bool restoreOriginal = false)
+        //{
+        //    var allPartialViews = await partialViewService.GetAllAsync();
+        //    if (allPartialViews == null)
+        //    { return; }
+
+        //    var prefix = "backup-";
+        //    var itemsPartial = $"blockgrid\\{(restoreOriginal ? prefix : "")}items.";
+        //    var itemsPartialViews = allPartialViews
+        //        .FirstOrDefault(v => v.Path.InvariantContains(itemsPartial));
+        //    if (itemsPartialViews == null)
+        //    { return; }
+
+        //    var updateModel = new PartialViewRenameModel
+        //    {
+        //        Name = $"{(restoreOriginal ? "" : prefix)}items.cshtml"
+        //    };
+        //    var attempt = await partialViewService.RenameAsync(itemsPartialViews.Path, updateModel, _userKey);
+        //    if (!attempt.Success)
+        //    {
+        //        throw new Exception($"{ErrorMsgPrefix} {attempt.Status}");
+        //    }
+        //}
+        #endregion
+
         private async Task SwitchPartialViews(bool restoreOriginal = false)
         {
-            var allPartialViews = await partialViewService.GetAllAsync();
+            var folderName = "blockgrid";
+            var allPartialViews = (await partialViewService.GetAllAsync())
+                ?.Where(v => v.Path.InvariantContains(folderName));
             if (allPartialViews == null)
             { return; }
 
-            var prefix = "backup-";
-            var itemsPartial = $"blockgrid\\{(restoreOriginal ? prefix : "")}items.";
-            var itemsPartialViews = allPartialViews
-                .FirstOrDefault(v => v.Path.InvariantContains(itemsPartial));
-            if (itemsPartialViews == null)
-            { return; }
+            var originalPartialName = "items.cshtml";
+            var backupPartialName = "backup-items.cshtml";
 
-            var updateModel = new PartialViewRenameModel
+            var original = allPartialViews
+                .FirstOrDefault(v => v.Path.InvariantEndsWith($"{folderName}\\{originalPartialName}"));
+
+            var backup = allPartialViews
+                .FirstOrDefault(v => v.Path.InvariantEndsWith(backupPartialName));
+
+            if (restoreOriginal)
             {
-                Name = $"{(restoreOriginal ? "" : prefix)}items.cshtml"
-            };
-            var attempt = await partialViewService.RenameAsync(itemsPartialViews.Path, updateModel, _userKey);
+                await RestoreItemsPartial(backup, original, originalPartialName);
+            }
+            else
+            {
+                await BackupItemsPartial(backup, original, backupPartialName);
+            }
+        }
+        private async Task BackupItemsPartial(IPartialView? backup, IPartialView? original, string backupPartialName)
+        {
+            if (backup != null)
+            {
+                logger.LogWarning("Backup partial view {alias} already exists.", backup.Path);
+                return;
+            }
+            if (original == null)
+            {
+                logger.LogWarning("Original partial view to backup does not exist.");
+                return;
+            }
+
+            await RenamePartialView(original.Path, backupPartialName);
+        }
+        private async Task RestoreItemsPartial(IPartialView? backup, IPartialView? original, string originalPartialName)
+        {
+            if (backup == null)
+            {
+                logger.LogWarning("Backup partial view for {name} does not exist.", originalPartialName);
+                return;
+            }
+            if (original != null)
+            {
+                logger.LogWarning("Original partial view {alias} already exists.", original.Path);
+                return;
+            }
+
+            await RenamePartialView(backup.Path, originalPartialName);
+        }
+        private async Task RenamePartialView(string path, string newName)
+        {
+            var updateModel = new PartialViewRenameModel
+            { Name = newName };
+            var attempt = await partialViewService.RenameAsync(path, updateModel, _userKey);
             if (!attempt.Success)
             {
+                logger.LogWarning("Partial view {alias} could not be renamed: {error}", path, attempt.Status);
                 throw new Exception($"{ErrorMsgPrefix} {attempt.Status}");
             }
         }
