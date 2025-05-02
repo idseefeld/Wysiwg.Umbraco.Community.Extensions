@@ -18,12 +18,11 @@ namespace WysiwgUmbracoCommunityExtensions.Composers
     {
         public void Compose(IUmbracoBuilder builder)
         {
+            _ = builder.Services.AddSingleton<IOperationIdHandler, CustomOperationHandler>();
 
-            builder.Services.AddSingleton<IOperationIdHandler, CustomOperationHandler>();
+            _ = builder.Services.AddSingleton<ISetupService, SetupService>();
 
-            builder.Services.AddSingleton<ISetupService, SetupService>();
-
-            builder.Services.Configure<SwaggerGenOptions>(opt =>
+            _ = builder.Services.Configure<SwaggerGenOptions>(opt =>
             {
                 // Related documentation:
                 // https://docs.umbraco.com/umbraco-cms/tutorials/creating-a-backoffice-api
