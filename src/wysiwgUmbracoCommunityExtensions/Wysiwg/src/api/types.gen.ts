@@ -731,6 +731,17 @@ export type CropUrlResponse = (string);
 
 export type CropUrlError = (unknown | string);
 
+export type FixUpgradeData = {
+    query?: {
+        culture?: boolean;
+        segment?: boolean;
+    };
+};
+
+export type FixUpgradeResponse = (string);
+
+export type FixUpgradeError = (unknown | string);
+
 export type ImageUrlData = {
     query?: {
         mediaItemId?: string;
@@ -776,3 +787,7 @@ export type V2CropUrlData = {
 export type V2CropUrlResponse = (string);
 
 export type V2CropUrlError = (unknown | string);
+
+export type GetVariationsResponse = (string);
+
+export type GetVariationsError = (unknown | string);

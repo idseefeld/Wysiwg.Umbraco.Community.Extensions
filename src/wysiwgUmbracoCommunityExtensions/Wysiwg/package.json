@@ -11,7 +11,8 @@
   "scripts": {
     "watch": "tsc && vite build --watch",
     "build": "tsc && vite build",
-    "generate-client": "node scripts/generate-openapi.js https://localhost:44335/umbraco/swagger/wysiwgumbracocommunityextensions/swagger.json"
+    "generate-client": "node scripts/generate-openapi.js https://localhost:44335/umbraco/swagger/wysiwgumbracocommunityextensions/swagger.json",
+    "generate-management-client": "node scripts/generate-management-openapi.js https://localhost:44335/umbraco/swagger/management/swagger.json"
   },
   "devDependencies": {
     "@hey-api/client-fetch": "^0.4.2",

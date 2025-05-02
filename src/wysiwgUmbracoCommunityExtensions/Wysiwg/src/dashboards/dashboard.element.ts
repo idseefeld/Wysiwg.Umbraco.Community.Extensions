@@ -15,7 +15,8 @@ import {
   UMB_CURRENT_USER_CONTEXT,
   UmbCurrentUserModel,
 } from "@umbraco-cms/backoffice/current-user";
-import { WysiwgUmbracoCommunityExtensionsService } from "../api";
+import { FixUpgradeData, GetVariationsResponse, WysiwgUmbracoCommunityExtensionsService } from "../api";
+import { GetServerInformationResponse, ServerService } from "../management-api";
 import { VersionStatus } from "./versionStatusEnum";
 import { umbConfirmModal, UmbConfirmModalData } from "@umbraco-cms/backoffice/modal";
 
@@ -27,6 +28,19 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
   private _contextCurrentUser: UmbCurrentUserModel | undefined = undefined;
   @state()
   private _updateStatus: VersionStatus | undefined = undefined;
+
+  @state()
+  private _variations: GetVariationsResponse | undefined = undefined;
+
+  private _varyByCulture: boolean = false;
+  private _varyBySegment: boolean = false;
+
+  @state()
+  private _serverInfo: GetServerInformationResponse | undefined = undefined;
+
+  private _majorVersion: number = 0;
+  private _minorVersion: number = 0;
+  private _patchVersion: number = 0;
 
   private _debug: boolean = true;
 
@@ -47,6 +61,58 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
         this._contextCurrentUser = currentUser;
       });
     });
+  }
+
+  #onChangeCulture = (ev: Event) => {
+    const checkboxElement = ev.target as HTMLInputElement;
+    this._varyByCulture = checkboxElement.checked;
+  }
+  #onChangeSegment = (ev: Event) => {
+    const checkboxElement = ev.target as HTMLInputElement;
+    this._varyBySegment = checkboxElement.checked;
+  }
+
+  #onClickUpdateSettings = async (ev: Event) => {
+    const buttonElement = ev.target as UUIButtonElement;
+    if (!buttonElement || buttonElement.state === "waiting") return;
+    buttonElement.state = "waiting";
+
+    if (this._majorVersion >= 15 && this._minorVersion >= 4 && this._patchVersion >= 0) {
+      this._varyBySegment = false;
+    }
+    const options: FixUpgradeData = {
+      query: {
+        culture: this._varyByCulture,
+        segment: this._varyBySegment,
+      }
+    };
+    const { data, error } = await WysiwgUmbracoCommunityExtensionsService.fixUpgrade(options);
+
+    if (error) {
+      if (this.#notificationContext) {
+        this.#notificationContext.stay("danger", {
+          data: {
+            headline: this.localize.term("wysiwg_updateSettingsError"),
+            message: `${this.localize.term("wysiwg_updateSettingsErrorDescription")} ${error}`,
+          },
+        });
+      }
+      buttonElement.state = "failed";
+      console.error(error);
+      return "error";
+    }
+    if (data !== undefined) {
+      if (this.#notificationContext) {
+        this.#notificationContext.peek("positive", {
+          data: {
+            headline: this.localize.term("wysiwg_updateSettingsSuccess"),
+            message: `${this.localize.term("wysiwg_updateSettingsSuccessDescription")}`,
+          },
+        });
+      }
+      this.setVariations(data);
+      buttonElement.state = "success";
+    }
   }
 
   #onClickInstall = async (ev: Event) => {
@@ -164,6 +230,59 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     }
   }
 
+  private async getServerInfo() {
+    if (this._updateStatus) return;
+
+    const { data, error } =
+      await ServerService.getServerInformation();
+
+    if (error) {
+      console.error(error);
+      if (this.#notificationContext) {
+        this.#notificationContext.stay("danger", {
+          data: {
+            headline: this.localize.term("wysiwg_serverInfoError"),
+            message: `${this.localize.term("wysiwg_serverInfoErrorDescription")} ${error}`,
+          },
+        });
+      }
+    }
+
+    if (data !== undefined) {
+      this._serverInfo = data;
+      const assemblyVersion = this._serverInfo?.assemblyVersion.split(".");
+      this._majorVersion = assemblyVersion.length > 0 ? parseInt(assemblyVersion[0]) : 0;
+      this._minorVersion = assemblyVersion.length > 1 ? parseInt(assemblyVersion[1]) : 0;
+      this._patchVersion = assemblyVersion.length > 2 ? parseInt(assemblyVersion[2]) : 0;
+    }
+  }
+
+  private async getVariations() {
+    const { data, error } = await WysiwgUmbracoCommunityExtensionsService.getVariations();
+
+    if (error) {
+      if (this.#notificationContext) {
+        this.#notificationContext.stay("danger", {
+          data: {
+            headline: this.localize.term("wysiwg_variationsError"),
+            message: `${this.localize.term("wysiwg_variationsErrorDescription")} ${error}`,
+          },
+        });
+      }
+      return "error";
+    }
+
+    if (data !== undefined) {
+      this.setVariations(data);
+    }
+  }
+
+  private setVariations(data: GetVariationsResponse) {
+    this._variations = data;
+    this._varyByCulture = this._variations.indexOf("culture") !== -1;
+    this._varyBySegment = this._variations.indexOf("segment") !== -1;
+  }
+
   render() {
     if (!this._contextCurrentUser?.isAdmin) {
       return html`<umb-localize key="wysiwg_" .debug=${this._debug}>
@@ -173,7 +292,11 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
 
     this.getUpdateStatus();
 
-    return html`${this.renderSetupBox()} ${this.renderUninstallBox()}`;
+    this.getServerInfo();
+
+    this.getVariations()
+
+    return html`${this.renderSetupBox()} ${this.renderUpdateBox()} ${this.renderUninstallBox()}`;
   }
 
   private renderSetupBox() {
@@ -207,6 +330,56 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     `;
   }
 
+  private renderUpdateBox() {
+    if (this._updateStatus === undefined) { return; }
+
+    if (this._updateStatus !== VersionStatus.UpToDate) { return; }
+
+    const buttonLabel = this.localize.term("wysiwg_cultureSegmentButtonLabel", { debug: this._debug, });
+
+    return html`
+      <uui-box headline=${this.localize.term("wysiwg_cultureSegmentTitle", {
+      debug: this._debug,
+    })}>
+        <div slot="header"></div>
+        <umb-localize key="wysiwg_cultureSegmentDescription" .debug=${this._debug}>
+          <p>
+            This will update the culture and segment settings for the WYSIWG BlockGrid element types.
+          </p>
+        </umb-localize>
+        <p>
+          <uui-checkbox
+            @change="${this.#onChangeCulture}"
+            ?checked=${this._varyByCulture}>Vary by culture</uui-checkbox><br />
+          ${this.renderSegmentCheckbox()}
+        </p>
+        <uui-button
+          color="positive"
+          look="primary"
+          @click="${this.#onClickUpdateSettings}"
+        >
+        ${buttonLabel}
+        </uui-button>
+      </uui-box>
+    `;
+  }
+
+  private renderSegmentCheckbox() {
+    if (this._majorVersion >= 15 && this._minorVersion >= 4 && this._patchVersion >= 0) {
+      return html`
+      <uui-checkbox
+        disabled
+        ?checked=${this._varyBySegment}>Vary by segment</uui-checkbox>
+      `;
+    }
+
+    return html`
+    <uui-checkbox
+      @change="${this.#onChangeSegment}"
+      ?checked=${this._varyBySegment}>Vary by segment</uui-checkbox>
+    `;
+  }
+
   private renderUninstallBox() {
     if (this._updateStatus === undefined) { return; }
     if (this._updateStatus === VersionStatus.Install) { return; }
@@ -216,13 +389,6 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
       <uui-box headline=${this.localize.term("wysiwg_uninstallTitle", {
       debug: this._debug,
     })}>
-        <uui-button
-          color="danger"
-          look="primary"
-          @click="${this.#onClickUninstall}"
-        >
-        ${buttonLabel}
-        </uui-button>
         <div slot="header"></div>
         <umb-localize key="wysiwg_uninstallButtonDescription" .debug=${this._debug}>
           <p>
@@ -230,6 +396,13 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
             editor views.
           </p>
         </umb-localize>
+        <uui-button
+          color="danger"
+          look="primary"
+          @click="${this.#onClickUninstall}"
+        >
+        ${buttonLabel}
+        </uui-button>
       </uui-box>
     `;
   }

@@ -12,11 +12,9 @@ using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
 using Umbraco.Cms.Core.Security;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Extensions;
-using WysiwgUmbracoCommunityExtensions.Extensions;
 using WysiwgUmbracoCommunityExtensions.Models;
 using WysiwgUmbracoCommunityExtensions.Services;
 using static Umbraco.Cms.Core.PropertyEditors.ValueConverters.ImageCropperValue;
-using imageValueConverter = Umbraco.Cms.Core.PropertyEditors.ValueConverters.ImageCropperValue;
 using MediaConventions = Umbraco.Cms.Core.Constants.Conventions.Media;
 
 namespace WysiwgUmbracoCommunityExtensions.Controllers
@@ -29,19 +27,9 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
         ISetupService installService,
         IMediaTypeService mediaTypeService,
         ILogger<WysiwgUmbracoCommunityExtensionsApiController> logger,
-        IBackOfficeSecurityAccessor backOfficeSecurityAccessor,
         ISetupService setupService
         ) : WysiwgUmbracoCommunityExtensionsApiControllerBase
     {
-        protected static Guid CurrentUserKey(IBackOfficeSecurityAccessor backOfficeSecurityAccessor)
-        { return CurrentUser(backOfficeSecurityAccessor).Key; }
-
-        protected static IUser CurrentUser(IBackOfficeSecurityAccessor backOfficeSecurityAccessor)
-        {
-            return backOfficeSecurityAccessor.BackOfficeSecurity?.CurrentUser
-                ?? throw new InvalidOperationException("No backoffice user found");
-        }
-
         [HttpGet("crops")]
         [ProducesResponseType<IEnumerable<ImageCropperCrop>>(StatusCodes.Status200OK)]
         [ProducesResponseType<IEnumerable<ImageCropperCrop>>(StatusCodes.Status404NotFound)]
@@ -264,7 +252,6 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
         {
             try
             {
-                Guid? userKey = CurrentUserKey(backOfficeSecurityAccessor);
                 await installService.Install(resetExisting: false);
             }
             catch (Exception ex)
@@ -273,6 +260,42 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
             return Ok("Installed");
+        }
+
+        [HttpGet("variations")]
+        [ProducesResponseType<string>(StatusCodes.Status200OK)]
+        [ProducesResponseType<string>(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetVariations()
+        {
+            try
+            {
+                var variations = setupService.GetVariations();
+                return Ok(variations);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error getting variations");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("fixupgrade")]
+        [ProducesResponseType<string>(StatusCodes.Status200OK)]
+        [ProducesResponseType<string>(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> FixUpgrade(bool? culture, bool? segment)
+        {
+            try
+            {
+                await installService.FixUpgrade(culture, segment);
+
+                var variations = setupService.GetVariations();
+                return Ok(variations);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error fixing package");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
 
         [HttpGet("uninstall")]

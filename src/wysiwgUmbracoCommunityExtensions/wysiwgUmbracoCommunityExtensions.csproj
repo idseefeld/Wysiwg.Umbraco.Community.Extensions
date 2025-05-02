@@ -45,6 +45,7 @@
   <ItemGroup>
     <!-- Dont include the client folder as part of packaging nuget build -->
     <Content Remove="Wysiwg\**" />
+    <Compile Remove="Composers\ApplicationLifetimeComposer.cs" />
     <Compile Remove="Models\CropModel.cs" />
     <Compile Remove="Models\ImageCropperCropExtended.cs" />
     <Content Remove="compilerconfig.json" />
