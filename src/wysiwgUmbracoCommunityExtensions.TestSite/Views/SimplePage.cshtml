@@ -1,0 +1,44 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<SimplePage>
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Simple Page</title>
+
+    <link rel="shortcut icon" type="image/png" href="/favicon.png" />
+
+    <link href="~/styles/customblockgrid.min.css" rel="stylesheet" />
+
+    <style>
+        figure{
+            margin: 0
+        }
+        figure img{
+            width: 100%;
+        }
+        body, html{
+            margin: 0;
+        }
+        #canvas{
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body id="top">
+    <div id="canvas">
+        @await Html.GetBlockGridHtmlAsync(Model.Main)
+
+        <footer>
+            <a href="/umbraco" target="_blank">backoffice</a>
+        </footer>
+
+    </div>
+</body>
+</html>

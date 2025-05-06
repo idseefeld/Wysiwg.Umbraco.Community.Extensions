@@ -6,7 +6,7 @@ import {
   unsafeHTML,
 } from "@umbraco-cms/backoffice/external/lit";
 import type { UmbBlockEditorCustomViewElement } from "@umbraco-cms/backoffice/block-custom-view";
-import WysiwgBaseBlockEditorCustomViewElement from "./base-block-editor-custom.view";
+import WysiwgBaseBlockEditorCustomViewElement from "./wysiwg-base-block-editor-custom.view";
 
 const customElementName = "wysiwg-block-paragraph-view";
 @customElement(customElementName)

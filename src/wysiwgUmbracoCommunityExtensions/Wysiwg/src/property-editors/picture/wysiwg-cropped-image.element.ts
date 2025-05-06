@@ -8,7 +8,7 @@ import {
 import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
 import { UmbTextStyles } from "@umbraco-cms/backoffice/style";
 import { V2CropUrlData, WysiwgUmbracoCommunityExtensionsService } from "../..";
-import { WysiwgMediaPickerPropertyValueEntry } from "../../property-editors/picture/types";
+import { WysiwgMediaPickerPropertyValueEntry } from "./types";
 import { UmbPropertyEditorUiElement, UmbPropertyValueChangeEvent } from "@umbraco-cms/backoffice/property-editor";
 
 const elementName = "wysiwg-cropped-image";

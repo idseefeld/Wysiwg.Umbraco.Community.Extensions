@@ -1,25 +1,28 @@
 import { LitElement as u, property as g, state as m, customElement as y } from "@umbraco-cms/backoffice/external/lit";
 import { UmbElementMixin as S } from "@umbraco-cms/backoffice/element-api";
 import { UMB_PROPERTY_DATASET_CONTEXT as E } from "@umbraco-cms/backoffice/property";
-var w = Object.defineProperty, P = Object.getOwnPropertyDescriptor, h = (t) => {
+var w = Object.defineProperty, C = Object.getOwnPropertyDescriptor, h = (t) => {
   throw TypeError(t);
-}, c = (t, e, s, r) => {
-  for (var i = r > 1 ? void 0 : r ? P(e, s) : e, a = t.length - 1, n; a >= 0; a--)
+}, l = (t, e, s, r) => {
+  for (var i = r > 1 ? void 0 : r ? C(e, s) : e, a = t.length - 1, n; a >= 0; a--)
     (n = t[a]) && (i = (r ? n(e, s, i) : n(i)) || i);
   return r && i && w(e, s, i), i;
-}, v = (t, e, s) => e.has(t) || h("Cannot " + s), C = (t, e, s) => (v(t, e, "read from private field"), e.get(t)), O = (t, e, s) => e.has(t) ? h("Cannot add the same private member more than once") : e instanceof WeakSet ? e.add(t) : e.set(t, s), b = (t, e, s, r) => (v(t, e, "write to private field"), e.set(t, s), s), l;
-const D = "#fff", x = "wysiwg-base.block-editor-custom-view";
+}, v = (t, e, s) => e.has(t) || h("Cannot " + s), P = (t, e, s) => (v(t, e, "read from private field"), e.get(t)), O = (t, e, s) => e.has(t) ? h("Cannot add the same private member more than once") : e instanceof WeakSet ? e.add(t) : e.set(t, s), T = (t, e, s, r) => (v(t, e, "write to private field"), e.set(t, s), s), c;
+const b = "#fff", x = "wysiwg-base.block-editor-custom-view";
 let o = class extends S(u) {
   constructor() {
-    super(), O(this, l), this.consumeContext(
+    super(), O(this, c), this.consumeContext(
       E,
       async (t) => this.getSettings(t)
     );
   }
+  isTransparentColor(t) {
+    return t === b;
+  }
   async getSettings(t) {
     var e;
-    b(this, l, t), this.observe(
-      (e = C(this, l)) == null ? void 0 : e.properties,
+    T(this, c, t), this.observe(
+      (e = P(this, c)) == null ? void 0 : e.properties,
       async (s) => {
         var i;
         const r = s;
@@ -47,24 +50,23 @@ let o = class extends S(u) {
   async lastStepObservingProperties(t) {
   }
 };
-l = /* @__PURE__ */ new WeakMap();
-c([
+c = /* @__PURE__ */ new WeakMap();
+l([
   g({ attribute: !1 })
 ], o.prototype, "content", 2);
-c([
+l([
   g({ attribute: !1 })
 ], o.prototype, "config", 2);
-c([
+l([
   g({ attribute: !1 })
 ], o.prototype, "settings", 2);
-c([
+l([
   m()
 ], o.prototype, "datasetSettings", 2);
-o = c([
+o = l([
   y(x)
 ], o);
 export {
-  o as W,
-  D as t
+  o as W
 };
-//# sourceMappingURL=base-block-editor-custom.view-Dqc2JicF.js.map
+//# sourceMappingURL=wysiwg-base-block-editor-custom.view-BP--8Rci.js.map

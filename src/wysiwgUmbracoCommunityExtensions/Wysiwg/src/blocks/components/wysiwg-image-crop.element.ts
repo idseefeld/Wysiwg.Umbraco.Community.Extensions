@@ -49,25 +49,13 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
 
   #intersectionObserver?: IntersectionObserver;
 
-  override render() {
-    //console.debug("wysiwg-image-crop.render", this._imageUrl, this._isLoading);
-
-    const img = this.#renderImageCrop();
-    const loading = this.#renderLoading();
-    //console.debug("wysiwg-image-crop.render img: ", img);
-    //console.debug("wysiwg-image-crop.render loading: ", loading);
-    return html` ${img} ${loading} `;
-  }
-
   override connectedCallback() {
     super.connectedCallback();
-    //console.debug("wysiwg-image-crop.connectedCallback");
 
     this.loadImage();
   }
 
   override disconnectedCallback() {
-    //console.debug("wysiwg-image-crop.disconnectedCallback");
 
     super.disconnectedCallback();
     this.#intersectionObserver?.disconnect();
@@ -82,7 +70,6 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
     ) {
       this.loadImage();
     } else if (changedProperties.has("_imageUrl")) {
-      //console.debug("wysiwg-image-crop.updated", this._imageUrl);
     }
   }
 
@@ -165,6 +152,12 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
       }
       this._imageUrl = data;
     });
+  }
+
+  override render() {
+    const img = this.#renderImageCrop();
+    const loading = this.#renderLoading();
+    return html` ${img} ${loading} `;
   }
 
   static override styles = [

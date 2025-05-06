@@ -33,7 +33,7 @@ import {
 } from "./types";
 import { CropsData, CropsResponse, MediaTypeModel, MediaTypesResponse, WysiwgUmbracoCommunityExtensionsService } from "../../api";
 import { UmbNumberRangeValueType } from "@umbraco-cms/backoffice/models";
-import { WysiwgCroppedImageElement } from "./wysiwg-image-crop.element";
+import { WysiwgCroppedImageElement } from "./wysiwg-cropped-image.element.js";
 
 import type { WysiwgInputRichMediaElement } from "./wysiwg-input-rich-media.element.js";
 import './wysiwg-input-rich-media.element.js';
