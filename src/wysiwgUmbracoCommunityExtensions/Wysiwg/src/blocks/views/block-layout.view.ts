@@ -18,7 +18,7 @@ import {
 import { UmbBlockGridValueModel } from "@umbraco-cms/backoffice/block-grid";
 import { BlockGridLayoutModel, MediaPickerValueModel } from "../types";
 import { ImageUrlData, WysiwgUmbracoCommunityExtensionsService } from "../..";
-import WysiwgBaseBlockEditorCustomViewElement, { transparentBackgroundColor } from "./base-block-editor-custom.view";
+import WysiwgBaseBlockEditorCustomViewElement from "./wysiwg-base-block-editor-custom.view";
 
 //this is based on a copy of
 // Umbraco-CMS\src\
@@ -119,7 +119,7 @@ export class WysiwgBlockLayoutView
           value: string;
         }
       ).value;
-      const transparentBackground = backgroundColor === transparentBackgroundColor;
+      const transparentBackground = this.isTransparentColor(backgroundColor);
       if (backgroundColor) {
         inlineStyles.backgroundColor = transparentBackground ? "transparent" : backgroundColor;
       }
