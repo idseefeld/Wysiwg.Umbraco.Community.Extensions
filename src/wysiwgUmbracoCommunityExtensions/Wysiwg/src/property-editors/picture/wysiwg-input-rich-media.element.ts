@@ -473,6 +473,7 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
       text-align: center;
       min-height: 150px;
       min-width: 150px;
+      width: 100%;
     }
 
     uui-icon {

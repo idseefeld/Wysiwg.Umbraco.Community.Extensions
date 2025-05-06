@@ -1,4 +1,4 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Web.Common.PublishedModels;
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<SimplePage>
 @{
     Layout = null;
@@ -33,7 +33,7 @@
 </head>
 <body id="top">
     <div id="canvas">
-        @await Html.GetBlockGridHtmlAsync(Model.Main)
+        @await Html.GetBlockGridHtmlAsync(Model.Grid)
 
         <footer>
             <a href="/umbraco" target="_blank">backoffice</a>

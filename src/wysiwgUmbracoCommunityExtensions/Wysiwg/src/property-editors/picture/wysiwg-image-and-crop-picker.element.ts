@@ -315,22 +315,6 @@ export class WysiwgImageAndCropPickerElement
     </div>`;
   }
 
-  // #renderPreviewImage() {
-  //   if (!this.value || !this.value.length || !this.value[0]?.mediaKey) { return; }
-
-  //   const media = this.value[0];
-
-  //   return html`<wysiwg-cropped-image .mediaItem=${media} @change=${this.#onChangePreview}></wysiwg-cropped-image>`;
-  // }
-
-  // #onChangePreview(event: CustomEvent & { target: WysiwgCroppedImageElement }) {
-  //   if (event?.target?.value?.length > 0) {
-  //     this._updateValue({
-  //       cropUrl: event?.target?.value,
-  //     });
-  //   }
-  // }
-
   #renderEditImage() {
     return html`
     <wysiwg-input-rich-media
