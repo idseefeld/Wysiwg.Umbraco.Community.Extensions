@@ -1,40 +1,40 @@
 import { UMB_MEDIA_ITEM_REPOSITORY_ALIAS as ae, UMB_IMAGE_CROPPER_EDITOR_MODAL as re, UMB_MEDIA_PICKER_MODAL as oe, UMB_MEDIA_ENTITY_TYPE as ne } from "@umbraco-cms/backoffice/media";
-import { html as y, nothing as P, repeat as le, css as B, property as d, state as c, customElement as U } from "@umbraco-cms/backoffice/external/lit";
+import { html as _, nothing as P, repeat as le, css as B, property as h, state as u, customElement as U } from "@umbraco-cms/backoffice/external/lit";
 import { UmbLitElement as R } from "@umbraco-cms/backoffice/lit-element";
-import { UMB_PROPERTY_CONTEXT as de } from "@umbraco-cms/backoffice/property";
-import { UmbPropertyValueChangeEvent as pe } from "@umbraco-cms/backoffice/property-editor";
-import { UmbFormControlMixin as N, UMB_VALIDATION_EMPTY_LOCALIZATION_KEY as z } from "@umbraco-cms/backoffice/validation";
-import { UUISelectElement as he } from "@umbraco-cms/backoffice/external/uui";
+import { UMB_PROPERTY_CONTEXT as he } from "@umbraco-cms/backoffice/property";
+import { UmbPropertyValueChangeEvent as N } from "@umbraco-cms/backoffice/property-editor";
+import { UmbFormControlMixin as z, UMB_VALIDATION_EMPTY_LOCALIZATION_KEY as W } from "@umbraco-cms/backoffice/validation";
+import { UUISelectElement as pe } from "@umbraco-cms/backoffice/external/uui";
 import { W as q } from "./services.gen-B_ebHh4e.js";
-import { UmbChangeEvent as A } from "@umbraco-cms/backoffice/event";
-import { UmbId as K } from "@umbraco-cms/backoffice/id";
-import { UMB_MODAL_MANAGER_CONTEXT as ce, umbConfirmModal as ue } from "@umbraco-cms/backoffice/modal";
-import { UmbRepositoryItemsManager as me } from "@umbraco-cms/backoffice/repository";
-import { UmbModalRouteRegistrationController as ye } from "@umbraco-cms/backoffice/router";
-import { UmbSorterController as _e, UmbSorterResolvePlacementAsGrid as fe } from "@umbraco-cms/backoffice/sorter";
-var ge = Object.defineProperty, ve = Object.getOwnPropertyDescriptor, W = (e) => {
+import { UmbChangeEvent as E } from "@umbraco-cms/backoffice/event";
+import { UmbId as D } from "@umbraco-cms/backoffice/id";
+import { UMB_MODAL_MANAGER_CONTEXT as de, umbConfirmModal as ce } from "@umbraco-cms/backoffice/modal";
+import { UmbRepositoryItemsManager as ue } from "@umbraco-cms/backoffice/repository";
+import { UmbModalRouteRegistrationController as me } from "@umbraco-cms/backoffice/router";
+import { UmbSorterController as ye, UmbSorterResolvePlacementAsGrid as _e } from "@umbraco-cms/backoffice/sorter";
+var fe = Object.defineProperty, ge = Object.getOwnPropertyDescriptor, K = (e) => {
   throw TypeError(e);
 }, p = (e, t, i, s) => {
-  for (var a = s > 1 ? void 0 : s ? ve(t, i) : t, r = e.length - 1, o; r >= 0; r--)
+  for (var a = s > 1 ? void 0 : s ? ge(t, i) : t, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (a = (s ? o(t, i, a) : o(a)) || a);
-  return s && a && ge(t, i, a), a;
-}, x = (e, t, i) => t.has(e) || W("Cannot " + i), _ = (e, t, i) => (x(e, t, "read from private field"), i ? i.call(e) : t.get(e)), C = (e, t, i) => t.has(e) ? W("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, i), O = (e, t, i, s) => (x(e, t, "write to private field"), t.set(e, i), i), m = (e, t, i) => (x(e, t, "access private method"), i), $, E, I, M, u, S, T, k, D, L, F, V, Y, G, X, H, Z;
-const we = "wysiwg-input-rich-media";
-let n = class extends N(R, void 0) {
+  return s && a && fe(t, i, a), a;
+}, x = (e, t, i) => t.has(e) || K("Cannot " + i), y = (e, t, i) => (x(e, t, "read from private field"), i ? i.call(e) : t.get(e)), w = (e, t, i) => t.has(e) ? K("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, i), O = (e, t, i, s) => (x(e, t, "write to private field"), t.set(e, i), i), m = (e, t, i) => (x(e, t, "access private method"), i), b, M, I, $, c, S, A, k, L, F, V, Y, G, X, H, Z, J, Q;
+const ve = "wysiwg-input-rich-media";
+let n = class extends z(R, void 0) {
   constructor() {
-    super(), C(this, u), C(this, $, new _e(this, {
+    super(), w(this, c), w(this, b, new ye(this, {
       getUniqueOfElement: (e) => e.id,
       getUniqueOfModel: (e) => e.key,
       identifier: "Umb.SorterIdentifier.InputRichMedia",
       itemSelector: "uui-card-media",
       containerSelector: ".container",
-      resolvePlacement: fe,
+      resolvePlacement: _e,
       onChange: ({ model: e }) => {
-        this.value = e, this.dispatchEvent(new A());
+        this.value = e, this.dispatchEvent(new E());
       }
-    })), this.min = 0, this.minMessage = "This field need more items", this.max = 1 / 0, this.maxMessage = "This field exceeds the allowed amount of items", this.multiple = !1, C(this, E, !1), C(this, I, !1), this._cards = [], C(this, M, new me(this, ae)), C(this, T, (e) => this.allowedContentTypeIds && this.allowedContentTypeIds.length > 0 ? this.allowedContentTypeIds.includes(e.mediaType.unique) : !0), this.observe(_(this, M).items, () => {
-      m(this, u, S).call(this);
-    }), new ye(this, re).addAdditionalPath(":key").onSetup((e) => {
+    })), this.min = 0, this.minMessage = "This field need more items", this.max = 1 / 0, this.maxMessage = "This field exceeds the allowed amount of items", this.multiple = !1, w(this, M, !1), w(this, I, !1), this._cards = [], w(this, $, new ue(this, ae)), w(this, A, (e) => this.allowedContentTypeIds && this.allowedContentTypeIds.length > 0 ? this.allowedContentTypeIds.includes(e.mediaType.unique) : !0), this.observe(y(this, $).items, () => {
+      m(this, c, S).call(this);
+    }), new me(this, re).addAdditionalPath(":key").onSetup((e) => {
       var s;
       const t = e.key;
       if (!t) return !1;
@@ -45,7 +45,7 @@ let n = class extends N(R, void 0) {
           hideFocalPoint: !this.focalPointEnabled,
           key: t,
           unique: i.mediaKey,
-          pickableFilter: _(this, T)
+          pickableFilter: y(this, A)
         },
         value: {
           crops: i.crops ?? [],
@@ -59,14 +59,14 @@ let n = class extends N(R, void 0) {
       var t;
       this.value = (t = this.value) == null ? void 0 : t.map((i) => {
         if (i.key !== e.key) return i;
-        const s = this.focalPointEnabled ? e.focalPoint : null, a = e.crops, r = e.unique, o = r === i.mediaKey ? i.key : K.new();
+        const s = this.focalPointEnabled ? e.focalPoint : null, a = e.crops, r = e.unique, o = r === i.mediaKey ? i.key : D.new();
         return { ...i, crops: a, mediaKey: r, focalPoint: s, key: o };
-      }), this.dispatchEvent(new A());
+      }), this.dispatchEvent(new E());
     }).observeRouteBuilder((e) => {
       this._routeBuilder = e;
     }), this.addValidator(
       "valueMissing",
-      () => this.requiredMessage ?? z,
+      () => this.requiredMessage ?? W,
       () => !this.readonly && !!this.required && (!this.value || this.value.length === 0)
     ), this.addValidator(
       "rangeUnderflow",
@@ -88,16 +88,16 @@ let n = class extends N(R, void 0) {
     );
   }
   set value(e) {
-    super.value = e, _(this, $).setModel(e), _(this, M).setUniques(e == null ? void 0 : e.map((t) => t.mediaKey)), m(this, u, S).call(this);
+    super.value = e, y(this, b).setModel(e), y(this, $).setUniques(e == null ? void 0 : e.map((t) => t.mediaKey)), m(this, c, S).call(this);
   }
   get value() {
     return super.value;
   }
   set focalPointEnabled(e) {
-    O(this, E, e);
+    O(this, M, e);
   }
   get focalPointEnabled() {
-    return _(this, E);
+    return y(this, M);
   }
   /** @deprecated will be removed in v17 */
   set alias(e) {
@@ -110,29 +110,46 @@ let n = class extends N(R, void 0) {
   get variantId() {
   }
   get readonly() {
-    return _(this, I);
+    return y(this, I);
   }
   set readonly(e) {
-    O(this, I, e), _(this, I) ? _(this, $).disable() : _(this, $).enable();
+    O(this, I, e), y(this, I) ? y(this, b).disable() : y(this, b).enable();
   }
   getFormElement() {
   }
   //#endregion
   render() {
-    return y`
-    ${m(this, u, V).call(this)}
-    <div class="container">${m(this, u, Y).call(this)} ${m(this, u, G).call(this)}</div>
+    return _`
+    ${m(this, c, Y).call(this)}
+    <div class="container">${m(this, c, G).call(this)} ${m(this, c, X).call(this)}</div>
   `;
   }
+  _updateValue(e, t = !1) {
+    const i = [];
+    if (!this.value || !this.value.length || t) {
+      const s = {
+        ...e
+      };
+      i.push(s);
+    } else
+      for (let s = 0; s < this.value.length; s++) {
+        const a = {
+          ...this.value[s],
+          ...e
+        };
+        i.push(a);
+      }
+    this.value = i, this.dispatchEvent(new N());
+  }
 };
-$ = /* @__PURE__ */ new WeakMap();
-E = /* @__PURE__ */ new WeakMap();
-I = /* @__PURE__ */ new WeakMap();
+b = /* @__PURE__ */ new WeakMap();
 M = /* @__PURE__ */ new WeakMap();
-u = /* @__PURE__ */ new WeakSet();
+I = /* @__PURE__ */ new WeakMap();
+$ = /* @__PURE__ */ new WeakMap();
+c = /* @__PURE__ */ new WeakSet();
 S = async function() {
   var s;
-  const e = _(this, M).getItems();
+  const e = y(this, $).getItems();
   if (!e.length) {
     this._cards = [];
     return;
@@ -150,69 +167,69 @@ S = async function() {
     };
   })) ?? []);
 };
-T = /* @__PURE__ */ new WeakMap();
+A = /* @__PURE__ */ new WeakMap();
 k = function(e) {
   if (!e.length) return;
   const t = e.map((i) => ({
-    key: K.new(),
+    key: D.new(),
     mediaKey: i,
     mediaTypeAlias: "",
     crops: [],
     focalPoint: null
   }));
-  this.value = [...this.value ?? [], ...t], this.dispatchEvent(new A());
+  this.value = [...this.value ?? [], ...t], this.dispatchEvent(new E());
 };
-D = async function() {
-  const e = await this.getContext(ce), t = e == null ? void 0 : e.open(this, oe, {
+L = async function() {
+  const e = await this.getContext(de), t = e == null ? void 0 : e.open(this, oe, {
     data: {
       multiple: this.multiple,
       startNode: this.startNode,
-      pickableFilter: _(this, T)
+      pickableFilter: y(this, A)
     },
     value: { selection: [] }
   }), i = await (t == null ? void 0 : t.onSubmit().catch(() => null));
   if (!i) return;
   const s = i.selection.filter((a) => a !== null);
-  m(this, u, k).call(this, s);
+  m(this, c, k).call(this, s);
 };
-L = async function(e) {
+F = async function(e) {
   var t;
-  await ue(this, {
+  await ce(this, {
     color: "danger",
     headline: `${this.localize.term("actions_remove")} ${e.name}?`,
     content: `${this.localize.term("defaultdialogs_confirmremove")} ${e.name}?`,
     confirmLabel: this.localize.term("actions_remove")
-  }), this.value = (t = this.value) == null ? void 0 : t.filter((i) => i.key !== e.unique), this.dispatchEvent(new A());
+  }), this.value = (t = this.value) == null ? void 0 : t.filter((i) => i.key !== e.unique), this.dispatchEvent(new E());
 };
-F = async function(e) {
+V = async function(e) {
   const i = e.detail.map((s) => s.unique);
-  m(this, u, k).call(this, i);
-};
-V = function() {
-  if (this.readonly) return P;
-  if (!(this._cards && this._cards.length >= this.max))
-    return y`<umb-dropzone ?multiple=${this.max > 1} @complete=${m(this, u, F)}></umb-dropzone>`;
+  m(this, c, k).call(this, i);
 };
 Y = function() {
+  if (this.readonly) return P;
+  if (!(this._cards && this._cards.length >= this.max))
+    return _`<umb-dropzone ?multiple=${this.max > 1} @complete=${m(this, c, V)}></umb-dropzone>`;
+};
+G = function() {
   if (this._cards.length)
-    return y`
+    return _`
     ${le(
       this._cards,
       (e) => e.unique,
-      (e) => m(this, u, X).call(this, e)
+      (e) => m(this, c, H).call(this, e)
     )}
   `;
 };
-G = function() {
+X = function() {
   if (!(this._cards && this._cards.length && !this.multiple))
-    return this.readonly && this._cards.length > 0 ? P : y`
+    return this.readonly && this._cards.length > 0 ? P : _`
       <uui-button
         id="btn-add"
         look="placeholder"
         @blur=${() => {
       this.pristine = !1, this.checkValidity();
     }}
-        @click=${m(this, u, D)}
+        @click=${m(this, c, L)}
         label=${this.localize.term("general_choose")}
         ?disabled=${this.readonly}>
         <uui-icon name="icon-add"></uui-icon>
@@ -220,32 +237,38 @@ G = function() {
       </uui-button>
     `;
 };
-X = function(e) {
-  var i;
-  if (!e.unique) return P;
-  const t = this.readonly || (i = this._routeBuilder) == null ? void 0 : i.call(this, { key: e.unique });
-  return y`
-    <uui-card-media id=${e.unique} name=${e.name} .href=${t} ?readonly=${this.readonly}>
-      <umb-imaging-thumbnail
-        unique=${e.media}
-        alt=${e.name}
-        icon=${e.icon ?? "icon-picture"}></umb-imaging-thumbnail>
-      ${m(this, u, Z).call(this, e)} ${m(this, u, H).call(this, e)}
-    </uui-card-media>
+H = function(e) {
+  var s, a;
+  const t = (s = this.value) != null && s.length ? this.value[0] : void 0;
+  if (!e.unique || !t) return P;
+  const i = this.readonly || (a = this._routeBuilder) == null ? void 0 : a.call(this, { key: e.unique });
+  return _`
+    <wysiwg-card-image id=${e.unique} name=${e.name} .href=${i} ?readonly=${this.readonly}>
+
+      <wysiwg-cropped-image .mediaItem=${t} @change=${m(this, c, Z)}></wysiwg-cropped-image>
+      ${m(this, c, Q).call(this, e)} ${m(this, c, J).call(this, e)}
+
+    </wysiwg-card-image>
   `;
 };
-H = function(e) {
-  return this.readonly ? P : y`
+Z = function(e) {
+  var t, i, s;
+  ((i = (t = e == null ? void 0 : e.target) == null ? void 0 : t.value) == null ? void 0 : i.length) > 0 && this._updateValue({
+    cropUrl: (s = e == null ? void 0 : e.target) == null ? void 0 : s.value
+  });
+};
+J = function(e) {
+  return this.readonly ? P : _`
     <uui-action-bar slot="actions">
-      <uui-button label=${this.localize.term("general_remove")} look="secondary" @click=${() => m(this, u, L).call(this, e)}>
+      <uui-button label=${this.localize.term("general_remove")} look="secondary" @click=${() => m(this, c, F).call(this, e)}>
         <uui-icon name="icon-trash"></uui-icon>
       </uui-button>
     </uui-action-bar>
   `;
 };
-Z = function(e) {
+Q = function(e) {
   if (e.isTrashed)
-    return y`
+    return _`
     <uui-tag size="s" slot="tag" color="danger">
       <umb-localize key="mediaPicker_trashed">Trashed</umb-localize>
     </uui-tag>
@@ -256,16 +279,17 @@ n.styles = [
     :host {
       position: relative;
     }
-    .container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      grid-auto-rows: 150px;
-      gap: var(--uui-size-space-5);
+
+    .container{
+      min-width: 150px;
+      min-height: 150px;
+      display: block;
     }
 
     #btn-add {
       text-align: center;
-      height: 100%;
+      min-height: 150px;
+      min-width: 150px;
     }
 
     uui-icon {
@@ -288,71 +312,71 @@ n.styles = [
   `
 ];
 p([
-  d({ type: Boolean })
+  h({ type: Boolean })
 ], n.prototype, "required", 2);
 p([
-  d({ type: String })
+  h({ type: String })
 ], n.prototype, "requiredMessage", 2);
 p([
-  d({ type: Number })
+  h({ type: Number })
 ], n.prototype, "min", 2);
 p([
-  d({ type: String, attribute: "min-message" })
+  h({ type: String, attribute: "min-message" })
 ], n.prototype, "minMessage", 2);
 p([
-  d({ type: Number })
+  h({ type: Number })
 ], n.prototype, "max", 2);
 p([
-  d({ type: String, attribute: "min-message" })
+  h({ type: String, attribute: "min-message" })
 ], n.prototype, "maxMessage", 2);
 p([
-  d({ type: Array })
+  h({ type: Array })
 ], n.prototype, "value", 1);
 p([
-  d({ type: Array })
+  h({ type: Array })
 ], n.prototype, "allowedContentTypeIds", 2);
 p([
-  d({ type: Object, attribute: !1 })
+  h({ type: Object, attribute: !1 })
 ], n.prototype, "startNode", 2);
 p([
-  d({ type: Boolean })
+  h({ type: Boolean })
 ], n.prototype, "multiple", 2);
 p([
-  d({ type: Array })
+  h({ type: Array })
 ], n.prototype, "preselectedCrops", 2);
 p([
-  d({ type: Boolean })
+  h({ type: Boolean })
 ], n.prototype, "focalPointEnabled", 1);
 p([
-  d()
+  h()
 ], n.prototype, "alias", 1);
 p([
-  d()
+  h()
 ], n.prototype, "variantId", 1);
 p([
-  d({ type: Boolean, reflect: !0 })
+  h({ type: Boolean, reflect: !0 })
 ], n.prototype, "readonly", 1);
 p([
-  c()
+  u()
 ], n.prototype, "_cards", 2);
 p([
-  c()
+  u()
 ], n.prototype, "_routeBuilder", 2);
 n = p([
-  U(we)
+  U(ve)
 ], n);
-var Ce = Object.defineProperty, be = Object.getOwnPropertyDescriptor, J = (e) => {
+var we = Object.defineProperty, Ce = Object.getOwnPropertyDescriptor, j = (e) => {
   throw TypeError(e);
-}, h = (e, t, i, s) => {
-  for (var a = s > 1 ? void 0 : s ? be(t, i) : t, r = e.length - 1, o; r >= 0; r--)
+}, d = (e, t, i, s) => {
+  for (var a = s > 1 ? void 0 : s ? Ce(t, i) : t, r = e.length - 1, o; r >= 0; r--)
     (o = e[r]) && (a = (s ? o(t, i, a) : o(a)) || a);
-  return s && a && Ce(t, i, a), a;
-}, $e = (e, t, i) => t.has(e) || J("Cannot " + i), Ie = (e, t, i) => t.has(e) ? J("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, i), b = (e, t, i) => ($e(e, t, "access private method"), i), v, Q, j, ee, te, ie, se;
-const Me = "wysiwg-image-and-crop-picker";
-let l = class extends N(R) {
+  return s && a && we(t, i, a), a;
+}, be = (e, t, i) => t.has(e) || j("Cannot " + i), Ie = (e, t, i) => t.has(e) ? j("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, i), T = (e, t, i) => (be(e, t, "access private method"), i), C, ee, te, ie, se;
+const $e = "wysiwg-image-and-crop-picker";
+let l = class extends z(R) {
   //#endregion
   constructor() {
-    super(), Ie(this, v), this.mandatoryMessage = z, this.readonly = !1, this._focalPointEnabled = !1, this._preselectedCrops = [], this._allowedMediaTypes = [], this._multiple = !1, this._min = 0, this._max = 1 / 0, this._selectedCropAlias = "", this._options = [], this._mediaTypes = [], this._imgSrc = "", this._prevImgSrc = "", this.consumeContext(de, (e) => {
+    super(), Ie(this, C), this.mandatoryMessage = W, this.readonly = !1, this._focalPointEnabled = !1, this._preselectedCrops = [], this._allowedMediaTypes = [], this._multiple = !1, this._min = 0, this._max = 1 / 0, this._selectedCropAlias = "", this._options = [], this._mediaTypes = [], this._imgSrc = "", this._prevImgSrc = "", this.consumeContext(he, (e) => {
       this.observe(e.alias, (t) => this._alias = t), this.observe(e.variantId, (t) => this._variantId = (t == null ? void 0 : t.toString()) || "invariant");
     });
   }
@@ -365,9 +389,9 @@ let l = class extends N(R) {
       const o = this._preselectedCrops.find((g) => !!g.defaultCrop);
       this._selectedCropAlias = ((r = (a = this.value) == null ? void 0 : a[0]) == null ? void 0 : r.selectedCropAlias) ?? (o == null ? void 0 : o.alias) ?? "";
       const f = this._preselectedCrops.map((g) => {
-        var w;
+        var v;
         return {
-          name: ((w = g.label) == null ? void 0 : w.toString()) ?? g.alias,
+          name: ((v = g.label) == null ? void 0 : v.toString()) ?? g.alias,
           value: g.alias,
           selected: g.alias === this._selectedCropAlias
         };
@@ -458,26 +482,23 @@ let l = class extends N(R) {
         };
         i.push(a);
       }
-    this.value = i, this.dispatchEvent(new pe());
+    this.value = i, this.dispatchEvent(new N());
   }
   render() {
-    return y`
+    return _`
     <div id="container">
       <div id="left">
-        ${b(this, v, ie).call(this)}
-      </div>
-      <div id="right">
-        ${b(this, v, te).call(this)}
-        ${b(this, v, se).call(this)}
+        ${T(this, C, ie).call(this)}
+        ${T(this, C, se).call(this)}
       </div>
     </div>`;
   }
 };
-v = /* @__PURE__ */ new WeakSet();
-Q = function(e) {
+C = /* @__PURE__ */ new WeakSet();
+ee = function(e) {
   var r, o, f, g;
   this._imgSrc !== this._prevImgSrc && (console.debug("imgSrc changed", this._imgSrc, this._prevImgSrc), this._prevImgSrc = this._imgSrc);
-  const t = ((r = e.target.value) == null ? void 0 : r.length) === 0, i = ((o = e.target.value) == null ? void 0 : o.find((w) => !!w.mediaKey)) ?? void 0;
+  const t = ((r = e.target.value) == null ? void 0 : r.length) === 0, i = ((o = e.target.value) == null ? void 0 : o.find((v) => !!v.mediaKey)) ?? void 0;
   let s = t ? void 0 : i;
   const a = ((g = (f = this.value) == null ? void 0 : f[0]) == null ? void 0 : g.selectedCropAlias) ?? this._selectedCropAlias;
   if (t)
@@ -485,38 +506,25 @@ Q = function(e) {
       selectedCropAlias: a
     }, !0);
   else {
-    const w = (s == null ? void 0 : s.crops.length) === 0 ? this._preselectedCrops : s == null ? void 0 : s.crops;
+    const v = (s == null ? void 0 : s.crops.length) === 0 ? this._preselectedCrops : s == null ? void 0 : s.crops;
     this._updateValue({
       key: s == null ? void 0 : s.key,
       mediaKey: s == null ? void 0 : s.mediaKey,
       mediaTypeAlias: s == null ? void 0 : s.mediaTypeAlias,
       focalPoint: s == null ? void 0 : s.focalPoint,
-      crops: w,
+      crops: v,
       selectedCropAlias: a
     });
   }
 };
-j = function(e) {
+te = function(e) {
   const t = e.target.value;
   this._selectedCropAlias = t, this._updateValue({
     selectedCropAlias: this._selectedCropAlias
   });
 };
-ee = function(e) {
-  var t, i, s;
-  ((i = (t = e == null ? void 0 : e.target) == null ? void 0 : t.value) == null ? void 0 : i.length) > 0 && this._updateValue({
-    cropUrl: (s = e == null ? void 0 : e.target) == null ? void 0 : s.value
-  });
-};
-te = function() {
-  var t;
-  if (!this.value || !this.value.length || !((t = this.value[0]) != null && t.mediaKey))
-    return;
-  const e = this.value[0];
-  return y`<wysiwg-cropped-image .mediaItem=${e} @change=${b(this, v, ee)}></wysiwg-cropped-image>`;
-};
 ie = function() {
-  return y`
+  return _`
     <wysiwg-input-rich-media
       .alias=${this._alias}
       .allowedContentTypeIds=${this._allowedMediaTypes}
@@ -530,7 +538,7 @@ ie = function() {
       .required=${this.mandatory}
       .requiredMessage=${this.mandatoryMessage}
       ?multiple=${this._multiple}
-      @change=${b(this, v, Q)}
+      @change=${T(this, C, ee)}
       ?readonly=${this.readonly}
     >
     </wysiwg-input-rich-media>
@@ -539,18 +547,18 @@ ie = function() {
 se = function() {
   var i, s;
   const e = !!((i = this.value) != null && i.length) && !!((s = this.value[0]) != null && s.mediaKey), t = "crop-select";
-  return this._options.length ? y`
+  return this._options.length ? _`
       <uui-select
         label=${t}
         .disabled=${!e}
         .options=${this._options}
-        @change=${b(this, v, j)}
+        @change=${T(this, C, te)}
         ?readonly=${this.readonly}
       ></uui-select>
-    ` : y`<uui-select label=${t}></uui-select>`;
+    ` : _`<uui-select label=${t}></uui-select>`;
 };
 l.styles = [
-  he.styles,
+  pe.styles,
   B`
       uui-select {
         margin-top: 8px;
@@ -583,62 +591,62 @@ l.styles = [
       }
     `
 ];
-h([
-  d({ type: Boolean })
+d([
+  h({ type: Boolean })
 ], l.prototype, "mandatory", 2);
-h([
-  d({ type: String })
+d([
+  h({ type: String })
 ], l.prototype, "mandatoryMessage", 2);
-h([
-  d({ type: Boolean, reflect: !0 })
+d([
+  h({ type: Boolean, reflect: !0 })
 ], l.prototype, "readonly", 2);
-h([
-  c()
+d([
+  u()
 ], l.prototype, "_startNode", 2);
-h([
-  c()
+d([
+  u()
 ], l.prototype, "_focalPointEnabled", 2);
-h([
-  c()
+d([
+  u()
 ], l.prototype, "_preselectedCrops", 2);
-h([
-  c()
+d([
+  u()
 ], l.prototype, "_allowedMediaTypes", 2);
-h([
-  c()
+d([
+  u()
 ], l.prototype, "_multiple", 2);
-h([
-  c()
+d([
+  u()
 ], l.prototype, "_min", 2);
-h([
-  c()
+d([
+  u()
 ], l.prototype, "_max", 2);
-h([
-  c()
+d([
+  u()
 ], l.prototype, "_alias", 2);
-h([
-  c()
+d([
+  u()
 ], l.prototype, "_variantId", 2);
-h([
-  c()
+d([
+  u()
 ], l.prototype, "_selectedCropAlias", 2);
-h([
-  c()
+d([
+  u()
 ], l.prototype, "_options", 2);
-h([
-  c()
+d([
+  u()
 ], l.prototype, "_mediaTypes", 2);
-h([
-  c()
+d([
+  u()
 ], l.prototype, "_imgSrc", 2);
-h([
-  c()
+d([
+  u()
 ], l.prototype, "_prevImgSrc", 2);
-l = h([
-  U(Me)
+l = d([
+  U($e)
 ], l);
 export {
   l as WysiwgImageAndCropPickerElement,
   l as element
 };
-//# sourceMappingURL=wysiwg-image-and-crop-picker.element-Dko5HQsH.js.map
+//# sourceMappingURL=wysiwg-image-and-crop-picker.element-CBM75-DY.js.map

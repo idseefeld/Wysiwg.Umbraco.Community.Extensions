@@ -10,6 +10,9 @@ import { UmbSorterController, UmbSorterResolvePlacementAsGrid } from "@umbraco-c
 import { UmbTreeStartNode } from "@umbraco-cms/backoffice/tree";
 import { UMB_VALIDATION_EMPTY_LOCALIZATION_KEY, UmbFormControlMixin } from "@umbraco-cms/backoffice/validation";
 import { UmbVariantId } from "@umbraco-cms/backoffice/variant";
+import { WysiwgCroppedImageElement } from "./wysiwg-cropped-image.element";
+import { WysiwgMediaPickerPropertyValueEntry, WysiwgMediaPickerPropertyValues } from "./types";
+import { UmbPropertyValueChangeEvent } from "@umbraco-cms/backoffice/property-editor";
 
 type RichMediaCardModel = {
   unique: string;
@@ -128,7 +131,7 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
   @property()
   /** @deprecated will be removed in v17 */
   public set alias(value: string | undefined) {
-    if(!value) {}
+    if (!value) { }
     //this.#modalRouter.setUniquePathValue('propertyAlias', value);
   }
   public get alias(): string | undefined {
@@ -138,7 +141,7 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
   @property()
   /** @deprecated will be removed in v17 */
   public set variantId(value: string | UmbVariantId | undefined) {
-    if(!value) {}
+    if (!value) { }
     //this.#modalRouter.setUniquePathValue('variantId', value?.toString());
   }
   public get variantId(): string | undefined {
@@ -392,17 +395,46 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
   }
 
   #renderItem(item: RichMediaCardModel) {
-    if (!item.unique) return nothing;
+    const mediaItem = this.value?.length ? this.value[0] : undefined;
+    if (!item.unique || !mediaItem) return nothing;
+
     const href = this.readonly ? undefined : this._routeBuilder?.({ key: item.unique });
     return html`
-    <uui-card-media id=${item.unique} name=${item.name} .href=${href} ?readonly=${this.readonly}>
-      <umb-imaging-thumbnail
-        unique=${item.media}
-        alt=${item.name}
-        icon=${item.icon ?? 'icon-picture'}></umb-imaging-thumbnail>
+    <wysiwg-card-image id=${item.unique} name=${item.name} .href=${href} ?readonly=${this.readonly}>
+
+      <wysiwg-cropped-image .mediaItem=${mediaItem} @change=${this.#onChangePreview}></wysiwg-cropped-image>
       ${this.#renderIsTrashed(item)} ${this.#renderActions(item)}
-    </uui-card-media>
+
+    </wysiwg-card-image>
   `;
+  }
+
+  #onChangePreview(event: CustomEvent & { target: WysiwgCroppedImageElement }) {
+    if (event?.target?.value?.length > 0) {
+      this._updateValue({
+        cropUrl: event?.target?.value,
+      });
+    }
+  }
+
+  private _updateValue(fieldsToUpdate: Partial<WysiwgMediaPickerPropertyValueEntry>, deleteImage: boolean = false) {
+    const newValue: WysiwgMediaPickerPropertyValues = [];
+    if (!this.value || !this.value.length || deleteImage) {
+      const item = {
+        ...fieldsToUpdate,
+      } as WysiwgMediaPickerPropertyValueEntry;
+      newValue.push(item);
+    } else {
+      for (let i = 0; i < this.value.length; i++) {
+        const item = {
+          ...this.value[i],
+          ...fieldsToUpdate,
+        };
+        newValue.push(item);
+      }
+    }
+    this.value = newValue;
+    this.dispatchEvent(new UmbPropertyValueChangeEvent());
   }
 
   #renderActions(item: RichMediaCardModel) {
@@ -430,16 +462,17 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
     :host {
       position: relative;
     }
-    .container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      grid-auto-rows: 150px;
-      gap: var(--uui-size-space-5);
+
+    .container{
+      min-width: 150px;
+      min-height: 150px;
+      display: block;
     }
 
     #btn-add {
       text-align: center;
-      height: 100%;
+      min-height: 150px;
+      min-width: 150px;
     }
 
     uui-icon {

@@ -33,7 +33,6 @@ import {
 } from "./types";
 import { CropsData, CropsResponse, MediaTypeModel, MediaTypesResponse, WysiwgUmbracoCommunityExtensionsService } from "../../api";
 import { UmbNumberRangeValueType } from "@umbraco-cms/backoffice/models";
-import { WysiwgCroppedImageElement } from "./wysiwg-cropped-image.element.js";
 
 import type { WysiwgInputRichMediaElement } from "./wysiwg-input-rich-media.element.js";
 import './wysiwg-input-rich-media.element.js';
@@ -286,14 +285,6 @@ export class WysiwgImageAndCropPickerElement
     });
   }
 
-  #onChangePreview(event: CustomEvent & { target: WysiwgCroppedImageElement }) {
-    if (event?.target?.value?.length > 0) {
-      this._updateValue({
-        cropUrl: event?.target?.value,
-      });
-    }
-  }
-
   private _updateValue(fieldsToUpdate: Partial<WysiwgMediaPickerPropertyValueEntry>, deleteImage: boolean = false) {
     const newValue: WysiwgMediaPickerPropertyValues = [];
     if (!this.value || !this.value.length || deleteImage) {
@@ -319,21 +310,26 @@ export class WysiwgImageAndCropPickerElement
     <div id="container">
       <div id="left">
         ${this.#renderEditImage()}
-      </div>
-      <div id="right">
-        ${this.#renderPreviewImage()}
         ${this.#renderDropdown()}
       </div>
     </div>`;
   }
 
-  #renderPreviewImage() {
-    if (!this.value || !this.value.length || !this.value[0]?.mediaKey) { return; }
+  // #renderPreviewImage() {
+  //   if (!this.value || !this.value.length || !this.value[0]?.mediaKey) { return; }
 
-    const media = this.value[0];
+  //   const media = this.value[0];
 
-    return html`<wysiwg-cropped-image .mediaItem=${media} @change=${this.#onChangePreview}></wysiwg-cropped-image>`;
-  }
+  //   return html`<wysiwg-cropped-image .mediaItem=${media} @change=${this.#onChangePreview}></wysiwg-cropped-image>`;
+  // }
+
+  // #onChangePreview(event: CustomEvent & { target: WysiwgCroppedImageElement }) {
+  //   if (event?.target?.value?.length > 0) {
+  //     this._updateValue({
+  //       cropUrl: event?.target?.value,
+  //     });
+  //   }
+  // }
 
   #renderEditImage() {
     return html`
