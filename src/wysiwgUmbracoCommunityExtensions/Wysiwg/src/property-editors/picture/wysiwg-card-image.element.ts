@@ -1,7 +1,6 @@
 import { ifDefined } from '@umbraco-cms/backoffice/external/lit';
 import { demandCustomElement, UUICardElement } from '@umbraco-cms/backoffice/external/uui';
-import { html, css, nothing } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { html, css, nothing, customElement, property, state } from "@umbraco-cms/backoffice/external/lit";
 
 const elementName = 'wysiwg-card-image';
 @customElement(elementName)
@@ -82,11 +81,11 @@ export class WysiwgCardImageElement extends UUICardElement {
         href=${ifDefined(!this.disabled ? this.href : undefined)}
         target=${ifDefined(this.target || undefined)}
         rel=${ifDefined(
-          this.rel ||
-            ifDefined(
-              this.target === '_blank' ? 'noopener noreferrer' : undefined,
-            ),
-        )}>
+      this.rel ||
+      ifDefined(
+        this.target === '_blank' ? 'noopener noreferrer' : undefined,
+      ),
+    )}>
         ${this.#renderContent()}
       </a>
     `;

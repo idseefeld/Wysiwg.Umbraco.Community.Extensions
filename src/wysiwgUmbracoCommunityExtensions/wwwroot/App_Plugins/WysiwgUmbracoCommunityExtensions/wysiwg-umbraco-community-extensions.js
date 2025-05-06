@@ -27,7 +27,7 @@ const t = [
     type: "bundle",
     name: "wysiwg block components",
     alias: "wysiwg.block.components",
-    js: () => import("./index-Dves7UhQ.js")
+    js: () => import("./index-zx1x6GLh.js")
   }
 ], i = "wysiwg65_";
 function s() {
@@ -41,7 +41,7 @@ const n = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.Layouts",
     name: "Block Editor Custom View for Layouts",
-    element: () => import("./wysiwg-image-crop.element-DqvFlxl0.js").then((e) => e.b),
+    element: () => import("./wysiwg-image-crop.element-Dt_WOlpl.js").then((e) => e.b),
     forContentTypeAlias: s(),
     forBlockEditor: "block-grid"
   },
@@ -158,7 +158,7 @@ const n = [
     type: "propertyEditorUi",
     alias: "wysiwg.PropertyEditorUi.ImageAndCropPicker",
     name: "WYSIWG Picture and Crop Picker",
-    element: () => import("./wysiwg-image-and-crop-picker.element-CBM75-DY.js"),
+    element: () => import("./wysiwg-image-and-crop-picker.element-Dheh-YuP.js"),
     meta: {
       label: "WYSIWG Picture and Crop Picker",
       propertyEditorSchemaAlias: "Wysiwg.ImageAndCropPicker",

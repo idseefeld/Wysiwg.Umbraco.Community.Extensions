@@ -290,6 +290,7 @@ n.styles = [
       text-align: center;
       min-height: 150px;
       min-width: 150px;
+      width: 100%;
     }
 
     uui-icon {
@@ -649,4 +650,4 @@ export {
   l as WysiwgImageAndCropPickerElement,
   l as element
 };
-//# sourceMappingURL=wysiwg-image-and-crop-picker.element-CBM75-DY.js.map
+//# sourceMappingURL=wysiwg-image-and-crop-picker.element-Dheh-YuP.js.map
