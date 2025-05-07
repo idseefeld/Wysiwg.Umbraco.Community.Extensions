@@ -1,5 +1,4 @@
-using System.IO;
-using System.Text;
+using System;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
@@ -8,18 +7,15 @@ using StackExchange.Profiling.Internal;
 using Umbraco.Cms.Api.Management.ViewModels.DataType;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models;
-using Umbraco.Cms.Core.Models.Membership;
 using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Cms.Core.Security;
 using Umbraco.Cms.Core.Serialization;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Services.OperationStatus;
 using Umbraco.Cms.Core.Strings;
-using Umbraco.Cms.Web.Common.Security;
 using Umbraco.Extensions;
 using WysiwgUmbracoCommunityExtensions.Extensions;
 using WysiwgUmbracoCommunityExtensions.Models;
-using static Umbraco.Cms.Core.Services.OperationResult;
 using uReferenceByIdModel = Umbraco.Cms.Api.Management.ViewModels.ReferenceByIdModel;
 
 namespace WysiwgUmbracoCommunityExtensions.Services
@@ -63,12 +59,13 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             $"{Constants.Prefix}paragraphSettings",
             $"{Constants.Prefix}rowSettings"
         ];
+        private readonly string[] _layoutKeyCollection = ["layout1", "layout2", "layout3", "layout4"];
         private readonly string[] _needUpdateContentTypes = [
             $"{Constants.Prefix}headline",
             $"{Constants.Prefix}paragraph",
             $"{Constants.Prefix}croppedPicture"
         ];
-        private string[] _depricatedContentTypes = [];
+        private string[] _deprecatedContentTypes = [$"{Constants.Prefix}pictureWithCrop"];
         private readonly string _dtContainerName = $"{Constants.Prefix.ToFirstUpper()}DataTypes";
         private readonly string[] _requiredDataTypes = [
             $"{Constants.Prefix}HeadlineSizes",
@@ -77,7 +74,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             $"{Constants.Prefix}CustomerColors",
             $"{Constants.Prefix}ImageAndCropPicker"
         ];
-        // Do not remove previus data types without deprication phase and documentation
+        // Do not remove previus data types without deprecation phase and documentation
         private readonly string[] _removedDataTypes = [
             //$"{Constants.Prefix}ImageMediaPicker",
             //$"{Constants.Prefix}CropNames"
@@ -87,6 +84,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         private const string BlockElementsName = "Block Elements";
         private const string BlockLayoutsName = "Block Layouts";
         private const string BlockSettingsName = "Block Settings";
+        private const string DeprecatedElementsName = "Deprecated Elements";
         private const string DepricatedElementsName = "Depricated Elements";
         private readonly string[] _level2ContainerNames = [BlockElementsName, BlockLayoutsName, BlockSettingsName];
         private readonly Dictionary<string, EntityContainer> _blockContainers = [];
@@ -122,7 +120,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 var pictureWithCropElement = contentTypeService.Get($"{Constants.Prefix}pictureWithCrop");
                 if (!string.IsNullOrEmpty(pictureWithCropElement?.Alias))
                 {
-                    _depricatedContentTypes = [pictureWithCropElement.Alias];
+                    _deprecatedContentTypes = [pictureWithCropElement.Alias];
                 }
 
                 await CreateOrUpdateDataTypesForBlockElements(parent);
@@ -587,7 +585,9 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 var imageAndCropPickerKey = GetElementKeyByName("croppedPicture");
                 var headlineKey = GetElementKeyByName("headline");
                 var headlineSettingsKey = GetElementKeyByName("headlineSettings");
-                var layoutKeys = new string[] { "layout1", "layout2", "layout3", "layout4" }
+
+                var layoutKeys = _layoutKeyCollection
+                    .Where(l => !string.IsNullOrEmpty(GetElementKeyByName(l)))
                     .Select(l => GetElementKeyByName(l))
                     .ToArray();
                 var blocksValueJson = @$"
@@ -905,19 +905,19 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 if (pictureWithCropBlock != null)
                 {
                     var deprecatedGroupName = "Deprecated";
-                    var newDepricatedGroupKey = blockGroups
+                    var newDeprecatedGroupKey = blockGroups
                         .FirstOrDefault(g => g.Name.Equals(deprecatedGroupName))?.Key;
-                    if (newDepricatedGroupKey == null)
+                    if (newDeprecatedGroupKey == null)
                     {
-                        newDepricatedGroupKey = Guid.NewGuid();
+                        newDeprecatedGroupKey = Guid.NewGuid();
 
                         blockGroups.Add(new()
                         {
                             Name = deprecatedGroupName,
-                            Key = newDepricatedGroupKey
+                            Key = newDeprecatedGroupKey
                         });
                     }
-                    pictureWithCropBlock.GroupKey = newDepricatedGroupKey;
+                    pictureWithCropBlock.GroupKey = newDeprecatedGroupKey;
                 }
             }
 
@@ -1069,16 +1069,23 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 #endregion
             }
 
-            #region Depricated
-            if (_depricatedContentTypes.Length > 0)
+            #region Deprecated
+            if (_deprecatedContentTypes.Length > 0)
             {
-                foreach (var elementTypeAlias in _depricatedContentTypes)
+                var elementContainer = _blockContainers[DepricatedElementsName];
+                foreach (var elementTypeAlias in _deprecatedContentTypes)
                 {
-                    var current = contentTypeService.Get(elementTypeAlias);
-                    if (current != null)
+                    switch (elementTypeAlias)
                     {
-                        var elementContainer = _blockContainers[DepricatedElementsName];
-                        await CreateOrUpdatePictureWithCropElementType(elementTypeAlias, elementTypeAlias, elementContainer, current);
+                        case $"{Constants.Prefix}pictureWithCrop":
+                            var current = contentTypeService.Get(elementTypeAlias);
+                            if (current != null)
+                            {
+                                await UpdatePictureWithCropElementType(elementTypeAlias, elementTypeAlias, elementContainer);
+                            }
+                            break;
+                        default:
+                            break;
                     }
                 }
             }
@@ -1106,9 +1113,16 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 ? alias
                 : elementTypeAlias;
             await CreateOrUpdateCroppedPictureElementType(compareAlias, alias, elementContainer, culture, segment);
+
+            //deprecated elements
+            alias = $"{Constants.Prefix}pictureWithCrop";
+            compareAlias = string.IsNullOrEmpty(elementTypeAlias)
+                ? alias
+                : elementTypeAlias;
+            await UpdatePictureWithCropElementType(compareAlias, alias, elementContainer, culture, segment);
         }
 
-        private void CreateOrUpdateContentElementContainers()
+        private void CreateOrUpdateContentElementContainers(bool fixUpdate = false)
         {
             Attempt<OperationResult<OperationResultType, EntityContainer>?> containerAttempt;
             var containerName = _contentElementsRootContainer;
@@ -1128,7 +1142,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
 
             var _containerNames = new List<string>(_level2ContainerNames);
-            if (_depricatedContentTypes.Length > 0)
+            if (_deprecatedContentTypes.Length > 0)
             {
                 _containerNames.Add(DepricatedElementsName);
             }
@@ -1138,7 +1152,16 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 var container = contentTypeService.GetContainers(name, 2).FirstOrDefault();
                 if (container != null)
                 {
-                    _ = _blockContainers.TryAdd(name, container);
+                    if (fixUpdate && name.Equals(DepricatedElementsName))
+                    {
+                        container.Name = DeprecatedElementsName;
+                        var saveAttempt = contentTypeService.SaveContainer(container);
+                        if (!saveAttempt.Success)
+                        {
+                            logger.LogWarning("Container {name} could not be saved", name);
+                        }
+                    }
+                    _ = _blockContainers.TryAdd(container.Name ?? name, container);
                     continue;
                 }
 
@@ -1389,20 +1412,38 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
         }
 
-        private async Task CreateOrUpdatePictureWithCropElementType(string elementTypeAlias, string alias, EntityContainer elementContainer, IContentType? current)
+        /// <summary>
+        /// Use only for updates otherwise use CreateOrUpdateCroppedPictureElementType instead
+        /// </summary>
+        /// <param name="elementTypeAlias"></param>
+        /// <param name="alias"></param>
+        /// <param name="elementContainer"></param>
+        /// <param name="culture"></param>
+        /// <param name="segment"></param>
+        /// <returns></returns>
+        private async Task UpdatePictureWithCropElementType(string elementTypeAlias, string alias, EntityContainer elementContainer, bool? culture = null, bool? segment = null, bool updateOnly = true)
         {
             if (elementTypeAlias != alias)
             { return; }
 
-            var type = new ContentType(shortStringHelper, elementContainer.Id)
+            var type = contentTypeService.Get(alias);
+            if (type != null)
             {
-                Alias = alias,
-                Name = "Picture with Crop",
-                Icon = "icon-document-image",
-                IsElement = true,
-                AllowedAsRoot = false,
-                Variations = ContentVariation.Culture,
-            };
+                UpdateCultureAndSegment(culture, segment, type);
+            }
+            else if (!updateOnly)
+            {
+                type = new ContentType(shortStringHelper, elementContainer.Id)
+                {
+                    Alias = alias,
+                    Name = "Picture with Crop",
+                    Icon = "icon-document-image",
+                    IsElement = true,
+                    AllowedAsRoot = false,
+                    Variations = ContentVariation.Culture,
+                };
+            }
+
             var propertyDefinitions = new List<PropertyDefinition>()
             {
                 new ("Media Item", $"{Constants.Prefix}ImageMediaPicker", 1),
@@ -1412,24 +1453,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 new ("Caption Color", $"{Constants.Prefix}CustomerColors", 5)
             };
 
-            Attempt<ContentTypeOperationStatus> ctAttempt;
-            if (current == null)
-            {
-                ctAttempt = await contentTypeService.CreateAsync(type, CurrentUserKey);
-                if (ctAttempt.Success)
-                {
-                    await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
-                }
-            }
-            else
-            {
-                current.SetParent(elementContainer);
-                ctAttempt = await contentTypeService.UpdateAsync(current, CurrentUserKey);
-                if (!ctAttempt.Success)
-                {
-                    logger.LogWarning("Content type {alias} could not be updated", alias);
-                }
-            }
+            await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
         }
 
         private async Task CreateOrUpdateHeadlineElementType(string elementTypeAlias, string alias, EntityContainer elementContainer, bool? culture, bool? segment)
@@ -1760,7 +1784,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
             var _containerNames = new List<string>(_level2ContainerNames)
             {
-                DepricatedElementsName
+                DepricatedElementsName,
+                DeprecatedElementsName
             };
 
             foreach (var name in _containerNames)
@@ -1836,7 +1861,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             _isInstalling = true;
             try
             {
-                CreateOrUpdateContentElementContainers();
+                CreateOrUpdateContentElementContainers(fixUpdate: true);
 
                 UpdateContentTypes();
 
