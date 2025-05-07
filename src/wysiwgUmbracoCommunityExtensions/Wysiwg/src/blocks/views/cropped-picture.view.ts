@@ -7,7 +7,7 @@ import {
 } from "@umbraco-cms/backoffice/external/lit";
 import type { UmbBlockDataType } from "@umbraco-cms/backoffice/block";
 import { ColorType, CroppedPictureCustomViewProps } from "./types";
-import WysiwgBaseBlockEditorCustomViewElement from "./base-block-editor-custom.view";
+import WysiwgBaseBlockEditorCustomViewElement from "./wysiwg-base-block-editor-custom.view";
 
 @customElement("wysiwg-croppedicture-view")
 export class CroppedPictureCustomView
@@ -43,7 +43,7 @@ export class CroppedPictureCustomView
       const captionColor =
         pictureWithCrop?.captionColor?.value ?? this.defaultColor.value;
       const caption = pictureWithCrop?.figCaption;
-      const inlineStyle = `style="color: ${captionColor};"`;
+      const inlineStyle = this.isTransparentColor(captionColor) ? '' : `style="color: ${captionColor};"`;
       const figCaption = caption
         ? unsafeHTML(`<figcaption ${inlineStyle}>${caption}</figcaption>`)
         : "";

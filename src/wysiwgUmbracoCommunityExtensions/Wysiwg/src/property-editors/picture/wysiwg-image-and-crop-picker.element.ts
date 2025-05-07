@@ -1,6 +1,5 @@
 import {
   UMB_MEDIA_ENTITY_TYPE,
-  UmbInputRichMediaElement,
   UmbMediaPickerPropertyValueEntry,
 } from "@umbraco-cms/backoffice/media";
 import {
@@ -34,7 +33,10 @@ import {
 } from "./types";
 import { CropsData, CropsResponse, MediaTypeModel, MediaTypesResponse, WysiwgUmbracoCommunityExtensionsService } from "../../api";
 import { UmbNumberRangeValueType } from "@umbraco-cms/backoffice/models";
-import { WysiwgCroppedImageElement } from "./wysiwg-image-crop.element";
+
+import type { WysiwgInputRichMediaElement } from "./wysiwg-input-rich-media.element.js";
+import './wysiwg-input-rich-media.element.js';
+
 /**
  * based on @element umb-property-editor-ui-media-picker
  */
@@ -158,7 +160,7 @@ export class WysiwgImageAndCropPickerElement
   }
 
   override firstUpdated() {
-    this.addFormControlElement(this.shadowRoot!.querySelector("umb-input-rich-media")!);
+    this.addFormControlElement(this.shadowRoot!.querySelector("wysiwg-input-rich-media")!);
     const cropSelect = this.shadowRoot?.querySelector<UUISelectElement>("umb-input-dropdown-list");
     if (cropSelect) {
       this.addFormControlElement(this.shadowRoot!.querySelector("umb-input-dropdown-list")!);
@@ -167,7 +169,7 @@ export class WysiwgImageAndCropPickerElement
 
   override focus(options?: FocusOptions) {
     console.log("focus(options) options = ", options);
-    return this.shadowRoot?.querySelector<UmbInputRichMediaElement>("umb-input-rich-media")?.focus();
+    return this.shadowRoot?.querySelector<WysiwgInputRichMediaElement>("wysiwg-input-rich-media")?.focus();
   }
 
   private async getMediaTypes() {
@@ -244,7 +246,7 @@ export class WysiwgImageAndCropPickerElement
     return "no data";
   }
 
-  #onChangeImage(event: CustomEvent & { target: UmbInputRichMediaElement }) {
+  #onChangeImage(event: CustomEvent & { target: WysiwgInputRichMediaElement }) {
     if (this._imgSrc !== this._prevImgSrc) {
       console.debug("imgSrc changed", this._imgSrc, this._prevImgSrc);
       this._prevImgSrc = this._imgSrc;
@@ -283,14 +285,6 @@ export class WysiwgImageAndCropPickerElement
     });
   }
 
-  #onChangePreview(event: CustomEvent & { target: WysiwgCroppedImageElement }) {
-    if (event?.target?.value?.length > 0) {
-      this._updateValue({
-        cropUrl: event?.target?.value,
-      });
-    }
-  }
-
   private _updateValue(fieldsToUpdate: Partial<WysiwgMediaPickerPropertyValueEntry>, deleteImage: boolean = false) {
     const newValue: WysiwgMediaPickerPropertyValues = [];
     if (!this.value || !this.value.length || deleteImage) {
@@ -316,25 +310,14 @@ export class WysiwgImageAndCropPickerElement
     <div id="container">
       <div id="left">
         ${this.#renderEditImage()}
-      </div>
-      <div id="right">
-        ${this.#renderPreviewImage()}
         ${this.#renderDropdown()}
       </div>
     </div>`;
   }
 
-  #renderPreviewImage() {
-    if (!this.value || !this.value.length || !this.value[0]?.mediaKey) { return; }
-
-    const media = this.value[0];
-
-    return html`<wysiwg-cropped-image .mediaItem=${media} @change=${this.#onChangePreview}></wysiwg-cropped-image>`;
-  }
-
   #renderEditImage() {
     return html`
-    <umb-input-rich-media
+    <wysiwg-input-rich-media
       .alias=${this._alias}
       .allowedContentTypeIds=${this._allowedMediaTypes}
       .focalPointEnabled=${this._focalPointEnabled}
@@ -350,7 +333,7 @@ export class WysiwgImageAndCropPickerElement
       @change=${this.#onChangeImage}
       ?readonly=${this.readonly}
     >
-    </umb-input-rich-media>
+    </wysiwg-input-rich-media>
   `;
   }
 
