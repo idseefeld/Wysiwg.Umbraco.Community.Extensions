@@ -129,7 +129,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
                 await CreateBlockElements();
 
-                await CreateDataTypeBlockGrid(parent);
+                await CreateOrUpdateDataTypeBlockGrid(parent);
 
                 await RemoveDataTypes();
 
@@ -226,12 +226,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             }
         }
 
-        private string GetElementKeyByName(string name)
-        {
-            return GetElementKeyGuidByName(name)?.ToString() ?? string.Empty;
-        }
-
-        private Guid? GetElementKeyGuidByName(string name, bool throwIfNotExist = true)
+        private IContentType? GetElementByName(string name, bool throwIfNotExist = true)
         {
             var prefixedName = $"{Constants.Prefix}{name}";
             var type = _allContentTypes
@@ -249,8 +244,18 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             }
             else
             {
-                return type.Key;
+                return type;
             }
+        }
+
+        private string GetElementKeyByName(string name)
+        {
+            return GetElementKeyGuidByName(name)?.ToString() ?? string.Empty;
+        }
+
+        private Guid? GetElementKeyGuidByName(string name, bool throwIfNotExist = true)
+        {
+            return GetElementByName(name, throwIfNotExist)?.Key;
         }
         #endregion
 
@@ -566,7 +571,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         #endregion
 
         #region Block Grid Data Type
-        private async Task CreateDataTypeBlockGrid(uReferenceByIdModel parent)
+        private async Task CreateOrUpdateDataTypeBlockGrid(uReferenceByIdModel parent)
         {
             UpdateContentTypes();
 
@@ -887,27 +892,33 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 blockModels.Add(croppedPictureBlock);
             }
 
-            var pictureWithCropElementKey = GetElementKeyGuidByName("pictureWithCrop", throwIfNotExist: false);
-            var pictureWithCropBlock = pictureWithCropElementKey != null
-                ? blockModels.FirstOrDefault(b => b.ContentElementTypeKey != null && b.ContentElementTypeKey.Equals(pictureWithCropElementKey))
-                : null;
-            if (pictureWithCropBlock != null)
+            var pictureWithCropElement = GetElementByName("pictureWithCrop", throwIfNotExist: false);
+            if (pictureWithCropElement != null)
             {
-                var deprecatedGroupName = "Deprecated";
-                var newDepricatedGroupKey = blockGroups
-                    .FirstOrDefault(g => g.Name.Equals(deprecatedGroupName))?.Key;
-                if (newDepricatedGroupKey == null)
+                pictureWithCropElement.Variations = pictureWithCropElement.Variations == ContentVariation.CultureAndSegment || pictureWithCropElement.Variations == ContentVariation.Culture
+                    ? ContentVariation.Culture
+                    : ContentVariation.Nothing;
+
+                var pictureWithCropBlock = blockModels
+                    .FirstOrDefault(b => b.ContentElementTypeKey != null
+                        && b.ContentElementTypeKey.Equals(pictureWithCropElement.Key));
+                if (pictureWithCropBlock != null)
                 {
-                    newDepricatedGroupKey = Guid.NewGuid();
-
-                    blockGroups.Add(new()
+                    var deprecatedGroupName = "Deprecated";
+                    var newDepricatedGroupKey = blockGroups
+                        .FirstOrDefault(g => g.Name.Equals(deprecatedGroupName))?.Key;
+                    if (newDepricatedGroupKey == null)
                     {
-                        Name = deprecatedGroupName,
-                        Key = newDepricatedGroupKey
-                    });
-                }
+                        newDepricatedGroupKey = Guid.NewGuid();
 
-                pictureWithCropBlock.GroupKey = newDepricatedGroupKey;
+                        blockGroups.Add(new()
+                        {
+                            Name = deprecatedGroupName,
+                            Key = newDepricatedGroupKey
+                        });
+                    }
+                    pictureWithCropBlock.GroupKey = newDepricatedGroupKey;
+                }
             }
 
             foreach (var block in blockModels)
@@ -1837,7 +1848,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 var parent = uReferenceByIdModel.ReferenceOrNull(_dataTypeContainer?.Key)
                     ?? throw new Exception($"{ErrorMsgPrefix} could not get ReferenceByIdModel for {_dataTypeContainer?.Name}!");
 
-                await CreateDataTypeBlockGrid(parent);
+                await CreateOrUpdateDataTypeBlockGrid(parent);
             }
             catch
             {
