@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using StackExchange.Profiling.Internal;
@@ -227,17 +228,24 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
         private string GetElementKeyByName(string name)
         {
-            return GetElementKeyGuidByName(name).ToString();
+            return GetElementKeyGuidByName(name)?.ToString() ?? string.Empty;
         }
 
-        private Guid GetElementKeyGuidByName(string name)
+        private Guid? GetElementKeyGuidByName(string name, bool throwIfNotExist = true)
         {
             var prefixedName = $"{Constants.Prefix}{name}";
             var type = _allContentTypes
                 .FirstOrDefault(t => t.Alias.Equals(prefixedName));
             if (type == null)
             {
-                throw new Exception($"{_errorMsgDataTypeNotFoundStart} {prefixedName}");
+                if (throwIfNotExist)
+                {
+                    throw new Exception($"{_errorMsgDataTypeNotFoundStart} {prefixedName}");
+                }
+                else
+                {
+                    return null;
+                }
             }
             else
             {
@@ -564,6 +572,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
             _existingDataTypes = [.. await dataTypeService.GetAllAsync()];
             var current = _existingDataTypes?.FirstOrDefault(d => d.Name != null && d.Name.Equals(_requiredBlockGridName));
+            var layoutGroupName = "Layouts";
             if (current == null)
             {
                 var blockGroupKey = Guid.NewGuid();
@@ -755,13 +764,15 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 ]";
                 var blocksValue = blocksValueJson.GetJsonArrayFromString();
 
-                var blockGroupsValue = @$"
-                [
-                    {{
-                        ""name"":""Layouts"",
-                        ""key"":""{Guid.NewGuid()}""
-                    }}
-                ]".GetJsonArrayFromString();
+                var blockGroups = new List<BGBlockGroupModel>
+                {
+                    new()
+                    {
+                        Name = layoutGroupName,
+                        Key = blockGroupKey
+                    }
+                };
+                var blockGroupsValue = JsonSerializer.Serialize(blockGroups).GetJsonArrayFromString();
 
                 var createDataTypeRequestModel = new CreateDataTypeRequestModel
                 {
@@ -795,72 +806,14 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             {
                 var config = current.ConfigurationData;
                 var layoutStylesheet = config.FirstOrDefault(v => v.Key == "layoutStylesheet").Value;
-                var blockGroupsJson = config.FirstOrDefault(v => v.Key == "blockGroups")
-                    .Value.ToJson();
-                var blockGroups = JsonSerializer.Deserialize<IEnumerable<BGBlockGroupModel>>(blockGroupsJson);
 
-                var currentblockLayoutGroupKey = blockGroups?.FirstOrDefault(g => g.Name.Equals("Layouts"))?.Key.ToString();
-                if (string.IsNullOrEmpty(currentblockLayoutGroupKey))
-                {
-                    throw new Exception($"{_errorMsgUpdateContentTypeStart} CreateDataTypeBlockGrid: no layout group found!");
-                }
-                var newDepricatedGroupKey = Guid.NewGuid();
-                var blockGroupsValue = @$"
-                [
-                    {{
-                        ""name"":""Layouts"",
-                        ""key"":""{currentblockLayoutGroupKey}""
-                    }},
-                    {{
-                        ""name"":""Deprecated"",
-                        ""key"":""{newDepricatedGroupKey}""
-                    }}
-                ]".GetJsonArrayFromString();
-
+                var blockModels = new List<BGBlockModel>();
                 var blocksJson = config.FirstOrDefault(v => v.Key == "blocks")
                     .Value.ToJson();
+                var existingBlocks = JsonSerializer.Deserialize<IEnumerable<BGBlockModel>>(blocksJson) ?? [];
+                blockModels.AddRange(existingBlocks);
 
-                var blockModels = new List<BGBlockModel>
-                {
-                    new()
-                    {
-                        ContentElementTypeKey = GetElementKeyGuidByName("croppedPicture"),
-                        AllowAtRoot = false,
-                        AllowInAreas = true,
-                        SettingsElementTypeKey = null
-                    }
-                };
-                blockModels.AddRange(JsonSerializer.Deserialize<IEnumerable<BGBlockModel>>(blocksJson) ?? []);
-
-                foreach (var block in blockModels)
-                {
-                    if (block.Areas.Count() > 0)
-                    {
-                        foreach (var area in block.Areas)
-                        {
-                            if (area.SpecifiedAllowance != null && area.SpecifiedAllowance.Any())
-                            {
-                                var specifiedAllowance = new List<BGSpecfiedAllowanceModel>{
-                                    new()
-                                    {
-                                        ElementTypeKey = GetElementKeyGuidByName("croppedPicture"),
-                                        MinAllowed = 0
-                                    }
-                                };
-                                specifiedAllowance.AddRange(area.SpecifiedAllowance);
-                                area.SpecifiedAllowance = specifiedAllowance;
-                            }
-                        }
-                    }
-                }
-
-                var pictureWithCropBlock = blockModels
-                        .FirstOrDefault(b => b.ContentElementTypeKey != null
-                            && b.ContentElementTypeKey.Equals(GetElementKeyGuidByName("pictureWithCrop")));
-                if (pictureWithCropBlock != null)
-                {
-                    pictureWithCropBlock.GroupKey = newDepricatedGroupKey;
-                }
+                JsonArray blockGroupsValue = UpdateBlockGroups(config, blockModels, layoutGroupName);
 
                 var blocksValue = JsonSerializer.Serialize(blockModels).GetJsonArrayFromString();
 
@@ -898,6 +851,89 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 _existingDataTypes = [.. await dataTypeService.GetAllAsync()];
                 var updated = _existingDataTypes?.FirstOrDefault(d => d.Name != null && d.Name.Equals(_requiredBlockGridName));
             }
+        }
+
+        private JsonArray UpdateBlockGroups(IDictionary<string, object> config, List<BGBlockModel> blockModels, string layoutGroupName)
+        {
+            var blockGroupsJson = config.FirstOrDefault(v => v.Key == "blockGroups")
+                   .Value.ToJson();
+            List<BGBlockGroupModel> blockGroups = JsonSerializer.Deserialize<IEnumerable<BGBlockGroupModel>>(blockGroupsJson)?.ToList() ?? [];
+
+            var currentblockLayoutGroupKey = blockGroups
+                .FirstOrDefault(g => g.Name.Equals(layoutGroupName))?.Key;
+            if (currentblockLayoutGroupKey == null)
+            {
+                currentblockLayoutGroupKey = Guid.NewGuid();
+                blockGroups.Add(new()
+                {
+                    Name = layoutGroupName,
+                    Key = currentblockLayoutGroupKey
+                });
+            }
+            var croppedPictureElementKey = GetElementKeyGuidByName("croppedPicture", throwIfNotExist: false);
+            var croppedPictureBlock = croppedPictureElementKey != null ?
+                blockModels.FirstOrDefault(b => b.ContentElementTypeKey != null && b.ContentElementTypeKey.Equals(croppedPictureElementKey))
+                : null;
+            if (croppedPictureBlock == null)
+            {
+                croppedPictureBlock = new()
+                {
+                    ContentElementTypeKey = croppedPictureElementKey,
+                    AllowAtRoot = false,
+                    AllowInAreas = true,
+                    SettingsElementTypeKey = null
+                };
+
+                blockModels.Add(croppedPictureBlock);
+            }
+
+            var pictureWithCropElementKey = GetElementKeyGuidByName("pictureWithCrop", throwIfNotExist: false);
+            var pictureWithCropBlock = pictureWithCropElementKey != null
+                ? blockModels.FirstOrDefault(b => b.ContentElementTypeKey != null && b.ContentElementTypeKey.Equals(pictureWithCropElementKey))
+                : null;
+            if (pictureWithCropBlock != null)
+            {
+                var deprecatedGroupName = "Deprecated";
+                var newDepricatedGroupKey = blockGroups
+                    .FirstOrDefault(g => g.Name.Equals(deprecatedGroupName))?.Key;
+                if (newDepricatedGroupKey == null)
+                {
+                    newDepricatedGroupKey = Guid.NewGuid();
+
+                    blockGroups.Add(new()
+                    {
+                        Name = deprecatedGroupName,
+                        Key = newDepricatedGroupKey
+                    });
+                }
+
+                pictureWithCropBlock.GroupKey = newDepricatedGroupKey;
+            }
+
+            foreach (var block in blockModels)
+            {
+                if (block.Areas.Any())
+                {
+                    foreach (var area in block.Areas)
+                    {
+                        if (area.SpecifiedAllowance != null && area.SpecifiedAllowance.Any())
+                        {
+                            var specifiedAllowance = new List<BGSpecfiedAllowanceModel>{
+                                    new()
+                                    {
+                                        ElementTypeKey = croppedPictureElementKey,
+                                        MinAllowed = 0
+                                    }
+                                };
+                            specifiedAllowance.AddRange(area.SpecifiedAllowance);
+                            area.SpecifiedAllowance = specifiedAllowance;
+                        }
+                        block.GroupKey = currentblockLayoutGroupKey;
+                    }
+                }
+            }
+
+            return JsonSerializer.Serialize(blockGroups).GetJsonArrayFromString();
         }
 
         #endregion
@@ -1794,6 +1830,14 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 UpdateContentTypes();
 
                 await CreateOrUpdateContentElements(string.Empty, culture, segment);
+
+                _dataTypeContainer ??= (await CreateDataTypeContainer())
+                    ?? throw new Exception($"{ErrorMsgPrefix} Could not find data type container.");
+
+                var parent = uReferenceByIdModel.ReferenceOrNull(_dataTypeContainer?.Key)
+                    ?? throw new Exception($"{ErrorMsgPrefix} could not get ReferenceByIdModel for {_dataTypeContainer?.Name}!");
+
+                await CreateDataTypeBlockGrid(parent);
             }
             catch
             {
@@ -1820,7 +1864,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 {
                     variations = "culture segment";
                 }
-                else if(headlineType.VariesByCulture())
+                else if (headlineType.VariesByCulture())
                 {
                     variations = "culture";
                 }
