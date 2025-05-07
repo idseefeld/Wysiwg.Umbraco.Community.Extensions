@@ -1,4 +1,3 @@
-using System;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
@@ -560,7 +559,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     var attempt = await dataTypeService.DeleteAsync(previous.Key, CurrentUserKey);
                     if (!attempt.Success)
                     {
-                        logger.LogWarning($"Data type {name} could not be deleted");
+                        logger.LogWarning("Data type {name} could not be deleted", name);
                     }
                 }
             }
@@ -875,20 +874,20 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     Key = currentblockLayoutGroupKey
                 });
             }
-            var croppedPictureElementKey = GetElementKeyGuidByName("croppedPicture", throwIfNotExist: false);
-            var croppedPictureBlock = croppedPictureElementKey != null ?
-                blockModels.FirstOrDefault(b => b.ContentElementTypeKey != null && b.ContentElementTypeKey.Equals(croppedPictureElementKey))
-                : null;
-            if (croppedPictureBlock == null)
+
+            var croppedPictureElement = GetElementByName("croppedPicture", throwIfNotExist: false);
+            var croppedPictureBlock = blockModels
+                        .FirstOrDefault(b => b.ContentElementTypeKey != null
+                            && b.ContentElementTypeKey.Equals(croppedPictureElement?.Key));
+            if (croppedPictureElement != null && croppedPictureBlock == null)
             {
                 croppedPictureBlock = new()
                 {
-                    ContentElementTypeKey = croppedPictureElementKey,
+                    ContentElementTypeKey = croppedPictureElement.Key,
                     AllowAtRoot = false,
                     AllowInAreas = true,
                     SettingsElementTypeKey = null
                 };
-
                 blockModels.Add(croppedPictureBlock);
             }
 
@@ -927,16 +926,25 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 {
                     foreach (var area in block.Areas)
                     {
-                        if (area.SpecifiedAllowance != null && area.SpecifiedAllowance.Any())
+                        var areaSpecifiedAllowance = area.SpecifiedAllowance
+                            ?.Where(a => a.ElementTypeKey != pictureWithCropElement?.Key)
+                            .ToList();
+
+                        if (areaSpecifiedAllowance != null && areaSpecifiedAllowance.Count > 0)
                         {
-                            var specifiedAllowance = new List<BGSpecfiedAllowanceModel>{
-                                    new()
-                                    {
-                                        ElementTypeKey = croppedPictureElementKey,
-                                        MinAllowed = 0
-                                    }
+                            var specifiedAllowance = new List<BGSpecfiedAllowanceModel>();
+                            specifiedAllowance.AddRange(areaSpecifiedAllowance);
+
+                            if (areaSpecifiedAllowance.FirstOrDefault(a => a.ElementTypeKey == croppedPictureElement?.Key) == null)
+                            {
+                                BGSpecfiedAllowanceModel croppedPictureElementAllowance = new()
+                                {
+                                    ElementTypeKey = croppedPictureElement?.Key,
+                                    MinAllowed = 0
                                 };
-                            specifiedAllowance.AddRange(area.SpecifiedAllowance);
+                                specifiedAllowance.Add(croppedPictureElementAllowance);
+                            }
+
                             area.SpecifiedAllowance = specifiedAllowance;
                         }
                         block.GroupKey = currentblockLayoutGroupKey;
@@ -1069,27 +1077,6 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 #endregion
             }
 
-            #region Deprecated
-            if (_deprecatedContentTypes.Length > 0)
-            {
-                var elementContainer = _blockContainers[DepricatedElementsName];
-                foreach (var elementTypeAlias in _deprecatedContentTypes)
-                {
-                    switch (elementTypeAlias)
-                    {
-                        case $"{Constants.Prefix}pictureWithCrop":
-                            var current = contentTypeService.Get(elementTypeAlias);
-                            if (current != null)
-                            {
-                                await UpdatePictureWithCropElementType(elementTypeAlias, elementTypeAlias, elementContainer);
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-            #endregion
         }
 
         private async Task CreateOrUpdateContentElements(string elementTypeAlias, bool? culture = null, bool? segment = null)
@@ -1114,15 +1101,26 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 : elementTypeAlias;
             await CreateOrUpdateCroppedPictureElementType(compareAlias, alias, elementContainer, culture, segment);
 
-            //deprecated elements
-            alias = $"{Constants.Prefix}pictureWithCrop";
-            compareAlias = string.IsNullOrEmpty(elementTypeAlias)
-                ? alias
-                : elementTypeAlias;
-            await UpdatePictureWithCropElementType(compareAlias, alias, elementContainer, culture, segment);
+            #region Deprecated
+            if (_deprecatedContentTypes.Length > 0)
+            {
+                elementContainer = _blockContainers[DeprecatedElementsName];
+                foreach (var typeAlias in _deprecatedContentTypes)
+                {
+                    switch (typeAlias)
+                    {
+                        case $"{Constants.Prefix}pictureWithCrop":
+                            await UpdatePictureWithCropElementType(typeAlias, typeAlias, elementContainer, culture, segment);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            #endregion
         }
 
-        private void CreateOrUpdateContentElementContainers(bool fixUpdate = false)
+        private void CreateOrUpdateContentElementContainers()
         {
             Attempt<OperationResult<OperationResultType, EntityContainer>?> containerAttempt;
             var containerName = _contentElementsRootContainer;
@@ -1140,11 +1138,21 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 throw new Exception($"{ErrorMsgPrefix} Could not create root content type folder.");
             }
 
+            var depricatedContainer = contentTypeService.GetContainers(DepricatedElementsName, 2).FirstOrDefault();
+            if (depricatedContainer != null)
+            {
+                depricatedContainer.Name = DeprecatedElementsName;
+                var saveAttempt = contentTypeService.SaveContainer(depricatedContainer);
+                if (!saveAttempt.Success)
+                {
+                    logger.LogWarning("Container {name} could not be saved", DeprecatedElementsName);
+                }
+            }
 
             var _containerNames = new List<string>(_level2ContainerNames);
             if (_deprecatedContentTypes.Length > 0)
             {
-                _containerNames.Add(DepricatedElementsName);
+                _containerNames.Add(DeprecatedElementsName);
             }
 
             foreach (var name in _containerNames)
@@ -1152,15 +1160,6 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 var container = contentTypeService.GetContainers(name, 2).FirstOrDefault();
                 if (container != null)
                 {
-                    if (fixUpdate && name.Equals(DepricatedElementsName))
-                    {
-                        container.Name = DeprecatedElementsName;
-                        var saveAttempt = contentTypeService.SaveContainer(container);
-                        if (!saveAttempt.Success)
-                        {
-                            logger.LogWarning("Container {name} could not be saved", name);
-                        }
-                    }
                     _ = _blockContainers.TryAdd(container.Name ?? name, container);
                     continue;
                 }
@@ -1176,7 +1175,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     throw new Exception($"{ErrorMsgPrefix} Could not create {name} folder.");
                 }
                 else
-                { _ = _blockContainers.TryAdd(name, container); }
+                { _ = _blockContainers.TryAdd(container.Name ?? name, container); }
             }
         }
 
@@ -1427,8 +1426,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             { return; }
 
             var type = contentTypeService.Get(alias);
+            List<PropertyDefinition>? propertyDefinitions = null;
             if (type != null)
             {
+                type.ParentId = elementContainer.Id;
                 UpdateCultureAndSegment(culture, segment, type);
             }
             else if (!updateOnly)
@@ -1442,18 +1443,38 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     AllowedAsRoot = false,
                     Variations = ContentVariation.Culture,
                 };
+
+                var ctAttempt = await contentTypeService.CreateAsync(type, CurrentUserKey);
+                if (!ctAttempt.Success)
+                {
+                    throw new Exception($"{type.Name} [{alias}] creation failed.");
+                }
+
+                propertyDefinitions =
+                [
+                    new ("Media Item", $"{Constants.Prefix}ImageMediaPicker", 1),
+                    new ("Alternative Text", "Textstring", 2, variations: ContentVariation.Culture),
+                    new ("Fig Caption", "Textstring", 3, variations: ContentVariation.Culture),
+                    new ("Crop Alias", $"{Constants.Prefix}CropNames", 4),
+                    new ("Caption Color", $"{Constants.Prefix}CustomerColors", 5)
+                ];
             }
 
-            var propertyDefinitions = new List<PropertyDefinition>()
+            if (type == null)
             {
-                new ("Media Item", $"{Constants.Prefix}ImageMediaPicker", 1),
-                new ("Alternative Text", "Textstring", 2, variations: ContentVariation.Culture),
-                new ("Fig Caption", "Textstring", 3, variations: ContentVariation.Culture),
-                new ("Crop Alias", $"{Constants.Prefix}CropNames", 4),
-                new ("Caption Color", $"{Constants.Prefix}CustomerColors", 5)
-            };
-
-            await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
+                logger.LogWarning("Element type {alias} could not be found or created", alias);
+            }
+            else
+            {
+                try
+                {
+                    await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "CreateOrUpdateContentElementProperties Error: {message}", ex.Message);
+                }
+            }
         }
 
         private async Task CreateOrUpdateHeadlineElementType(string elementTypeAlias, string alias, EntityContainer elementContainer, bool? culture, bool? segment)
@@ -1482,6 +1503,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             }
             else
             {
+                type.ParentId = elementContainer.Id;
                 UpdateCultureAndSegment(culture, segment, type);
             }
             var propertyDefinitions = new List<PropertyDefinition>()
@@ -1509,31 +1531,41 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 type.Variations = ContentVariation.Segment;
             }
         }
-
-        private async Task CreateOrUpdateContentElementProperties(IContentType type, IEnumerable<PropertyDefinition> propertyDefinitions)
+        private async Task<IPropertyType> GetPropertyType(PropertyDefinition definition)
+        {
+            var dt = await dataTypeService.GetAsync(definition.DataTypeName)
+                       ?? throw new Exception($"{_errorMsgDataTypeNotFoundStart} {definition.DataTypeName}");
+            var propertyType = new PropertyType(shortStringHelper, dt)
+            {
+                Alias = definition.Name.ToFirstLower().Replace(" ", string.Empty),
+                Name = definition.Name,
+                Description = definition.Description,
+                Mandatory = false,
+                SortOrder = definition.SortOrder,
+                DataTypeId = dt.Id,
+                Variations = definition.Variations
+            };
+            return propertyType;
+        }
+        private async Task CreateOrUpdateContentElementProperties(IContentType type, IEnumerable<PropertyDefinition>? propertyDefinitions)
         {
             if (type == null)
             { return; }
 
-            var propItems = new List<PropertyType>();
-            IDataType dt;
-            foreach (var definition in propertyDefinitions)
-            {
-                dt = await dataTypeService.GetAsync(definition.DataTypeName)
-                    ?? throw new Exception($"{_errorMsgDataTypeNotFoundStart} {definition.DataTypeName}");
-                propItems.Add(
-                    new(shortStringHelper, dt)
-                    {
-                        Alias = definition.Name.ToFirstLower().Replace(" ", string.Empty),
-                        Name = definition.Name,
-                        Description = definition.Description,
-                        Mandatory = false,
-                        SortOrder = definition.SortOrder,
-                        DataTypeId = dt.Id,
-                        Variations = definition.Variations
-                    });
-            }
+            var propItems = new List<IPropertyType>();
 
+            if (propertyDefinitions == null)
+            {
+                propItems.AddRange(type.PropertyTypes);
+            }
+            else
+            {
+                foreach (var definition in propertyDefinitions)
+                {
+                    var propertyType = await GetPropertyType(definition);
+                    propItems.Add(propertyType);
+                }
+            }
             await AddOrUpdateProperties(type, propItems, "Content");
         }
 
@@ -1604,7 +1636,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             }
         }
 
-        private async Task AddOrUpdateProperties(IContentType type, IEnumerable<PropertyType> propItems, string groupName, int groupSortOrder = 1, bool updateType = true)
+        private async Task AddOrUpdateProperties(IContentType type, IEnumerable<IPropertyType> propItems, string groupName, int groupSortOrder = 1, bool updateType = true)
         {
             var propertyCollection = new PropertyTypeCollection(true, propItems);
             var group = new PropertyGroup(isPublishing: true)
@@ -1861,7 +1893,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             _isInstalling = true;
             try
             {
-                CreateOrUpdateContentElementContainers(fixUpdate: true);
+                CreateOrUpdateContentElementContainers();
 
                 UpdateContentTypes();
 
@@ -1870,10 +1902,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 _dataTypeContainer ??= (await CreateDataTypeContainer())
                     ?? throw new Exception($"{ErrorMsgPrefix} Could not find data type container.");
 
-                var parent = uReferenceByIdModel.ReferenceOrNull(_dataTypeContainer?.Key)
+                var parentKey = uReferenceByIdModel.ReferenceOrNull(_dataTypeContainer?.Key)
                     ?? throw new Exception($"{ErrorMsgPrefix} could not get ReferenceByIdModel for {_dataTypeContainer?.Name}!");
 
-                await CreateOrUpdateDataTypeBlockGrid(parent);
+                await CreateOrUpdateDataTypeBlockGrid(parentKey);
             }
             catch
             {

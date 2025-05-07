@@ -10,7 +10,7 @@ export default {
     setupTitle: "Setup WYSIWG",
     setupButtonLabel: "Setup document and data types",
     updateButtonLabel: "Update document and data types",
-    setupButtonDescription: "<p>This will create the document and data types needed for WYSIWG block editor views.</p>",
+    setupButtonDescription: "<p>This will create or update the document and data types needed for WYSIWG block editor views.</p>",
     uninstallTitle: "Remove WYSIWG",
     uninstallButtonLabel: "Remove document and data types",
     uninstallButtonDescription: "<p>This will remove the document and data types needed for WYSIWG block editor views.</p>",
