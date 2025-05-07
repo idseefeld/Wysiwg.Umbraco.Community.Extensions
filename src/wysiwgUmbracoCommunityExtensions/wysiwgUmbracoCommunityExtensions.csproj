@@ -51,6 +51,7 @@
     <Content Remove="compilerconfig.json" />
     <Content Remove="Views\Partials\blockgrid\area.cshtml" />
     <Content Remove="Views\Partials\blockgrid\default.cshtml" />
+    <None Remove="compilerconfig.json.defaults" />
     <None Remove="manually-pack.cmd" />
     <None Include="..\..\LICENSE">
       <Pack>True</Pack>
