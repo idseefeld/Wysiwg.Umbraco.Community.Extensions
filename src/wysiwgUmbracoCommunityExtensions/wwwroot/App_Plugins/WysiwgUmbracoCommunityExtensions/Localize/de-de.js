@@ -10,7 +10,7 @@ export default {
     setupTitle: "WYSIWG Einrichtung",
     setupButtonLabel: "Dokument- und Datentypen anlegen",
     updateButtonLabel: "Dokument- und Datentypen aktualisieren",
-    setupButtonDescription: "<p>Hiermit werden die benötigten Dokument- und Datentypen angelegt.</p>",
+    setupButtonDescription: "<p>Hiermit werden die benötigten Dokument- und Datentypen angelegt oder aktualisiert.</p>",
     uninstallTitle: "WYSIWG Entfernung",
     uninstallButtonLabel: "Dokument- und Datentypen entfernen",
     uninstallButtonDescription: "<p>Hiermit werden die benötigten Dokument- und Datentypen entfernt.</p>",
