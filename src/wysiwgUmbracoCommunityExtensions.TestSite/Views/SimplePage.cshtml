@@ -1,4 +1,4 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Web.Common.PublishedModels;
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<SimplePage>
 @{
     Layout = null;
@@ -16,7 +16,11 @@
 
     <link href="~/styles/Demo.min.css" rel="stylesheet" />
     <link href="~/styles/customblockgrid.min.css" rel="stylesheet" />
-
+    <style>
+        body{
+            background-color: @(Model.PageBackgroundColor ?? "inherit");
+        }
+    </style>
 </head>
 <body id="top">
     <div id="canvas">

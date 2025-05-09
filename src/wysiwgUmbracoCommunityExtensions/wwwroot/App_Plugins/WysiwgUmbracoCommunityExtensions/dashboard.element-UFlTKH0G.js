@@ -1,4 +1,4 @@
-import { LitElement as k, html as o, css as z, state as g, customElement as x } from "@umbraco-cms/backoffice/external/lit";
+import { LitElement as k, html as n, css as z, state as g, customElement as x } from "@umbraco-cms/backoffice/external/lit";
 import { UmbElementMixin as $ } from "@umbraco-cms/backoffice/element-api";
 import { UMB_NOTIFICATION_CONTEXT as C } from "@umbraco-cms/backoffice/notification";
 import { UMB_CURRENT_USER_CONTEXT as U } from "@umbraco-cms/backoffice/current-user";
@@ -7,11 +7,11 @@ import { S as B } from "./services.gen-CS9qDZj5.js";
 import { umbConfirmModal as E } from "@umbraco-cms/backoffice/modal";
 var h = /* @__PURE__ */ ((t) => (t[t.Unknown = 0] = "Unknown", t[t.UpToDate = 1] = "UpToDate", t[t.Update = 2] = "Update", t[t.Install = 3] = "Install", t))(h || {}), I = Object.defineProperty, D = Object.getOwnPropertyDescriptor, v = (t) => {
   throw TypeError(t);
-}, d = (t, e, i, r) => {
-  for (var n = r > 1 ? void 0 : r ? D(e, i) : e, p = t.length - 1, _; p >= 0; p--)
-    (_ = t[p]) && (n = (r ? _(e, i, n) : _(n)) || n);
-  return r && n && I(e, i, n), n;
-}, S = (t, e, i) => e.has(t) || v("Cannot " + i), s = (t, e, i) => (S(t, e, "read from private field"), e.get(t)), u = (t, e, i) => e.has(t) ? v("Cannot add the same private member more than once") : e instanceof WeakSet ? e.add(t) : e.set(t, i), T = (t, e, i, r) => (S(t, e, "write to private field"), e.set(t, i), i), a, m, y, w, b, f;
+}, d = (t, e, r, s) => {
+  for (var o = s > 1 ? void 0 : s ? D(e, r) : e, p = t.length - 1, _; p >= 0; p--)
+    (_ = t[p]) && (o = (s ? _(e, r, o) : _(o)) || o);
+  return s && o && I(e, r, o), o;
+}, S = (t, e, r) => e.has(t) || v("Cannot " + r), i = (t, e, r) => (S(t, e, "read from private field"), e.get(t)), u = (t, e, r) => e.has(t) ? v("Cannot add the same private member more than once") : e instanceof WeakSet ? e.add(t) : e.set(t, r), T = (t, e, r, s) => (S(t, e, "write to private field"), e.set(t, r), r), a, m, y, w, b, f;
 let l = class extends $(k) {
   constructor() {
     super(), this._contextCurrentUser = void 0, this._updateStatus = void 0, this._variations = void 0, this._varyByCulture = !1, this._varyBySegment = !1, this._serverInfo = void 0, this._majorVersion = 0, this._minorVersion = 0, this._patchVersion = 0, this._debug = !0, u(this, a), u(this, m, (t) => {
@@ -24,70 +24,68 @@ let l = class extends $(k) {
       const e = t.target;
       if (!e || e.state === "waiting") return;
       e.state = "waiting", this._majorVersion >= 15 && this._minorVersion >= 4 && this._patchVersion >= 0 && (this._varyBySegment = !1);
-      const i = {
+      const r = {
         query: {
           culture: this._varyByCulture,
           segment: this._varyBySegment
         }
-      }, { data: r, error: n } = await c.fixUpgrade(i);
-      if (n)
-        return s(this, a) && s(this, a).stay("danger", {
+      }, { data: s, error: o } = await c.fixUpgrade(r);
+      if (o)
+        return i(this, a) && i(this, a).stay("danger", {
           data: {
             headline: this.localize.term("wysiwg_updateSettingsError"),
-            message: `${this.localize.term("wysiwg_updateSettingsErrorDescription")} ${n}`
+            message: `${this.localize.term("wysiwg_updateSettingsErrorDescription")} ${o}`
           }
-        }), e.state = "failed", console.error(n), "error";
-      r !== void 0 && (s(this, a) && s(this, a).peek("positive", {
+        }), e.state = "failed", console.error(o), "error";
+      s !== void 0 && (i(this, a) && i(this, a).peek("positive", {
         data: {
           headline: this.localize.term("wysiwg_updateSettingsSuccess"),
           message: `${this.localize.term("wysiwg_updateSettingsSuccessDescription")}`
         }
-      }), this.setVariations(r), e.state = "success");
+      }), this.setVariations(s), e.state = "success");
     }), u(this, b, async (t) => {
       const e = t.target;
       if (!e || e.state === "waiting") return;
       e.state = "waiting";
-      const { data: i, error: r } = await c.install();
-      if (r)
-        return s(this, a) && s(this, a).stay("danger", {
+      const { data: r, error: s } = await c.install();
+      if (s)
+        return i(this, a) && i(this, a).stay("danger", {
           data: {
             headline: this.localize.term("wysiwg_installError"),
-            message: `${this.localize.term("wysiwg_installErrorDescription")} ${r}`
+            message: `${this.localize.term("wysiwg_installErrorDescription")} ${s}`
           }
-        }), e.state = "failed", console.error(r), "error";
-      i !== void 0 && (i === "Installed" ? (s(this, a) && s(this, a).peek("positive", {
+        }), e.state = "failed", console.error(s), "error";
+      r !== void 0 && (r === "Installed" ? (i(this, a) && i(this, a).peek("positive", {
         data: {
           headline: this.localize.term("wysiwg_installSuccess"),
           message: this.localize.term("wysiwg_installSuccessDescription")
         }
       }), this._updateStatus = h.UpToDate, e.state = "success") : e.state = "failed");
-    }), this.confirmUninstall = async () => {
-    }, u(this, f, async (t) => {
-      const e = {
+    }), u(this, f, async (t) => {
+      const e = t.target;
+      if (!e || e.state === "waiting") return;
+      const r = {
         color: "danger",
         headline: this.localize.term("wysiwg_unistallConfirmHeadline", { debug: this._debug }),
-        content: o`${this.localize.term("wysiwg_uninstallConfirmDescription", { debug: this._debug })}`,
+        content: n`${this.localize.term("wysiwg_uninstallConfirmDescription", { debug: this._debug })}`,
         confirmLabel: this.localize.term("wysiwg_okConfirmButtonLabel", { debug: this._debug }),
         cancelLabel: this.localize.term("wysiwg_cancelConfirmButtonLabel", { debug: this._debug })
       };
-      await E(this, e);
-      const i = t.target;
-      if (!i || i.state === "waiting") return;
-      i.state = "waiting";
-      const { data: r, error: n } = await c.unInstall();
-      if (n)
-        return s(this, a) && (s(this, a).stay("danger", {
+      await E(this, r), console.log("confirmed uninstall"), e.state = "waiting";
+      const { data: s, error: o } = await c.unInstall();
+      if (o)
+        return i(this, a) && (i(this, a).stay("danger", {
           data: {
             headline: this.localize.term("wysiwg_uninstallError"),
-            message: `${this.localize.term("wysiwg_uninstallErrorDescription")} ${n}`
+            message: `${this.localize.term("wysiwg_uninstallErrorDescription")} ${o}`
           }
-        }), i.state = "failed"), console.error(n), "error";
-      r !== void 0 && (r === "Uninstalled" ? (s(this, a) && s(this, a).peek("positive", {
+        }), e.state = "failed"), console.error(o), "error";
+      s !== void 0 && (s === "Uninstalled" ? (i(this, a) && i(this, a).peek("positive", {
         data: {
           headline: this.localize.term("wysiwg_uninstallSuccessTitle"),
           message: this.localize.term("wysiwg_uninstallSuccessDescription")
         }
-      }), i.state = "success") : i.state = "failed", this._updateStatus = void 0);
+      }), e.state = "success") : e.state = "failed", this._updateStatus = void 0);
     }), this.consumeContext(C, (t) => {
       T(this, a, t);
     }), this.consumeContext(U, (t) => {
@@ -99,7 +97,7 @@ let l = class extends $(k) {
   async getUpdateStatus() {
     if (this._updateStatus) return;
     const { data: t, error: e } = await c.getUpdateStatusCode();
-    e && (console.error(e), s(this, a) && s(this, a).stay("danger", {
+    e && (console.error(e), i(this, a) && i(this, a).stay("danger", {
       data: {
         headline: this.localize.term("wysiwg_versionError"),
         message: `${this.localize.term("wysiwg_versionErrorDescription")} ${e}`
@@ -107,24 +105,24 @@ let l = class extends $(k) {
     })), t !== void 0 && (this._updateStatus = t);
   }
   async getServerInfo() {
-    var i;
+    var r;
     if (this._updateStatus) return;
     const { data: t, error: e } = await B.getServerInformation();
-    if (e && (console.error(e), s(this, a) && s(this, a).stay("danger", {
+    if (e && (console.error(e), i(this, a) && i(this, a).stay("danger", {
       data: {
         headline: this.localize.term("wysiwg_serverInfoError"),
         message: `${this.localize.term("wysiwg_serverInfoErrorDescription")} ${e}`
       }
     })), t !== void 0) {
       this._serverInfo = t;
-      const r = (i = this._serverInfo) == null ? void 0 : i.assemblyVersion.split(".");
-      this._majorVersion = r.length > 0 ? parseInt(r[0]) : 0, this._minorVersion = r.length > 1 ? parseInt(r[1]) : 0, this._patchVersion = r.length > 2 ? parseInt(r[2]) : 0;
+      const s = (r = this._serverInfo) == null ? void 0 : r.assemblyVersion.split(".");
+      this._majorVersion = s.length > 0 ? parseInt(s[0]) : 0, this._minorVersion = s.length > 1 ? parseInt(s[1]) : 0, this._patchVersion = s.length > 2 ? parseInt(s[2]) : 0;
     }
   }
   async getVariations() {
     const { data: t, error: e } = await c.getVariations();
     if (e)
-      return s(this, a) && s(this, a).stay("danger", {
+      return i(this, a) && i(this, a).stay("danger", {
         data: {
           headline: this.localize.term("wysiwg_variationsError"),
           message: `${this.localize.term("wysiwg_variationsErrorDescription")} ${e}`
@@ -137,7 +135,7 @@ let l = class extends $(k) {
   }
   render() {
     var t;
-    return (t = this._contextCurrentUser) != null && t.isAdmin ? (this.getUpdateStatus(), this.getServerInfo(), this.getVariations(), o`${this.renderSetupBox()} ${this.renderUpdateBox()} ${this.renderUninstallBox()}`) : o`<umb-localize key="wysiwg_" .debug=${this._debug}>
+    return (t = this._contextCurrentUser) != null && t.isAdmin ? (this.getUpdateStatus(), this.getServerInfo(), this.getVariations(), n`${this.renderSetupBox()} ${this.renderUpdateBox()} ${this.renderUninstallBox()}`) : n`<umb-localize key="wysiwg_" .debug=${this._debug}>
       <p>Only admins can see this dashboard</p>
       </umb-localize>`;
   }
@@ -145,14 +143,14 @@ let l = class extends $(k) {
     if (this._updateStatus === void 0 || this._updateStatus === h.UpToDate)
       return;
     const t = this._updateStatus === h.Install ? this.localize.term("wysiwg_setupButtonLabel", { debug: this._debug }) : this.localize.term("wysiwg_updateButtonLabel", { debug: this._debug });
-    return o`
+    return n`
       <uui-box headline=${this.localize.term("wysiwg_setupTitle", {
       debug: this._debug
     })}>
         <uui-button
           color="positive"
           look="primary"
-          @click="${s(this, b)}"
+          @click="${i(this, b)}"
         >
         ${t}
         </uui-button>
@@ -170,7 +168,7 @@ let l = class extends $(k) {
     if (this._updateStatus === void 0 || this._updateStatus !== h.UpToDate)
       return;
     const t = this.localize.term("wysiwg_cultureSegmentButtonLabel", { debug: this._debug });
-    return o`
+    return n`
       <uui-box headline=${this.localize.term("wysiwg_cultureSegmentTitle", {
       debug: this._debug
     })}>
@@ -182,14 +180,14 @@ let l = class extends $(k) {
         </umb-localize>
         <p>
           <uui-checkbox
-            @change="${s(this, m)}"
+            @change="${i(this, m)}"
             ?checked=${this._varyByCulture}>Vary by culture</uui-checkbox><br />
           ${this.renderSegmentCheckbox()}
         </p>
         <uui-button
           color="positive"
           look="primary"
-          @click="${s(this, w)}"
+          @click="${i(this, w)}"
         >
         ${t}
         </uui-button>
@@ -197,13 +195,13 @@ let l = class extends $(k) {
     `;
   }
   renderSegmentCheckbox() {
-    return this._majorVersion >= 15 && this._minorVersion >= 4 && this._patchVersion >= 0 ? o`
+    return this._majorVersion >= 15 && this._minorVersion >= 4 && this._patchVersion >= 0 ? n`
       <uui-checkbox
         disabled
         ?checked=${this._varyBySegment}>Vary by segment</uui-checkbox>
-      ` : o`
+      ` : n`
     <uui-checkbox
-      @change="${s(this, y)}"
+      @change="${i(this, y)}"
       ?checked=${this._varyBySegment}>Vary by segment</uui-checkbox>
     `;
   }
@@ -211,7 +209,7 @@ let l = class extends $(k) {
     if (this._updateStatus === void 0 || this._updateStatus === h.Install)
       return;
     const t = this.localize.term("wysiwg_uninstallButtonLabel", { debug: this._debug });
-    return o`
+    return n`
       <uui-box headline=${this.localize.term("wysiwg_uninstallTitle", {
       debug: this._debug
     })}>
@@ -225,7 +223,7 @@ let l = class extends $(k) {
         <uui-button
           color="danger"
           look="primary"
-          @click="${s(this, f)}"
+          @click="${i(this, f)}"
         >
         ${t}
         </uui-button>
@@ -281,4 +279,4 @@ export {
   l as WysiwgDashboardElement,
   P as default
 };
-//# sourceMappingURL=dashboard.element-B_ANfST9.js.map
+//# sourceMappingURL=dashboard.element-UFlTKH0G.js.map

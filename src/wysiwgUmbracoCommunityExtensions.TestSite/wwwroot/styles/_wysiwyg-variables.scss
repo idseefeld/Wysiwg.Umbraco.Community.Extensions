@@ -1,6 +1,6 @@
 * {
   /*colors*/
-  --wysiwg-highlight-color: #ffffff;
+  --wysiwg-highlight-color: #833ad8;
   --wysiwg-text-color: #000;
   --wysiwg-error-color: #cc0000;
   /*all elements*/
@@ -17,10 +17,11 @@
   --wysiwg-font-size-12: 12px;
   --wysiwg-font-size-10: 10px;
   --wysiwg-text-shadow: rgba(0,0,0,0.3) 0.2em 0.3em 0.2em; /* none; */
+  --wysiwg-text-dark-shadow: rgba(0,0,0,0.9) 0.3em 0.4em 0.3em; /* none; */
   --wysiwg-link-hover-color: var(--wysiwg-highlight-color, inherit);
   /*headline element*/
   --wysiwg-headline-text-shadow: var(--wysiwg-text-shadow, none);
-  /*--wysiwg-headline-color: var(--wysiwg-highlight-color, inherit);*/
+  --wysiwg-headline-color: var(--wysiwg-highlight-color, inherit);
   --wysiwg-headline-1-font-size: 32px;
   --wysiwg-headline-2-font-size: 28px;
   --wysiwg-headline-3-font-size: 24px;
@@ -37,10 +38,11 @@
   --wysiwg-p-paragraph-margin: 0;
   --wysiwg-p-paragraph-padding: 0 0 20px;
   --wysiwg-link-text-decoration: underline;
-  --wysiwg-paragraph-headline-text-shadow: var(--wysiwg-text-shadow, none);
-  --wysiwg-paragraph-text-shadow: var(--wysiwg-text-shadow, none);
+  --wysiwg-paragraph-headline-text-shadow: var(--wysiwg-text-dark-shadow, none);
+  --wysiwg-paragraph-text-shadow: var(--wysiwg-text-dark-shadow, none);
   /*cropped-picture element*/
   --wysiwg-figcaption-font-style: italic;
+  --wysiwg-figcaption-rotate-font-style: normal;
   --wysiwg-figcaption-text-shadow: var(--wysiwg-text-shadow, none);
   --wysiwg-figcaption-color: inherit;
   --wysiwg-figcaption-font-style: italic;

@@ -310,11 +310,11 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 EditorUiAlias = "Umb.PropertyEditorUi.Slider",
                 Values = [
                     new DataTypePropertyPresentationModel {
-                        Alias = "minValue",
+                        Alias = "minVal",
                         Value = -90
                     },
                     new DataTypePropertyPresentationModel {
-                        Alias = "maxValue",
+                        Alias = "maxVal",
                         Value = 90
                     },
                     new DataTypePropertyPresentationModel {

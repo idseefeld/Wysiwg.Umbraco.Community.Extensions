@@ -24,8 +24,9 @@
     var color = content.CaptionColor?.Color ?? "";
     var selectedCrop = content.MediaItem.SelectedCropAlias ?? "";
     var alternativeText = content.AlternativeText ?? content.MediaItem.Name ?? selectedCrop;
-    var rotateStyle = new HtmlFormattableString(content.Rotation != null ? "" : $"style=\"transform: rotate({content.Rotation}deg);\"");
-    var colorStyle = new HtmlFormattableString(string.IsNullOrEmpty(color) ? "" : $"style=\"color: var(--wysiwg-figcaption-color,{color});\"");
+    var rotateStyle = new HtmlFormattableString(content.Rotation == null ? "" : $"style=\"transform: rotate({content.Rotation}deg);\"");
+    var rotateClass = content.Rotation == null ? "" : "class=\"rotate\"";
+    var colorStyle = new HtmlFormattableString(string.IsNullOrEmpty(color) ? "" : $"{rotateClass} style=\"color: var(--wysiwg-figcaption-color,{color});\"");
     if (content.MediaItem.ContentType.Alias == Conventions.MediaTypes.Folder)
     {
         RenderFolder(content.MediaItem, width, selectedCrop, alternativeText, figCaption, colorStyle, rotateStyle, PublishedMediaCache, MediaNavigationQueryService);

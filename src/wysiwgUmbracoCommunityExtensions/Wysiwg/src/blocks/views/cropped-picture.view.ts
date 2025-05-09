@@ -44,13 +44,14 @@ export class CroppedPictureCustomView
       const caption = pictureWithCrop?.figCaption;
       const captionColor =
         pictureWithCrop?.captionColor?.value ?? this.defaultColor.value;
-      const rotationStyle = pictureWithCrop?.rotation?.from ? `transform: rotate(${pictureWithCrop.rotation.from}deg);` : '';
-      const colorStyle = this.isTransparentColor(captionColor) ? '' : `style="color: var(--wysiwg-figcaption-color,${captionColor});"`;
+      const rotate = pictureWithCrop?.rotation?.from ?? 0;
+      const rotationStyle = !rotate ? '' : `transform: rotate(${rotate}deg);`;
+      const figcaptionClass = !rotate ? '' : 'class="rotate" ';
+      const figcaptionAttr = this.isTransparentColor(captionColor) ? '' : `${figcaptionClass}style="color: var(--wysiwg-figcaption-color,${captionColor});"`;
       const figCaption = caption
-        ? unsafeHTML(`<figcaption ${colorStyle}>${caption}</figcaption>`)
+        ? unsafeHTML(`<figcaption ${figcaptionAttr}>${caption}</figcaption>`)
         : "";
 
-      //const figureHtml = unsafeHTML(`<figure ${rotationStyle}>${img}${figCaption}</figure>`);
 
       return html`<figure style=${rotationStyle}>${img}${figCaption}</figure>`;
     }
@@ -91,6 +92,9 @@ export class CroppedPictureCustomView
         font-family: var(--wysiwg-figcaption-font-family, inherit);
         line-height: var(--wysiwg-figcaption-line-height, 1.2em);
         text-shadow: var(--wysiwg-figcaption-text-shadow, none);
+      }
+      figcaption.rotate{
+        font-style: var(--wysiwg-figcaption-rotate-font-style, normal);
       }
       .wysiwg-cropped-image {
         border-radius: var(--wysiwg-cropped-image-border-radius, 0);

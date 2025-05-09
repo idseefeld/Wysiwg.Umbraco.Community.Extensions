@@ -56,7 +56,7 @@ body, html {
     }
 
     .wysiwg-croppedicture-view {
-        
+
       figure {
         margin: 0;
         height: auto;
@@ -99,6 +99,10 @@ body, html {
         font-family: var(--wysiwg-figcaption-font-family, inherit);
         line-height: var(--wysiwg-figcaption-line-height, 1.2em);
         text-shadow: var(--wysiwg-figcaption-text-shadow, none);
+
+        &.rotate {
+          font-style: var(--wysiwg-figcaption-rotate-font-style, normal);
+        }
       }
     }
 
@@ -119,6 +123,7 @@ body, html {
 
       h2, h3 {
         color: var(--wysiwg-paragraph-headline-color, inherit);
+        text-shadow: var(--wysiwg-paragraph-headline-text-shadow, none);
       }
 
       h2 {
