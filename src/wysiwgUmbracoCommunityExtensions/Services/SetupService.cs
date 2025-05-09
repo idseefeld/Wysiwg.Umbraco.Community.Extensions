@@ -71,7 +71,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             $"{Constants.Prefix}LimitedHeadline",
             $"{Constants.Prefix}ParagaphRTE",
             $"{Constants.Prefix}CustomerColors",
-            $"{Constants.Prefix}ImageAndCropPicker"
+            $"{Constants.Prefix}ImageAndCropPicker",
+            $"{Constants.Prefix}Rotation"
         ];
         // Do not remove previus data types without deprecation phase and documentation
         private readonly string[] _removedDataTypes = [
@@ -171,6 +172,9 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             if (notAllRequiredInstalled)
             { return VersionStatus.Update; }
 
+            if (!await RotationPropertyExists())
+            { return VersionStatus.Update; }
+
             UpdateContentTypes();
             var requiredContentTypes = _allContentTypes
                .Select(t => t.Alias)
@@ -185,6 +189,14 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             { return VersionStatus.Update; }
 
             return VersionStatus.UpToDate;
+        }
+
+        private async Task<bool> RotationPropertyExists()
+        {
+            var allDtTypes = await dataTypeService.GetAllAsync();
+            var rotationDataType = allDtTypes.FirstOrDefault(d => d.Name != null && d.Name.Equals($"{Constants.Prefix}Rotation"));
+
+            return rotationDataType != null;
         }
 
         public async Task<int> GetVersionStatusCode()
@@ -278,11 +290,52 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     case $"{Constants.Prefix}CustomerColors":
                         await CreateDataTypeCustomerColors(name, parent);
                         break;
+                    case $"{Constants.Prefix}Rotation":
+                        await CreateDataTypeRotation(name, parent);
+                        break;
                     default:
                         break;
                 }
             }
             _existingDataTypes = [.. await GetAllWysiwgDataTypes()];
+        }
+
+        private async Task CreateDataTypeRotation(string name, uReferenceByIdModel parent)
+        {
+            var createDataTypeRequestModel = new CreateDataTypeRequestModel
+            {
+                Parent = parent,
+                Name = name,
+                EditorAlias = "Umbraco.Slider",
+                EditorUiAlias = "Umb.PropertyEditorUi.Slider",
+                Values = [
+                    new DataTypePropertyPresentationModel {
+                        Alias = "minValue",
+                        Value = -90
+                    },
+                    new DataTypePropertyPresentationModel {
+                        Alias = "maxValue",
+                        Value = 90
+                    },
+                    new DataTypePropertyPresentationModel {
+                        Alias = "initVal1",
+                        Value = 0
+                    },
+                    new DataTypePropertyPresentationModel {
+                        Alias = "initVal2",
+                        Value = 0
+                    },
+                    new DataTypePropertyPresentationModel {
+                        Alias = "step",
+                        Value = 5
+                    },
+                    new DataTypePropertyPresentationModel {
+                        Alias = "enableRange",
+                        Value = false
+                    }
+                ]
+            };
+            await CreateOrUpdateDataType(createDataTypeRequestModel);
         }
 
         private async Task CreateDataTypeHeadlineSizes(string name, uReferenceByIdModel parent)
@@ -1404,7 +1457,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 new ("Media Item", $"{Constants.Prefix}ImageAndCropPicker", 1),
                 new ("Alternative Text", "Textstring", 2, variations : ContentVariation.Culture),
                 new ("Fig Caption", "Textstring", 3, variations : ContentVariation.Culture),
-                new ("Caption Color", $"{Constants.Prefix}CustomerColors", 5)
+                new ("Caption Color", $"{Constants.Prefix}CustomerColors", 4),
+                new ("Rotation", $"{Constants.Prefix}Rotation", 5)
             };
 
             await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
@@ -1894,6 +1948,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             try
             {
                 CreateOrUpdateContentElementContainers();
+
+                var allDataTypes = await GetAllWysiwgDataTypes();
 
                 UpdateContentTypes();
 
