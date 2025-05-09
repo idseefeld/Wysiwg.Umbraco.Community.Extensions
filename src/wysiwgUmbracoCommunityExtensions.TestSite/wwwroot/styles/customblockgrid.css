@@ -40,7 +40,6 @@
   --wysiwg-paragraph-headline-text-shadow: var(--wysiwg-text-shadow, none);
   --wysiwg-paragraph-text-shadow: var(--wysiwg-text-shadow, none);
   /*cropped-picture element*/
-  --wysiwg-cropped-image-rotate: -10deg;
   --wysiwg-figcaption-font-style: italic;
   --wysiwg-figcaption-text-shadow: var(--wysiwg-text-shadow, none);
   --wysiwg-figcaption-color: inherit;
@@ -112,9 +111,6 @@ body, html {
 .wysiwg .umb-block-grid__layout-item .headline h3 {
   font-size: var(--wysiwg-headline-3-font-size, 24px);
   line-height: var(--wysiwg-headline-3-line-height, 1.2em);
-}
-.wysiwg .umb-block-grid__layout-item .wysiwg-croppedicture-view {
-  rotate: var(--wysiwg-cropped-image-rotate, 0);
 }
 .wysiwg .umb-block-grid__layout-item .wysiwg-croppedicture-view figure {
   margin: 0;

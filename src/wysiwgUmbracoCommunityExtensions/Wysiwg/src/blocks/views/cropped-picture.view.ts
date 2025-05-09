@@ -44,12 +44,15 @@ export class CroppedPictureCustomView
       const caption = pictureWithCrop?.figCaption;
       const captionColor =
         pictureWithCrop?.captionColor?.value ?? this.defaultColor.value;
-      const inlineStyle = this.isTransparentColor(captionColor) ? '' : `style="color: var(--wysiwg-figcaption-color,${captionColor});"`;
+      const rotationStyle = pictureWithCrop?.rotation?.from ? `transform: rotate(${pictureWithCrop.rotation.from}deg);` : '';
+      const colorStyle = this.isTransparentColor(captionColor) ? '' : `style="color: var(--wysiwg-figcaption-color,${captionColor});"`;
       const figCaption = caption
-        ? unsafeHTML(`<figcaption ${inlineStyle}>${caption}</figcaption>`)
+        ? unsafeHTML(`<figcaption ${colorStyle}>${caption}</figcaption>`)
         : "";
 
-      return html`<figure>${img}${figCaption}</figure>`;
+      //const figureHtml = unsafeHTML(`<figure ${rotationStyle}>${img}${figCaption}</figure>`);
+
+      return html`<figure style=${rotationStyle}>${img}${figCaption}</figure>`;
     }
   }
 
@@ -62,7 +65,6 @@ export class CroppedPictureCustomView
         margin: 0;
         padding: 0;
         font-family: var(--wysiwg-font-family, initial);
-        rotate: var(--wysiwg-cropped-image-rotate, 0);
       }
       .error {
         color: var(--wysiwg-error-color, #cc0000);

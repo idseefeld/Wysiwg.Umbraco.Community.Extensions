@@ -14,7 +14,13 @@ export type CroppedPictureCustomViewProps = {
   alternativeText: string;
   figCaption: string;
   captionColor: ColorType;
+  rotation: RotationSlider;
 };
+
+export type RotationSlider = {
+  from: number;
+  to: number;
+}
 
 export type ColorType = {
   label: string;

@@ -24,37 +24,38 @@
     var color = content.CaptionColor?.Color ?? "";
     var selectedCrop = content.MediaItem.SelectedCropAlias ?? "";
     var alternativeText = content.AlternativeText ?? content.MediaItem.Name ?? selectedCrop;
-    var inlineStyle = new HtmlFormattableString(string.IsNullOrEmpty(color) ? "" : $"style=\"color: var(--wysiwg-figcaption-color,{color});\"");
+    var rotateStyle = new HtmlFormattableString(content.Rotation != null ? "" : $"style=\"transform: rotate({content.Rotation}deg);\"");
+    var colorStyle = new HtmlFormattableString(string.IsNullOrEmpty(color) ? "" : $"style=\"color: var(--wysiwg-figcaption-color,{color});\"");
     if (content.MediaItem.ContentType.Alias == Conventions.MediaTypes.Folder)
     {
-        RenderFolder(content.MediaItem, width, selectedCrop, alternativeText, figCaption, inlineStyle, PublishedMediaCache, MediaNavigationQueryService);
+        RenderFolder(content.MediaItem, width, selectedCrop, alternativeText, figCaption, colorStyle, rotateStyle, PublishedMediaCache, MediaNavigationQueryService);
     }
     else if (content.MediaItem.ContentType.Alias == Conventions.MediaTypes.Image)
     {
-        RenderImage(content.MediaItem, width, selectedCrop, alternativeText, figCaption, inlineStyle);
+        RenderImage(content.MediaItem, width, selectedCrop, alternativeText, figCaption, colorStyle, rotateStyle);
     }
 }
 
 @functions {
-    private void RenderImage(MediaWithSelectedCrop image, int width, string cropAlias, string alternativeText, string figCaption, IHtmlContent inlineStyle)
+    private void RenderImage(MediaWithSelectedCrop image, int width, string cropAlias, string alternativeText, string figCaption, IHtmlContent colorStyle, IHtmlContent rotateStyle)
     {
         var src = image.GetSelectedCropUrl(width, cropAlias) ?? image.GetCropUrl(width: width, cropAlias: cropAlias);
 
         <div class="wysiwg-croppedicture-view">
-            <figure>
+            <figure @(rotateStyle)>
                 <div class="wysiwg-cropped-image">
                     <img src="@src" alt="@alternativeText" />
                 </div>
 
                 @if (!string.IsNullOrEmpty(figCaption))
                 {
-                    <figcaption @(inlineStyle)>@figCaption</figcaption>
+                    <figcaption @(colorStyle)>@figCaption</figcaption>
                 }
             </figure>
         </div>
     }
 
-    private void RenderFolder(PublishedContentWrapped folder, int width, string cropAlias, string alternativeText, string figCaption, IHtmlContent inlineStyle,
+    private void RenderFolder(PublishedContentWrapped folder, int width, string cropAlias, string alternativeText, string figCaption, IHtmlContent colorStyle, IHtmlContent rotateStyle,
         IPublishedMediaCache PublishedMediaCache,
         IMediaNavigationQueryService MediaNavigationQueryService)
     {
@@ -82,7 +83,7 @@
                 if (localCropsPropery.Value<ImageCropperValue>(noopFallback) is ImageCropperValue localCrops)
                 {
                     MediaWithSelectedCrop image = new MediaWithSelectedCrop(mediaItem, noopFallback, localCrops);
-                    RenderImage(image, width, cropAlias, alternativeText, figCaption, inlineStyle);
+                    RenderImage(image, width, cropAlias, alternativeText, figCaption, colorStyle, rotateStyle);
                 }
             }
         }

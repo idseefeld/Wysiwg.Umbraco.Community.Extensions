@@ -4,7 +4,7 @@ import { UmbTextStyles as D } from "@umbraco-cms/backoffice/style";
 import "./headline.view-BrAsvpqV.js";
 import "./paragraph.view-BuXeltMt.js";
 import "./picture-with-crop.view-uKUklPHt.js";
-import "./cropped-picture.view-DJIBr-kj.js";
+import "./cropped-picture.view-BKYcNyBc.js";
 import "./wysiwg-datatype-picker.element-BKj-4eik.js";
 import "./wysiwg-image-crops.element-CAGvkQix.js";
 import "./wysiwg-image-and-crop-picker.element-Dheh-YuP.js";
@@ -690,4 +690,4 @@ export {
   g as a,
   Te as b
 };
-//# sourceMappingURL=wysiwg-cropped-image.element-C7ZkNOJk.js.map
+//# sourceMappingURL=wysiwg-cropped-image.element-BNAtnKAD.js.map

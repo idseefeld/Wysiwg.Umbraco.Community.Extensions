@@ -56,8 +56,7 @@ body, html {
     }
 
     .wysiwg-croppedicture-view {
-      rotate: var(--wysiwg-cropped-image-rotate, 0);
-
+        
       figure {
         margin: 0;
         height: auto;

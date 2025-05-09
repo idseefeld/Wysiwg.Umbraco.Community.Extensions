@@ -16,6 +16,7 @@ namespace WysiwgUmbracoCommunityExtensions.ViewModels
             FigCaption = element?.Value<string>("figCaption");
             CropAlias = element?.Value<string>("cropAlias");
             CaptionColor = element?.Value<PickedColor>("captionColor");
+            Rotation = element?.Value<decimal?>("rotation");
         }
 
         public MediaWithSelectedCrop? MediaItem { get; set; }
@@ -23,5 +24,6 @@ namespace WysiwgUmbracoCommunityExtensions.ViewModels
         public string? FigCaption { get; set; }
         public PickedColor? CaptionColor { get; set; }
         public string? CropAlias { get; set; }
+        public decimal? Rotation { get; set; }
     }
 }
