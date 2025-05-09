@@ -154,11 +154,10 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     }
   };
 
-  confirmUninstall = async () => {
-
-  }
-
   #onClickUninstall = async (ev: Event) => {
+    const buttonElement = ev.target as UUIButtonElement;
+    if (!buttonElement || buttonElement.state === "waiting") return;
+
     const modalData: UmbConfirmModalData = {
       color: 'danger',
       headline: this.localize.term("wysiwg_unistallConfirmHeadline", { debug: this._debug, }),
@@ -166,10 +165,9 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
       confirmLabel: this.localize.term("wysiwg_okConfirmButtonLabel", { debug: this._debug, }),
       cancelLabel: this.localize.term("wysiwg_cancelConfirmButtonLabel", { debug: this._debug, }),
     };
-    await umbConfirmModal(this, modalData)
+    await umbConfirmModal(this, modalData);
+    console.log("confirmed uninstall");
 
-    const buttonElement = ev.target as UUIButtonElement;
-    if (!buttonElement || buttonElement.state === "waiting") return;
     buttonElement.state = "waiting";
 
     const { data, error } = await WysiwgUmbracoCommunityExtensionsService.unInstall();

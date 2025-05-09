@@ -17,24 +17,13 @@ namespace WysiwgUmbracoCommunityExtensions.Extensions
             if (rowSettings == null)
             { return null; }
 
-            string? colorStyle = null;
+            string? colorStyle = rowSettings.BackgroundColor is PickedColor color ? $"background-{GetColorStyle(color)}" : null;
             string? imageStyle = null;
             string? paddingStyle = null;
 
-            if (rowSettings.BackgroundColor is PickedColor color && !string.IsNullOrWhiteSpace(color.Color))
-            {
-                // work-a-round for missing tranparent definition in default ColorPicker data type
-                var isTransparent = color.Color.InvariantEquals("#fff")
-                        || (!string.IsNullOrWhiteSpace(color.Label)
-                            && rowSettings.BackgroundColor.Label.InvariantEquals("transparent"));
-
-                if (!isTransparent)
-                { colorStyle = $"background-color: {color.Color};"; }
-            }
-
             var src = rowSettings.BackgroundImage?.MediaUrl();
             if (!string.IsNullOrWhiteSpace(src))
-            { imageStyle = $"background-image: url('{src}');"; }
+            { imageStyle = $"background-repeat:no-repeat;background-position:inherit;background-image: url('{src}');"; }
 
             var padding = string.IsNullOrEmpty(rowSettings.Padding) && (colorStyle != null || imageStyle != null)
                 ? "10px" : rowSettings.Padding;
@@ -42,6 +31,23 @@ namespace WysiwgUmbracoCommunityExtensions.Extensions
             { paddingStyle = $"padding: {padding};"; }
 
             return $"{paddingStyle}{colorStyle}{imageStyle}";
+        }
+        public static string? GetColorStyle(this PickedColor color)
+        {
+            string? colorStyle = null;
+
+            if (!string.IsNullOrWhiteSpace(color.Color))
+            {
+                // work-a-round for missing tranparent definition in default ColorPicker data type
+                var isTransparent = color.Color.InvariantEquals("#fff")
+                        || (!string.IsNullOrWhiteSpace(color.Label)
+                            && color.Label.InvariantEquals("transparent"));
+
+                if (!isTransparent)
+                { colorStyle = $"color: {color.Color};"; }
+            }
+
+            return colorStyle;
         }
 
         public static HtmlString GetHtml(this IHtmlEncodedString text)

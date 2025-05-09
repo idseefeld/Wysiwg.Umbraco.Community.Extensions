@@ -38,17 +38,22 @@ export class CroppedPictureCustomView
         >
       </div>`;
     } else {
-      const img = html`<wysiwg-cropped-image .mediaItem=${mediaCropItem}></wysiwg-cropped-image>`;
+      const alt = pictureWithCrop?.alternativeText ?? mediaCropItem?.selectedCropAlias ?? "";
+      const img = html`<wysiwg-cropped-image class="wysiwg-cropped-image" .mediaItem=${mediaCropItem} .alt=${alt}></wysiwg-cropped-image>`;
 
+      const caption = pictureWithCrop?.figCaption;
       const captionColor =
         pictureWithCrop?.captionColor?.value ?? this.defaultColor.value;
-      const caption = pictureWithCrop?.figCaption;
-      const inlineStyle = this.isTransparentColor(captionColor) ? '' : `style="color: ${captionColor};"`;
+      const rotate = pictureWithCrop?.rotation?.from ?? 0;
+      const rotationStyle = !rotate ? '' : `transform: rotate(${rotate}deg);`;
+      const figcaptionClass = !rotate ? '' : 'class="rotate" ';
+      const figcaptionAttr = this.isTransparentColor(captionColor) ? '' : `${figcaptionClass}style="color: var(--wysiwg-figcaption-color,${captionColor});"`;
       const figCaption = caption
-        ? unsafeHTML(`<figcaption ${inlineStyle}>${caption}</figcaption>`)
+        ? unsafeHTML(`<figcaption ${figcaptionAttr}>${caption}</figcaption>`)
         : "";
 
-      return html`<figure>${img}${figCaption}</figure>`;
+
+      return html`<figure style=${rotationStyle}>${img}${figCaption}</figure>`;
     }
   }
 
@@ -63,7 +68,7 @@ export class CroppedPictureCustomView
         font-family: var(--wysiwg-font-family, initial);
       }
       .error {
-        color: red;
+        color: var(--wysiwg-error-color, #cc0000);
         font-weight: bold;
         text-align: center;
       }
@@ -71,9 +76,33 @@ export class CroppedPictureCustomView
         margin: 0;
         padding: 0;
         display: block;
+
+        font-size: var(--wysiwg-font-size-16, 16px);
+        line-height: var(--wysiwg-line-height-24, 24px);
       }
       figcaption {
+        display: inline-block;
+        margin: var(--wysiwg-figcaption-margin, 0);
+        padding: var(--wysiwg-figcaption-padding, 0);
+        color: var(--wysiwg-figcaption-color, inherit);
         font-style: var(--wysiwg-figcaption-font-style, italic);
+        font-variant: var(--wysiwg-figcaption-font-variant, normal);
+        font-weight: var(--wysiwg-figcaption-font-weight, normal);
+        font-size: var(--wysiwg-figcaption-font-size, 90%);
+        font-family: var(--wysiwg-figcaption-font-family, inherit);
+        line-height: var(--wysiwg-figcaption-line-height, 1.2em);
+        text-shadow: var(--wysiwg-figcaption-text-shadow, none);
+      }
+      figcaption.rotate{
+        font-style: var(--wysiwg-figcaption-rotate-font-style, normal);
+      }
+      .wysiwg-cropped-image {
+        border-radius: var(--wysiwg-cropped-image-border-radius, 0);
+        border-style: var(--wysiwg-cropped-image-border-style, none);
+        border-width: var(--wysiwg-cropped-image-border-width, 0);
+        border-color: var(--wysiwg-cropped-image-border-color, transparent);
+        box-shadow: var(--wysiwg-cropped-image-box-shadow, none);
+        background-color: var(--wysiwg-cropped-image-background-color, transparent);
       }
     `,
   ];

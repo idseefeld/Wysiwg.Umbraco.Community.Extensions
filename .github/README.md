@@ -6,7 +6,7 @@
 
 This package was created with the [***Opinionated Umbraco Package Starter Template***](https://github.com/LottePitcher/opinionated-package-starter) based on the official [*Umbraco Extensions*](https://github.com/umbraco/Umbraco-CMS/tree/contrib/templates/UmbracoExtension) template and gives you a starting point with additional examples for advanced Block Grid views within the backoffice.
 
-![Screenshot: backoffice vs frontend](../docs/screenshots/BOvsFrontend-v2.jpg)
+![Screenshot: backoffice vs frontend](../docs/screenshots/BOvsFrontend-v3.jpg)
 
 
 

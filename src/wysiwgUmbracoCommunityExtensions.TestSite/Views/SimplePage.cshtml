@@ -2,9 +2,10 @@
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<SimplePage>
 @{
     Layout = null;
+    var lang = System.Threading.Thread.CurrentThread.CurrentCulture.Name;
 }
 <!DOCTYPE html>
-<html>
+<html lang="@lang">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -13,26 +14,17 @@
 
     <link rel="shortcut icon" type="image/png" href="/favicon.png" />
 
+    <link href="~/styles/Demo.min.css" rel="stylesheet" />
     <link href="~/styles/customblockgrid.min.css" rel="stylesheet" />
-
     <style>
-        figure{
-            margin: 0
-        }
-        figure img{
-            width: 100%;
-        }
-        body, html{
-            margin: 0;
-        }
-        #canvas{
-            max-width: 1200px;
-            margin: 0 auto;
+        body{
+            background-color: @(Model.PageBackgroundColor ?? "inherit");
         }
     </style>
 </head>
 <body id="top">
     <div id="canvas">
+
         @await Html.GetBlockGridHtmlAsync(Model.Grid)
 
         <footer>

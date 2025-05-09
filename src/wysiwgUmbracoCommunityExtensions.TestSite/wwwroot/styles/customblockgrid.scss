@@ -1,4 +1,4 @@
-@import 'custom-base';
+@import 'wysiwyg-base';
 
 .umb-block-grid__layout-container {
   position: relative;
@@ -29,6 +29,9 @@
 }
 
 .umb-block-grid__area {
+  color: var(--uui-color-text);
+  column-gap: 1px;
+  row-gap: 1px;
   position: relative;
   height: 100%;
   display: flex;
