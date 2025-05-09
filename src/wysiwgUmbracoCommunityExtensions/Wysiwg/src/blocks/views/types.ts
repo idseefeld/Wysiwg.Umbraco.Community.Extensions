@@ -11,6 +11,7 @@ export type PictureWithCropCustomViewProps = {
 export type CroppedPictureCustomViewProps = {
   mediaItem: WysiwgMediaPickerPropertyValues;
   cropAliasCollection: string[];
+  alternativeText: string;
   figCaption: string;
   captionColor: ColorType;
 };

@@ -6,8 +6,8 @@ import {
   unsafeHTML,
 } from "@umbraco-cms/backoffice/external/lit";
 import type { UmbBlockDataType } from "@umbraco-cms/backoffice/block";
-import { ColorType, PictureWithCropCustomViewProps } from "./types";
-import WysiwgBaseBlockEditorCustomViewElement from "./wysiwg-base-block-editor-custom.view";
+import { ColorType, PictureWithCropCustomViewProps } from "../types";
+import WysiwgBaseBlockEditorCustomViewElement from "../wysiwg-base-block-editor-custom.view";
 
 @customElement("wysiwg-picturewithcrop-view")
 export class PictureWithCropCustomView

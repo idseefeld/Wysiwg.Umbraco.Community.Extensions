@@ -20,11 +20,11 @@
 
     var width = 1200;
 
-    var alternativeText = content.AlternativeText ?? "";
     var figCaption = content.FigCaption ?? "";
     var color = content.CaptionColor?.Color ?? "";
     var selectedCrop = content.MediaItem.SelectedCropAlias ?? "";
-    var inlineStyle = new HtmlFormattableString(string.IsNullOrEmpty(color) ? "" : $"style=\"color: {color};\"");
+    var alternativeText = content.AlternativeText ?? content.MediaItem.Name ?? selectedCrop;
+    var inlineStyle = new HtmlFormattableString(string.IsNullOrEmpty(color) ? "" : $"style=\"color: var(--wysiwg-figcaption-color,{color});\"");
     if (content.MediaItem.ContentType.Alias == Conventions.MediaTypes.Folder)
     {
         RenderFolder(content.MediaItem, width, selectedCrop, alternativeText, figCaption, inlineStyle, PublishedMediaCache, MediaNavigationQueryService);
@@ -40,16 +40,18 @@
     {
         var src = image.GetSelectedCropUrl(width, cropAlias) ?? image.GetCropUrl(width: width, cropAlias: cropAlias);
 
-        <figure>
-            <img id="@image?.Id" src="@src" alt="@alternativeText" />
+        <div class="wysiwg-croppedicture-view">
+            <figure>
+                <div class="wysiwg-cropped-image">
+                    <img src="@src" alt="@alternativeText" />
+                </div>
 
-            @if (!string.IsNullOrEmpty(figCaption))
-            {
-                <figcaption @(inlineStyle)>
-                    @figCaption
-                </figcaption>
-            }
-        </figure>
+                @if (!string.IsNullOrEmpty(figCaption))
+                {
+                    <figcaption @(inlineStyle)>@figCaption</figcaption>
+                }
+            </figure>
+        </div>
     }
 
     private void RenderFolder(PublishedContentWrapped folder, int width, string cropAlias, string alternativeText, string figCaption, IHtmlContent inlineStyle,

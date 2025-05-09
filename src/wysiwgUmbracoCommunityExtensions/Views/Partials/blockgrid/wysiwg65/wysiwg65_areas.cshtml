@@ -8,11 +8,12 @@
 
     var backgroundStyle = Model.Settings?.GetBackgroundStyle();
 }
-
-<div class="wysiwg umb-block-grid__area-container"
-     style="--umb-block-grid--area-grid-columns: @(Model.AreaGridColumns?.ToString() ?? Model.GridColumns?.ToString() ?? "12");@backgroundStyle">
-    @foreach (var area in Model.Areas)
-    {
-        @await Html.GetBlockGridItemAreaHtmlAsync(area)
-    }
+<div class="umb-block-grid-areas-container" style="@backgroundStyle">
+    <div class="wysiwg umb-block-grid__area-container"
+         style="--umb-block-grid--area-grid-columns: @(Model.AreaGridColumns?.ToString() ?? Model.GridColumns?.ToString() ?? "12");">
+        @foreach (var area in Model.Areas)
+        {
+            @await Html.GetBlockGridItemAreaHtmlAsync(area)
+        }
+    </div>
 </div>

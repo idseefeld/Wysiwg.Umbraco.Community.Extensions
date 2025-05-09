@@ -10,7 +10,7 @@ import { UmbSorterController, UmbSorterResolvePlacementAsGrid } from "@umbraco-c
 import { UmbTreeStartNode } from "@umbraco-cms/backoffice/tree";
 import { UMB_VALIDATION_EMPTY_LOCALIZATION_KEY, UmbFormControlMixin } from "@umbraco-cms/backoffice/validation";
 import { UmbVariantId } from "@umbraco-cms/backoffice/variant";
-import { WysiwgCroppedImageElement } from "./wysiwg-cropped-image.element";
+import { WysiwgCroppedImageElement } from "../../blocks/components/wysiwg-cropped-image.element";
 import { WysiwgMediaPickerPropertyValueEntry, WysiwgMediaPickerPropertyValues } from "./types";
 import { UmbPropertyValueChangeEvent } from "@umbraco-cms/backoffice/property-editor";
 

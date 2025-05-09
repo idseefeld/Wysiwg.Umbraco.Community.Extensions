@@ -36,7 +36,7 @@ export const manifests: Array<UmbExtensionManifest> = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.pictureWithCrop",
     name: "Block Editor Custom View for Picture with Crop",
-    element: () => import("./picture-with-crop.view.js"),
+    element: () => import("./deprecated/picture-with-crop.view.js"),
     forContentTypeAlias: prefix + "pictureWithCrop",
     forBlockEditor: "block-grid",
   },

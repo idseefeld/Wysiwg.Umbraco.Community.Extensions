@@ -34,7 +34,7 @@ export class WysiwgBlockHeadlineView
       const color =
         (settings.filter((v) => v.alias === "color")[0]?.value as ColorType)
           ?.value ?? this.defaultColor.value;
-      if (color) {
+      if (color && !this.isTransparentColor(color)) {
         inlineStyle = `color: ${color};`;
       }
       const margin =
@@ -49,7 +49,7 @@ export class WysiwgBlockHeadlineView
       }
     }
     const headline = this.content?.text ?? "Headline";
-    const innerHtml = `<${size} ${inlineStyle}>${headline}</${size}>`;
+    const innerHtml = `<${size} class="headline" ${inlineStyle}>${headline}</${size}>`;
     return html`${unsafeHTML(innerHtml)}`;
   }
 
@@ -66,6 +66,10 @@ export class WysiwgBlockHeadlineView
       }
       h1, h2, h3 {
         margin: 0;
+      }
+      .headline{
+        color: var(--wysiwg-headline-color, inherit);
+        text-shadow: var(--wysiwg-headline-text-shadow, none);
       }
       h1 {
         font-size: var(--wysiwg-headline-1-font-size, 32px);

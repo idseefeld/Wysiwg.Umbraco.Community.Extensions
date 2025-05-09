@@ -1,30 +1,30 @@
 import { UmbTextStyles as u } from "@umbraco-cms/backoffice/style";
 import { unsafeHTML as p, html as x, css as z, customElement as $ } from "@umbraco-cms/backoffice/external/lit";
 import { W as b } from "./wysiwg-base-block-editor-custom.view-BP--8Rci.js";
-var k = Object.getOwnPropertyDescriptor, B = (i, e, o, l) => {
-  for (var t = l > 1 ? void 0 : l ? k(e, o) : e, n = i.length - 1, a; n >= 0; n--)
-    (a = i[n]) && (t = a(t) || t);
+var k = Object.getOwnPropertyDescriptor, C = (i, e, o, l) => {
+  for (var t = l > 1 ? void 0 : l ? k(e, o) : e, s = i.length - 1, n; s >= 0; s--)
+    (n = i[s]) && (t = n(t) || t);
   return t;
 };
-const C = "wysiwg-block-headline-view";
+const B = "wysiwg-block-headline-view";
 let r = class extends b {
   constructor() {
     super(...arguments), this.defaultColor = { label: "Black", value: "#000" };
   }
   render() {
-    var t, n, a, m, w, f, c, d;
+    var t, s, n, m, d, c, f, y;
     let i = "h1", e = "";
     if ((t = this.datasetSettings) != null && t.length) {
-      const g = this.layout, h = (n = this.datasetSettings.filter(
-        (s) => (g == null ? void 0 : g.settingsKey) === s.key
-      )[0]) == null ? void 0 : n.values;
-      i = ((m = (a = h.filter((s) => s.alias === "size")[0]) == null ? void 0 : a.value) == null ? void 0 : m.toString().toLowerCase()) ?? i;
-      const y = ((f = (w = h.filter((s) => s.alias === "color")[0]) == null ? void 0 : w.value) == null ? void 0 : f.value) ?? this.defaultColor.value;
-      y && (e = `color: ${y};`);
-      const v = ((c = h.filter((s) => s.alias === "margin")[0]) == null ? void 0 : c.value) ?? "";
+      const h = this.layout, g = (s = this.datasetSettings.filter(
+        (a) => (h == null ? void 0 : h.settingsKey) === a.key
+      )[0]) == null ? void 0 : s.values;
+      i = ((m = (n = g.filter((a) => a.alias === "size")[0]) == null ? void 0 : n.value) == null ? void 0 : m.toString().toLowerCase()) ?? i;
+      const w = ((c = (d = g.filter((a) => a.alias === "color")[0]) == null ? void 0 : d.value) == null ? void 0 : c.value) ?? this.defaultColor.value;
+      w && !this.isTransparentColor(w) && (e = `color: ${w};`);
+      const v = ((f = g.filter((a) => a.alias === "margin")[0]) == null ? void 0 : f.value) ?? "";
       v && (e += `margin: ${v};`), e && (e = `style="${e}"`);
     }
-    const o = ((d = this.content) == null ? void 0 : d.text) ?? "Headline", l = `<${i} ${e}>${o}</${i}>`;
+    const o = ((y = this.content) == null ? void 0 : y.text) ?? "Headline", l = `<${i} class="headline" ${e}>${o}</${i}>`;
     return x`${p(l)}`;
   }
 };
@@ -41,6 +41,10 @@ r.styles = [
       }
       h1, h2, h3 {
         margin: 0;
+      }
+      .headline{
+        color: var(--wysiwg-headline-color, inherit);
+        text-shadow: var(--wysiwg-headline-text-shadow, none);
       }
       h1 {
         font-size: var(--wysiwg-headline-1-font-size, 32px);
@@ -59,12 +63,12 @@ r.styles = [
       }
     `
 ];
-r = B([
-  $(C)
+r = C([
+  $(B)
 ], r);
 const W = r;
 export {
   r as WysiwgBlockHeadlineView,
   W as default
 };
-//# sourceMappingURL=headline.view-DPLPckUa.js.map
+//# sourceMappingURL=headline.view-BrAsvpqV.js.map

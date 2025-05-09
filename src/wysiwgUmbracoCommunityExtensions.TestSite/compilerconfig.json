@@ -1,10 +1,10 @@
 [
   {
-    "outputFile": "wwwroot/styles/customer.css",
-    "inputFile": "wwwroot/styles/customer.scss"
-  },
-  {
     "outputFile": "wwwroot/styles/customblockgrid.css",
     "inputFile": "wwwroot/styles/customblockgrid.scss"
+  },
+  {
+    "outputFile": "wwwroot/styles/Demo.css",
+    "inputFile": "wwwroot/styles/Demo.scss"
   }
 ]

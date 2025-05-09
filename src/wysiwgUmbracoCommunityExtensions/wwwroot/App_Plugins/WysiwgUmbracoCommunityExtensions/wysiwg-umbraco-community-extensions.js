@@ -5,29 +5,28 @@ const t = [
     type: "backofficeEntryPoint",
     js: () => import("./entrypoint-C5ICsXB3.js")
   }
-], a = [
-  {
-    name: "WYSIWG Extensions Dashboard",
-    alias: "WysiwgDashboardElement.Dashboard",
-    type: "dashboard",
-    js: () => import("./dashboard.element-B_ANfST9.js"),
-    meta: {
-      label: "WYSIWG",
-      pathname: "wysiwg-dashboard"
-    },
-    conditions: [
-      {
-        alias: "Umb.Condition.SectionAlias",
-        match: "Umb.Section.Packages"
-      }
-    ]
-  }
-], r = [
+], r = {
+  type: "sectionView",
+  alias: "WysiwgDashboardElement.Section",
+  name: "WYSIWG Extensions Section",
+  element: () => import("./dashboard.element-B_ANfST9.js"),
+  meta: {
+    label: "WYSIWG",
+    icon: "icon-settings",
+    pathname: "wysiwg-section"
+  },
+  conditions: [
+    {
+      alias: "Umb.Condition.SectionAlias",
+      match: "Umb.Section.Packages"
+    }
+  ]
+}, a = [
   {
     type: "bundle",
     name: "wysiwg block components",
     alias: "wysiwg.block.components",
-    js: () => import("./index-zx1x6GLh.js")
+    js: () => import("./index-2-SldARD.js")
   }
 ], i = "wysiwg65_";
 function s() {
@@ -41,7 +40,7 @@ const n = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.Layouts",
     name: "Block Editor Custom View for Layouts",
-    element: () => import("./wysiwg-image-crop.element-Dt_WOlpl.js").then((e) => e.b),
+    element: () => import("./wysiwg-cropped-image.element-C7ZkNOJk.js").then((e) => e.b),
     forContentTypeAlias: s(),
     forBlockEditor: "block-grid"
   },
@@ -49,7 +48,7 @@ const n = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockHeadline",
     name: "Block Editor Custom View for Headline",
-    element: () => import("./headline.view-DPLPckUa.js"),
+    element: () => import("./headline.view-BrAsvpqV.js"),
     forContentTypeAlias: i + "headline",
     forBlockEditor: "block-grid"
   },
@@ -57,7 +56,7 @@ const n = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockParagraph",
     name: "Block Editor Custom View for Paragraph",
-    element: () => import("./paragraph.view-ChR31KwU.js"),
+    element: () => import("./paragraph.view-BuXeltMt.js"),
     forContentTypeAlias: i + "paragraph",
     forBlockEditor: "block-grid"
   },
@@ -73,12 +72,12 @@ const n = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.croppedPicture",
     name: "Block Editor Custom View for Cropped Picture",
-    element: () => import("./cropped-picture.view-BrtEb5K0.js"),
+    element: () => import("./cropped-picture.view-DJIBr-kj.js"),
     forContentTypeAlias: i + "croppedPicture",
     forBlockEditor: "block-grid"
   }
 ], l = [
-  ...r,
+  ...a,
   ...n
 ], p = {
   type: "propertyEditorSchema",
@@ -170,10 +169,10 @@ const n = [
   m
 ], d = [
   ...y
-], u = [
+], g = [
   ...c,
   ...d
-], g = [
+], u = [
   {
     type: "localization",
     alias: "WysiwgUmbracoCommunityExtensions.Localize.En",
@@ -221,10 +220,10 @@ const n = [
   }
 ], E = [
   ...t,
-  ...a,
+  r,
   ...l,
-  ...u,
-  ...g
+  ...g,
+  ...u
 ];
 export {
   E as manifests

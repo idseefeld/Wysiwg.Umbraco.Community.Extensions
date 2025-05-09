@@ -7,7 +7,7 @@ import {
 } from "@umbraco-cms/backoffice/external/lit";
 import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
 import { UmbTextStyles } from "@umbraco-cms/backoffice/style";
-import { CropUrlData, WysiwgUmbracoCommunityExtensionsService } from "../..";
+import { CropUrlData, WysiwgUmbracoCommunityExtensionsService } from "../../..";
 
 const elementName = "wysiwg-image-crop";
 @customElement(elementName)

@@ -1,60 +1,37 @@
-import {
-  html,
-  customElement,
-  property,
-  css,
-  unsafeHTML,
-} from "@umbraco-cms/backoffice/external/lit";
-import type { UmbBlockDataType } from "@umbraco-cms/backoffice/block";
-import { ColorType, CroppedPictureCustomViewProps } from "./types";
-import WysiwgBaseBlockEditorCustomViewElement from "./wysiwg-base-block-editor-custom.view";
-
-@customElement("wysiwg-croppedicture-view")
-export class CroppedPictureCustomView
-  extends WysiwgBaseBlockEditorCustomViewElement {
-
-  private debugLocalize: boolean = false;
-  defaultColor: ColorType = { label: "Black", value: "#000" };
-
-  @property({ attribute: false })
-  content?: UmbBlockDataType;
-
+import { html as l, unsafeHTML as f, css as y, property as m, customElement as v } from "@umbraco-cms/backoffice/external/lit";
+import { W as u } from "./wysiwg-base-block-editor-custom.view-BP--8Rci.js";
+var b = Object.defineProperty, h = Object.getOwnPropertyDescriptor, w = (i, a, e, r) => {
+  for (var o = r > 1 ? void 0 : r ? h(a, e) : a, t = i.length - 1, s; t >= 0; t--)
+    (s = i[t]) && (o = (r ? s(a, e, o) : s(o)) || o);
+  return r && o && b(a, e, o), o;
+};
+let n = class extends u {
+  constructor() {
+    super(...arguments), this.debugLocalize = !1, this.defaultColor = { label: "Black", value: "#000" };
+  }
   render() {
-    const pictureWithCrop = this.content as CroppedPictureCustomViewProps;
-    if (!pictureWithCrop) {
-      return html`<div class="error">
+    var o;
+    const i = this.content;
+    if (!i)
+      return l`<div class="error">
         <umb-localize key="wysiwg_invalidData" .debug=${this.debugLocalize}
           >invalid data</umb-localize
         >
       </div>`;
-    }
-    const mediaCropItems = pictureWithCrop?.mediaItem ?? [];
-    const mediaCropItem = mediaCropItems[0] ?? null;
-    const mediaKey = mediaCropItem ? mediaCropItem.mediaKey : "";
-    if (!mediaKey) {
-      return html`<div class="error">
+    const e = ((i == null ? void 0 : i.mediaItem) ?? [])[0] ?? null;
+    if (e ? e.mediaKey : "") {
+      const t = (i == null ? void 0 : i.alternativeText) ?? (e == null ? void 0 : e.selectedCropAlias) ?? "", s = l`<wysiwg-cropped-image class="wysiwg-cropped-image" .mediaItem=${e} .alt=${t}></wysiwg-cropped-image>`, g = i == null ? void 0 : i.figCaption, c = ((o = i == null ? void 0 : i.captionColor) == null ? void 0 : o.value) ?? this.defaultColor.value, d = this.isTransparentColor(c) ? "" : `style="color: var(--wysiwg-figcaption-color,${c});"`, p = g ? f(`<figcaption ${d}>${g}</figcaption>`) : "";
+      return l`<figure>${s}${p}</figure>`;
+    } else
+      return l`<div class="error">
         <umb-localize key="wysiwg_noImageSelected" .debug=${this.debugLocalize}
           >No image selected or found</umb-localize
         >
       </div>`;
-    } else {
-      const alt = pictureWithCrop?.alternativeText ?? mediaCropItem?.selectedCropAlias ?? "";
-      const img = html`<wysiwg-cropped-image class="wysiwg-cropped-image" .mediaItem=${mediaCropItem} .alt=${alt}></wysiwg-cropped-image>`;
-
-      const caption = pictureWithCrop?.figCaption;
-      const captionColor =
-        pictureWithCrop?.captionColor?.value ?? this.defaultColor.value;
-      const inlineStyle = this.isTransparentColor(captionColor) ? '' : `style="color: var(--wysiwg-figcaption-color,${captionColor});"`;
-      const figCaption = caption
-        ? unsafeHTML(`<figcaption ${inlineStyle}>${caption}</figcaption>`)
-        : "";
-
-      return html`<figure>${img}${figCaption}</figure>`;
-    }
   }
-
-  static styles = [
-    css`
+};
+n.styles = [
+  y`
       :host {
         display: block;
         height: auto;
@@ -98,8 +75,17 @@ export class CroppedPictureCustomView
         box-shadow: var(--wysiwg-cropped-image-box-shadow, none);
         background-color: var(--wysiwg-cropped-image-background-color, transparent);
       }
-    `,
-  ];
-}
-
-export default CroppedPictureCustomView;
+    `
+];
+w([
+  m({ attribute: !1 })
+], n.prototype, "content", 2);
+n = w([
+  v("wysiwg-croppedicture-view")
+], n);
+const $ = n;
+export {
+  n as CroppedPictureCustomView,
+  $ as default
+};
+//# sourceMappingURL=cropped-picture.view-DJIBr-kj.js.map

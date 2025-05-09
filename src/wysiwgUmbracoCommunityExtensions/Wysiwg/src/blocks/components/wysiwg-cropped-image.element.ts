@@ -8,7 +8,7 @@ import {
 import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
 import { UmbTextStyles } from "@umbraco-cms/backoffice/style";
 import { V2CropUrlData, WysiwgUmbracoCommunityExtensionsService } from "../..";
-import { WysiwgMediaPickerPropertyValueEntry } from "./types";
+import { WysiwgMediaPickerPropertyValueEntry } from "../../property-editors/picture/types";
 import { UmbPropertyEditorUiElement, UmbPropertyValueChangeEvent } from "@umbraco-cms/backoffice/property-editor";
 
 const elementName = "wysiwg-cropped-image";
@@ -17,6 +17,9 @@ export class WysiwgCroppedImageElement extends UmbLitElement implements UmbPrope
   //#region Properties
   @property({ type: String })
   value: string = "";
+
+  @property({ type: String })
+  alt: string = "";
 
   @property({ type: Object })
   mediaItem?: WysiwgMediaPickerPropertyValueEntry | null = null;
@@ -105,9 +108,8 @@ export class WysiwgCroppedImageElement extends UmbLitElement implements UmbPrope
       } else {
         return html`<img
           id="figure-image"
-          part="img"
           src="${this.value ?? ""}"
-          alt="${this.mediaItem?.mediaKey ?? ""}"
+          alt="${this.alt ?? this.mediaItem?.mediaKey ?? ""}"
           loading="${this.loading}"
           draggable="false"
         />`;
@@ -188,20 +190,16 @@ export class WysiwgCroppedImageElement extends UmbLitElement implements UmbPrope
         width: 100%;
       }
 
-      /* ::part(img) {
-        display: block;
-        width: 100%;
+      img {
+        display: flex;
         height: auto;
-        overflow: visible;
+        width: var(--wysiwg-cropped-image-width, 100%);
+        margin: var(--wysiwg-image-border-radius, 0);
+        border-radius: var(--wysiwg-image-border-radius, 0);
 
         background-image: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill-opacity=".1"><path d="M50 0h50v50H50zM0 50h50v50H0z"/></svg>');
         background-size: 10px 10px;
         background-repeat: repeat;
-      } */
-      img {
-        display: flex;
-        width: 100%;
-        height: auto;
       }
 
       #icon {
