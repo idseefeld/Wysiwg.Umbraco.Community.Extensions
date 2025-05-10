@@ -16,10 +16,11 @@ import {
   UmbCurrentUserModel,
 } from "@umbraco-cms/backoffice/current-user";
 import { FixUpgradeData, GetVariationsResponse, WysiwgUmbracoCommunityExtensionsService } from "../api";
-import { VersionStatus } from "./versionStatusEnum";
+import { UpdateStatus } from "../util/updateStatusEnum";
 import { umbConfirmModal, UmbConfirmModalData } from "@umbraco-cms/backoffice/modal";
 import { CommonUtilities } from "../util/common.utilities";
 import { SemVersion } from "../util/types";
+import { Debugging } from "../constants";
 
 @customElement("wysiwg-dashboard")
 export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
@@ -28,7 +29,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
   private _contextCurrentUser: UmbCurrentUserModel | undefined = undefined;
 
   @state()
-  private _updateStatus: VersionStatus | undefined = undefined;
+  private _updateStatus: UpdateStatus | undefined = undefined;
 
   @state()
   private _variations: GetVariationsResponse | undefined = undefined;
@@ -41,11 +42,11 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
 
   private _version: SemVersion = { major: 1, minor: 0, patch: 0 };
 
-  private _debug: boolean = true;
-
-  #notificationContext: UmbNotificationContext | undefined = undefined;
+  private _debug = Debugging;
 
   private _commonUtilities: CommonUtilities | undefined = undefined;
+
+  #notificationContext: UmbNotificationContext | undefined = undefined;
 
   constructor() {
     super();
@@ -56,6 +57,10 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     });
 
     this.consumeContext(UMB_CURRENT_USER_CONTEXT, (currentUserContext) => {
+      if (!currentUserContext) {
+        this._contextCurrentUser = undefined;
+        return;
+      }
       // When we have the current user context
       // We can observe properties from it, such as the current user or perhaps just individual properties
       // When the currentUser object changes we will get notified and can reset the @state properrty
@@ -73,23 +78,6 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
   #onChangeSegment = (ev: Event) => {
     const checkboxElement = ev.target as HTMLInputElement;
     this._varyBySegment = checkboxElement.checked;
-  }
-
-  private async setSemVersion() {
-    await this._commonUtilities?.getUmbracoVersion(this.#notificationContext).then((version) => {
-      if (version) {
-        this._version = version;
-      } else {
-        // if (this.#notificationContext) {
-        //   this.#notificationContext.stay("danger", {
-        //     data: {
-        //       headline: this.localize.term("wysiwg_serverInfoError"),
-        //       message: `${this.localize.term("wysiwg_serverInfoErrorDescription")}`,
-        //     },
-        //   });
-        // }
-      }
-    });
   }
 
   #onClickUpdateSettings = async (ev: Event) => {
@@ -166,7 +154,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
             },
           });
         }
-        this._updateStatus = VersionStatus.UpToDate;
+        this._updateStatus = UpdateStatus.UpToDate;
         buttonElement.state = "success";
       } else {
         buttonElement.state = "failed";
@@ -227,56 +215,6 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     }
   };
 
-  private async getUpdateStatus() {
-    if (this._updateStatus) return;
-
-    const { data, error } =
-      await WysiwgUmbracoCommunityExtensionsService.getUpdateStatusCode();
-
-    if (error) {
-      console.error(error);
-      if (this.#notificationContext) {
-        this.#notificationContext.stay("danger", {
-          data: {
-            headline: this.localize.term("wysiwg_versionError"),
-            message: `${this.localize.term("wysiwg_versionErrorDescription")} ${error}`,
-          },
-        });
-      }
-    }
-
-    if (data !== undefined) {
-      this._updateStatus = data;
-    }
-  }
-
-  // private async getServerInfo() {
-  //   if (this._updateStatus) return;
-
-  //   const { data, error } =
-  //     await ServerService.getServerInformation();
-
-  //   if (error) {
-  //     console.error(error);
-  //     if (this.#notificationContext) {
-  //       this.#notificationContext.stay("danger", {
-  //         data: {
-  //           headline: this.localize.term("wysiwg_serverInfoError"),
-  //           message: `${this.localize.term("wysiwg_serverInfoErrorDescription")} ${error}`,
-  //         },
-  //       });
-  //     }
-  //   }
-
-  //   if (data !== undefined) {
-  //     this._serverInfo = data;
-  //     const assemblyVersion = this._serverInfo?.assemblyVersion.split(".");
-  //     this._version.major = assemblyVersion.length > 0 ? parseInt(assemblyVersion[0]) : 0;
-  //     this._version.minor = assemblyVersion.length > 1 ? parseInt(assemblyVersion[1]) : 0;
-  //     this._version.patch = assemblyVersion.length > 2 ? parseInt(assemblyVersion[2]) : 0;
-  //   }
-  // }
-
   private async getVariations() {
     const { data, error } = await WysiwgUmbracoCommunityExtensionsService.getVariations();
 
@@ -310,9 +248,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
       </umb-localize>`;
     }
 
-    this.getUpdateStatus();
-
-    // this.getServerInfo();
+    this.setUpdateStatus();
 
     this.setSemVersion();
 
@@ -321,12 +257,30 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     return html`${this.renderSetupBox()} ${this.renderUpdateBox()}`;
   }
 
+  private async setUpdateStatus() {
+    if (this._updateStatus) return;
+
+    await this._commonUtilities?.getUpdateStatus(this.#notificationContext).then((status) => {
+      if (status) {
+        this._updateStatus = status;
+      }
+    });
+  }
+
+  private async setSemVersion() {
+    await this._commonUtilities?.getUmbracoVersion(this.#notificationContext).then((version) => {
+      if (version) {
+        this._version = version;
+      }
+    });
+  }
+
   private renderSetupBox() {
     if (this._updateStatus === undefined) { return this.renderUninstallBox(); }
 
-    if (this._updateStatus === VersionStatus.UpToDate) { return this.renderUninstallBox(); }
+    if (this._updateStatus === UpdateStatus.UpToDate) { return this.renderUninstallBox(); }
 
-    const buttonLabel = this._updateStatus === VersionStatus.Install
+    const buttonLabel = this._updateStatus === UpdateStatus.Install
       ? this.localize.term("wysiwg_setupButtonLabel", { debug: this._debug, })
       : this.localize.term("wysiwg_updateButtonLabel", { debug: this._debug, });
 
@@ -344,7 +298,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
         <div slot="header"></div>
         <umb-localize key="wysiwg_setupButtonDescription" .debug=${this._debug}>
           <p>
-            This will create the document and data types needed for WYSIWG block
+            This will create the document and data types needed for WYSIWYG block
             editor views.
           </p>
         </umb-localize>
@@ -355,7 +309,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
   private renderUpdateBox() {
     if (this._uninstalling || this._updateStatus === undefined) { return; }
 
-    if (this._updateStatus !== VersionStatus.UpToDate) { return; }
+    if (this._updateStatus !== UpdateStatus.UpToDate) { return; }
 
     const buttonLabel = this.localize.term("wysiwg_cultureSegmentButtonLabel", { debug: this._debug, });
 
@@ -366,7 +320,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
         <div slot="header"></div>
         <umb-localize key="wysiwg_cultureSegmentDescription" .debug=${this._debug}>
           <p>
-            This will update the culture and segment settings for the WYSIWG BlockGrid element types.
+            This will update the culture and segment settings for the WYSIWYG BlockGrid element types.
           </p>
         </umb-localize>
         <p>
@@ -404,7 +358,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
 
   private renderUninstallBox() {
     if (this._updateStatus === undefined) { return; }
-    if (this._updateStatus === VersionStatus.Install) { return; }
+    if (this._updateStatus === UpdateStatus.Install) { return; }
 
     const buttonLabel = this.localize.term("wysiwg_uninstallButtonLabel", { debug: this._debug, });
     return html`
@@ -414,7 +368,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
         <div slot="header"></div>
         <umb-localize key="wysiwg_uninstallButtonDescription" .debug=${this._debug}>
           <p>
-            This will remove the document and data types needed for WYSIWG block
+            This will remove the document and data types needed for WYSIWYG block
             editor views.
           </p>
         </umb-localize>

@@ -2,6 +2,8 @@ import { UmbLocalizationController } from "@umbraco-cms/backoffice/localization-
 import { GetServerInformationResponse, ServerService } from "../management-api";
 import { SemVersion } from "./types";
 import { UmbNotificationContext } from "@umbraco-cms/backoffice/notification";
+import { UpdateStatus } from "./updateStatusEnum";
+import { WysiwgUmbracoCommunityExtensionsService } from "../api";
 
 export class CommonUtilities {
   private _localize: UmbLocalizationController;
@@ -20,13 +22,13 @@ export class CommonUtilities {
     if (error) {
       console.error(error);
       if (this._notificationContext) {
-          this._notificationContext.stay("danger", {
-            data: {
-              headline: this._localize.term("wysiwg_serverInfoError"),
-              message: `${this._localize.term("wysiwg_serverInfoErrorDescription")}`,
-            },
-          });
-        }
+        this._notificationContext.stay("danger", {
+          data: {
+            headline: this._localize.term("wysiwg_serverInfoError"),
+            message: `${this._localize.term("wysiwg_serverInfoErrorDescription")}`,
+          },
+        });
+      }
       return;
     }
 
@@ -40,6 +42,27 @@ export class CommonUtilities {
       } as SemVersion;
 
       return version;
+    }
+  }
+
+  public async getUpdateStatus(notificationContext?: UmbNotificationContext): Promise<UpdateStatus | undefined> {
+    const { data, error } =
+      await WysiwgUmbracoCommunityExtensionsService.getUpdateStatusCode();
+
+    if (error) {
+      console.error(error);
+      if (notificationContext) {
+        notificationContext.stay("danger", {
+          data: {
+            headline: this._localize.term("wysiwg_versionError"),
+            message: `${this._localize.term("wysiwg_versionErrorDescription")} ${error}`,
+          },
+        });
+      }
+    }
+
+    if (data !== undefined) {
+      return data;
     }
   }
 }

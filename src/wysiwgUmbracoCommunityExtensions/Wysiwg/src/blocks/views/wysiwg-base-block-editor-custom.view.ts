@@ -13,8 +13,10 @@ import {
 } from "@umbraco-cms/backoffice/property";
 import { UmbBlockGridValueModel } from "@umbraco-cms/backoffice/block-grid";
 import { UmbBlockDataModel, UmbBlockDataType } from "@umbraco-cms/backoffice/block";
-
-const transparentBackgroundColor = "#fff";//work-a-round: color picker does not support transparent color
+import { UpdateStatus } from "../../util/updateStatusEnum";
+import { UMB_NOTIFICATION_CONTEXT, UmbNotificationContext } from "@umbraco-cms/backoffice/notification";
+import { CommonUtilities } from "../../util/common.utilities";
+import { Debugging, TransparentBackgroundColor } from "../../constants";
 
 const customElementName = "wysiwg-base.block-editor-custom-view";
 @customElement(customElementName)
@@ -32,22 +34,47 @@ export class WysiwgBaseBlockEditorCustomViewElement
   settings?: UmbBlockDataType;
 
   @state()
-  datasetSettings?: UmbBlockDataModel[];
+  protected datasetSettings?: UmbBlockDataModel[];
+
+  @state()
+  protected updateStatus: UpdateStatus | undefined = undefined;
+
+  protected _commonUtilities: CommonUtilities | undefined = undefined;
+
+  protected _debug = Debugging;
 
   #datasetContext?: UmbPropertyDatasetContext;
 
+  #notificationContext: UmbNotificationContext | undefined = undefined;
+
   constructor() {
     super();
+
+    this.consumeContext(UMB_NOTIFICATION_CONTEXT, (notificationContext) => {
+      this.#notificationContext = notificationContext;
+      this._commonUtilities = new CommonUtilities(this.localize, notificationContext);//ToDo: should be singleton via context(?)
+    });
+
     this.consumeContext(UMB_PROPERTY_DATASET_CONTEXT, async (context) =>
       this.getSettings(context)
     );
   }
 
-  isTransparentColor(color: string) {
-    return color === transparentBackgroundColor;
+  protected async setUpdateStatus() {
+    if (this.updateStatus) return;
+
+    await this._commonUtilities?.getUpdateStatus(this.#notificationContext).then((status) => {
+      if (status) {
+        this.updateStatus = status;
+      }
+    });
   }
 
-  async getSettings(context: any) {
+  protected isTransparentColor(color: string) {
+    return color === TransparentBackgroundColor;
+  }
+
+  protected async getSettings(context: any) {
     this.#datasetContext = context;
     this.observe(
       this.#datasetContext?.properties,
@@ -80,12 +107,12 @@ export class WysiwgBaseBlockEditorCustomViewElement
     );
   }
 
-  async prozessSettings(gridValues: UmbBlockGridValueModel) {
+  protected async prozessSettings(gridValues: UmbBlockGridValueModel) {
     this.datasetSettings = gridValues.settingsData;
   }
 
-  async lastStepObservingProperties(pageProperties: Array<UmbPropertyValueDataPotentiallyWithEditorAlias>) {
-    if (!pageProperties) return;
+  protected async lastStepObservingProperties(pageProperties: Array<UmbPropertyValueDataPotentiallyWithEditorAlias>) {
+    if (!pageProperties) { return; }
   }
 }
 

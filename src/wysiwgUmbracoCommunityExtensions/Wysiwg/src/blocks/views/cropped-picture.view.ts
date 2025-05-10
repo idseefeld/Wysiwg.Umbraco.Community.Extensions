@@ -22,7 +22,8 @@ export class CroppedPictureCustomView
   render() {
     const pictureWithCrop = this.content as CroppedPictureCustomViewProps;
     if (!pictureWithCrop) {
-      return html`<div class="error">
+      return html`
+      <div class="error">
         <umb-localize key="wysiwg_invalidData" .debug=${this.debugLocalize}
           >invalid data</umb-localize
         >

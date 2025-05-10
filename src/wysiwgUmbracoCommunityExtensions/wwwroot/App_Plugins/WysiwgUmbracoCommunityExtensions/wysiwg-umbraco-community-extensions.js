@@ -3,15 +3,15 @@ const t = [
     name: "wysiwg Extensions Entrypoint",
     alias: "WysiwgExtensions.Entrypoint",
     type: "backofficeEntryPoint",
-    js: () => import("./entrypoint-C5ICsXB3.js")
+    js: () => import("./entrypoint-BXN6LutW.js")
   }
 ], r = {
   type: "sectionView",
   alias: "WysiwgDashboardElement.Section",
-  name: "WYSIWG Extensions Section",
-  element: () => import("./dashboard.element-BtJozcfQ.js"),
+  name: "WYSIWYG Extensions Section",
+  element: () => import("./dashboard.element-co4pSfph.js").then((i) => i.d),
   meta: {
-    label: "WYSIWG",
+    label: "WYSIWYG",
     icon: "icon-settings",
     pathname: "wysiwg-section"
   },
@@ -26,21 +26,21 @@ const t = [
     type: "bundle",
     name: "wysiwg block components",
     alias: "wysiwg.block.components",
-    js: () => import("./index-CKu8HOeb.js")
+    js: () => import("./index-CqZ3qTiZ.js")
   }
-], i = "wysiwg65_";
+], e = "wysiwg65_";
 function s() {
-  const e = [];
+  const i = [];
   for (let o = 1; o <= 50; o++)
-    e.push(`${i}layout${o}`);
-  return e;
+    i.push(`${e}layout${o}`);
+  return i;
 }
 const n = [
   {
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.Layouts",
     name: "Block Editor Custom View for Layouts",
-    element: () => import("./wysiwg-cropped-image.element-DBsUl96x.js").then((e) => e.b),
+    element: () => import("./wysiwg-cropped-image.element-jxnxXK1I.js").then((i) => i.b),
     forContentTypeAlias: s(),
     forBlockEditor: "block-grid"
   },
@@ -48,32 +48,32 @@ const n = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockHeadline",
     name: "Block Editor Custom View for Headline",
-    element: () => import("./headline.view-BrAsvpqV.js"),
-    forContentTypeAlias: i + "headline",
+    element: () => import("./headline.view-Bf8XoX5J.js"),
+    forContentTypeAlias: e + "headline",
     forBlockEditor: "block-grid"
   },
   {
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockParagraph",
     name: "Block Editor Custom View for Paragraph",
-    element: () => import("./paragraph.view-BuXeltMt.js"),
-    forContentTypeAlias: i + "paragraph",
+    element: () => import("./paragraph.view-V-mGIrqZ.js"),
+    forContentTypeAlias: e + "paragraph",
     forBlockEditor: "block-grid"
   },
   {
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.pictureWithCrop",
     name: "Block Editor Custom View for Picture with Crop",
-    element: () => import("./picture-with-crop.view-uKUklPHt.js"),
-    forContentTypeAlias: i + "pictureWithCrop",
+    element: () => import("./picture-with-crop.view-CNeKKSaf.js"),
+    forContentTypeAlias: e + "pictureWithCrop",
     forBlockEditor: "block-grid"
   },
   {
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.croppedPicture",
     name: "Block Editor Custom View for Cropped Picture",
-    element: () => import("./cropped-picture.view-BHnWNjdv.js"),
-    forContentTypeAlias: i + "croppedPicture",
+    element: () => import("./cropped-picture.view-BwxvQlwj.js"),
+    forContentTypeAlias: e + "croppedPicture",
     forBlockEditor: "block-grid"
   }
 ], l = [
