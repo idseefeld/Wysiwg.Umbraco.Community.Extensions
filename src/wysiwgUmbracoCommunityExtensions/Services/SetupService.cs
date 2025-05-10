@@ -1753,7 +1753,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             var backupPartialName = "backup-items.cshtml";
 
             var original = allPartialViews
-                .FirstOrDefault(v => v.Path.InvariantEndsWith($"{folderName}\\{originalPartialName}"));
+                .FirstOrDefault(v => v.Path.InvariantEndsWith($"{folderName}${Path.DirectorySeparatorChar}{originalPartialName}"));
 
             var backup = allPartialViews
                 .FirstOrDefault(v => v.Path.InvariantEndsWith(backupPartialName));
