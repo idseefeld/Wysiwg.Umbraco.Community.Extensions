@@ -10,7 +10,7 @@ import "./wysiwg-image-crops.element-CAGvkQix.js";
 import "./wysiwg-image-and-crop-picker.element-Dheh-YuP.js";
 import { UUICardElement as Q, demandCustomElement as R } from "@umbraco-cms/backoffice/external/uui";
 import { W as K } from "./services.gen-B_ebHh4e.js";
-import "./dashboard.element-UFlTKH0G.js";
+import "./dashboard.element-BOEM3ng7.js";
 import { W as se } from "./wysiwg-base-block-editor-custom.view-BP--8Rci.js";
 import { UmbPropertyValueChangeEvent as le } from "@umbraco-cms/backoffice/property-editor";
 var de = Object.defineProperty, ce = Object.getOwnPropertyDescriptor, V = (e) => {
@@ -690,4 +690,4 @@ export {
   g as a,
   Te as b
 };
-//# sourceMappingURL=wysiwg-cropped-image.element-CntTXJEb.js.map
+//# sourceMappingURL=wysiwg-cropped-image.element-XLzP3nXZ.js.map

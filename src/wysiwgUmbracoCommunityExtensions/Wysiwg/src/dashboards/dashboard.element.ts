@@ -23,20 +23,20 @@ import { umbConfirmModal, UmbConfirmModalData } from "@umbraco-cms/backoffice/mo
 @customElement("wysiwg-dashboard")
 export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
 
-
   @state()
   private _contextCurrentUser: UmbCurrentUserModel | undefined = undefined;
+
   @state()
   private _updateStatus: VersionStatus | undefined = undefined;
 
   @state()
   private _variations: GetVariationsResponse | undefined = undefined;
 
-  private _varyByCulture: boolean = false;
-  private _varyBySegment: boolean = false;
-
   @state()
   private _serverInfo: GetServerInformationResponse | undefined = undefined;
+
+  private _varyByCulture: boolean = false;
+  private _varyBySegment: boolean = false;
 
   private _majorVersion: number = 0;
   private _minorVersion: number = 0;
@@ -169,6 +169,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     console.log("confirmed uninstall");
 
     buttonElement.state = "waiting";
+    this._updateStatus = VersionStatus.Install;
 
     const { data, error } = await WysiwgUmbracoCommunityExtensionsService.unInstall();
 
@@ -294,13 +295,13 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
 
     this.getVariations()
 
-    return html`${this.renderSetupBox()} ${this.renderUpdateBox()} ${this.renderUninstallBox()}`;
+    return html`${this.renderSetupBox()} ${this.renderUpdateBox()}`;
   }
 
   private renderSetupBox() {
-    if (this._updateStatus === undefined) { return; }
+    if (this._updateStatus === undefined) { return this.renderUninstallBox(); }
 
-    if (this._updateStatus === VersionStatus.UpToDate) { return; }
+    if (this._updateStatus === VersionStatus.UpToDate) { return this.renderUninstallBox(); }
 
     const buttonLabel = this._updateStatus === VersionStatus.Install
       ? this.localize.term("wysiwg_setupButtonLabel", { debug: this._debug, })
@@ -363,7 +364,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
   }
 
   private renderSegmentCheckbox() {
-    if (this._majorVersion >= 15 && this._minorVersion >= 4 && this._patchVersion >= 0) {
+    if (this._majorVersion > 15 || (this._majorVersion === 15 && this._minorVersion >= 4 && this._patchVersion >= 0)) {
       return html`
       <uui-checkbox
         disabled
