@@ -1,7 +1,7 @@
 {
   "name": "wysiwg-umbraco-community-extensions",
   "private": true,
-	"license": "MIT",
+  "license": "MIT",
   "version": "1.0.0",
   "type": "module",
   "engines": {

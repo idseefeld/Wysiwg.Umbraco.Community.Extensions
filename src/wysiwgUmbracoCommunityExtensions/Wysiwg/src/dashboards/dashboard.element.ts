@@ -16,9 +16,10 @@ import {
   UmbCurrentUserModel,
 } from "@umbraco-cms/backoffice/current-user";
 import { FixUpgradeData, GetVariationsResponse, WysiwgUmbracoCommunityExtensionsService } from "../api";
-import { GetServerInformationResponse, ServerService } from "../management-api";
 import { VersionStatus } from "./versionStatusEnum";
 import { umbConfirmModal, UmbConfirmModalData } from "@umbraco-cms/backoffice/modal";
+import { CommonUtilities } from "../util/common.utilities";
+import { SemVersion } from "../util/types";
 
 @customElement("wysiwg-dashboard")
 export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
@@ -33,24 +34,25 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
   private _variations: GetVariationsResponse | undefined = undefined;
 
   @state()
-  private _serverInfo: GetServerInformationResponse | undefined = undefined;
+  private _uninstalling: boolean = false;
 
   private _varyByCulture: boolean = false;
   private _varyBySegment: boolean = false;
 
-  private _majorVersion: number = 0;
-  private _minorVersion: number = 0;
-  private _patchVersion: number = 0;
+  private _version: SemVersion = { major: 1, minor: 0, patch: 0 };
 
   private _debug: boolean = true;
 
   #notificationContext: UmbNotificationContext | undefined = undefined;
+
+  private _commonUtilities: CommonUtilities | undefined = undefined;
 
   constructor() {
     super();
 
     this.consumeContext(UMB_NOTIFICATION_CONTEXT, (notificationContext) => {
       this.#notificationContext = notificationContext;
+      this._commonUtilities = new CommonUtilities(this.localize, notificationContext);
     });
 
     this.consumeContext(UMB_CURRENT_USER_CONTEXT, (currentUserContext) => {
@@ -61,6 +63,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
         this._contextCurrentUser = currentUser;
       });
     });
+
   }
 
   #onChangeCulture = (ev: Event) => {
@@ -72,12 +75,29 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     this._varyBySegment = checkboxElement.checked;
   }
 
+  private async setSemVersion() {
+    await this._commonUtilities?.getUmbracoVersion(this.#notificationContext).then((version) => {
+      if (version) {
+        this._version = version;
+      } else {
+        // if (this.#notificationContext) {
+        //   this.#notificationContext.stay("danger", {
+        //     data: {
+        //       headline: this.localize.term("wysiwg_serverInfoError"),
+        //       message: `${this.localize.term("wysiwg_serverInfoErrorDescription")}`,
+        //     },
+        //   });
+        // }
+      }
+    });
+  }
+
   #onClickUpdateSettings = async (ev: Event) => {
     const buttonElement = ev.target as UUIButtonElement;
     if (!buttonElement || buttonElement.state === "waiting") return;
     buttonElement.state = "waiting";
 
-    if (this._majorVersion >= 15 && this._minorVersion >= 4 && this._patchVersion >= 0) {
+    if (this._version.major > 15 || (this._version.major >= 15 && this._version.minor >= 4 && this._version.patch >= 0)) {
       this._varyBySegment = false;
     }
     const options: FixUpgradeData = {
@@ -169,9 +189,11 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     console.log("confirmed uninstall");
 
     buttonElement.state = "waiting";
-    this._updateStatus = VersionStatus.Install;
+    this._uninstalling = true;
 
     const { data, error } = await WysiwgUmbracoCommunityExtensionsService.unInstall();
+
+    this._uninstalling = false;
 
     if (error) {
       if (this.#notificationContext) {
@@ -205,7 +227,6 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     }
   };
 
-
   private async getUpdateStatus() {
     if (this._updateStatus) return;
 
@@ -229,32 +250,32 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     }
   }
 
-  private async getServerInfo() {
-    if (this._updateStatus) return;
+  // private async getServerInfo() {
+  //   if (this._updateStatus) return;
 
-    const { data, error } =
-      await ServerService.getServerInformation();
+  //   const { data, error } =
+  //     await ServerService.getServerInformation();
 
-    if (error) {
-      console.error(error);
-      if (this.#notificationContext) {
-        this.#notificationContext.stay("danger", {
-          data: {
-            headline: this.localize.term("wysiwg_serverInfoError"),
-            message: `${this.localize.term("wysiwg_serverInfoErrorDescription")} ${error}`,
-          },
-        });
-      }
-    }
+  //   if (error) {
+  //     console.error(error);
+  //     if (this.#notificationContext) {
+  //       this.#notificationContext.stay("danger", {
+  //         data: {
+  //           headline: this.localize.term("wysiwg_serverInfoError"),
+  //           message: `${this.localize.term("wysiwg_serverInfoErrorDescription")} ${error}`,
+  //         },
+  //       });
+  //     }
+  //   }
 
-    if (data !== undefined) {
-      this._serverInfo = data;
-      const assemblyVersion = this._serverInfo?.assemblyVersion.split(".");
-      this._majorVersion = assemblyVersion.length > 0 ? parseInt(assemblyVersion[0]) : 0;
-      this._minorVersion = assemblyVersion.length > 1 ? parseInt(assemblyVersion[1]) : 0;
-      this._patchVersion = assemblyVersion.length > 2 ? parseInt(assemblyVersion[2]) : 0;
-    }
-  }
+  //   if (data !== undefined) {
+  //     this._serverInfo = data;
+  //     const assemblyVersion = this._serverInfo?.assemblyVersion.split(".");
+  //     this._version.major = assemblyVersion.length > 0 ? parseInt(assemblyVersion[0]) : 0;
+  //     this._version.minor = assemblyVersion.length > 1 ? parseInt(assemblyVersion[1]) : 0;
+  //     this._version.patch = assemblyVersion.length > 2 ? parseInt(assemblyVersion[2]) : 0;
+  //   }
+  // }
 
   private async getVariations() {
     const { data, error } = await WysiwgUmbracoCommunityExtensionsService.getVariations();
@@ -291,7 +312,9 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
 
     this.getUpdateStatus();
 
-    this.getServerInfo();
+    // this.getServerInfo();
+
+    this.setSemVersion();
 
     this.getVariations()
 
@@ -330,7 +353,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
   }
 
   private renderUpdateBox() {
-    if (this._updateStatus === undefined) { return; }
+    if (this._uninstalling || this._updateStatus === undefined) { return; }
 
     if (this._updateStatus !== VersionStatus.UpToDate) { return; }
 
@@ -364,7 +387,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
   }
 
   private renderSegmentCheckbox() {
-    if (this._majorVersion > 15 || (this._majorVersion === 15 && this._minorVersion >= 4 && this._patchVersion >= 0)) {
+    if (this._version.major > 15 || (this._version.major >= 15 && this._version.minor >= 4 && this._version.patch >= 0)) {
       return html`
       <uui-checkbox
         disabled

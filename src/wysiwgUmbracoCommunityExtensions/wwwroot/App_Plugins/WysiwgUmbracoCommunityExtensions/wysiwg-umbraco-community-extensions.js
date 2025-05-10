@@ -9,7 +9,7 @@ const t = [
   type: "sectionView",
   alias: "WysiwgDashboardElement.Section",
   name: "WYSIWG Extensions Section",
-  element: () => import("./dashboard.element-BOEM3ng7.js"),
+  element: () => import("./dashboard.element-BtJozcfQ.js"),
   meta: {
     label: "WYSIWG",
     icon: "icon-settings",
@@ -26,7 +26,7 @@ const t = [
     type: "bundle",
     name: "wysiwg block components",
     alias: "wysiwg.block.components",
-    js: () => import("./index-_qz7Y0PX.js")
+    js: () => import("./index-CKu8HOeb.js")
   }
 ], i = "wysiwg65_";
 function s() {
@@ -40,7 +40,7 @@ const n = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.Layouts",
     name: "Block Editor Custom View for Layouts",
-    element: () => import("./wysiwg-cropped-image.element-XLzP3nXZ.js").then((e) => e.b),
+    element: () => import("./wysiwg-cropped-image.element-DBsUl96x.js").then((e) => e.b),
     forContentTypeAlias: s(),
     forBlockEditor: "block-grid"
   },

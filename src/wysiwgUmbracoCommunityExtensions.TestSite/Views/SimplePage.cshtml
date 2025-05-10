@@ -1,4 +1,4 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Web.Common.PublishedModels;
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<SimplePage>
 @{
     Layout = null;
@@ -28,7 +28,7 @@
         @await Html.GetBlockGridHtmlAsync(Model.Grid)
 
         <footer>
-            <a href="/umbraco" target="_blank">backoffice</a>
+            @await Html.PartialAsync("languageSwitch")
         </footer>
 
     </div>
