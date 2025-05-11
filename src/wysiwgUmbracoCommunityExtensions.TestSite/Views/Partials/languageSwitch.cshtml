@@ -1,29 +1,87 @@
-@* ToDo: implement dynamic switch related to the current page *@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@using Umbraco.Cms.Core
+@using Umbraco.Cms.Core.Cache
+@using Umbraco.Cms.Core.Models.PublishedContent
+@using Umbraco.Cms.Core.Routing
+@using Umbraco.Extensions
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+
+@inject IPublishedUrlProvider PublishedUrlProvider
 @{
     var lang = System.Threading.Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName;
     var isEnglish = lang.InvariantEquals("en");
+    var umbUContext = Context.Request.Cookies["UMB_UCONTEXT"];
+    var hasUser = !string.IsNullOrEmpty(umbUContext);
 
-    @if (Constants.Debug)
+    var root = Model;
+    while (root?.Parent() != null)
+    {
+        root = root.Parent();
+    }
+    var authority = UmbracoContext?.CleanedUmbracoUrl.Authority;
+    var liveAuthortiyStart = "www.idseefeld";
+    var isLivehost = authority?.InvariantStartsWith(liveAuthortiyStart) ?? false;
+    var isLocalhost = !isLivehost || (authority?.InvariantEquals("localhost") ?? false);
+    var authortiyStart = isLivehost ? liveAuthortiyStart : Context.Request.Host.ToString();
+    var currentCuture = Umbraco.CultureDictionary.Culture.ToString();
+    var currentUrl = Model?.Url();
+    var isRoot = root?.Id == Model?.Id;
+    var id = Model?.Id ?? 0;
+
+    var allOtherUrls = PublishedUrlProvider
+        .GetOtherUrls(id)
+        .ToList();
+
+    var otherUrls = PublishedUrlProvider
+        .GetOtherUrls(id)
+        .Where(u => u.IsUrl && u.Text.InvariantContains(authortiyStart) && (isRoot || !u.Culture.InvariantEquals(currentCuture)))
+        .DistinctBy(u => u.Culture)
+        .ToList();
+    if (!isRoot)
+    {
+        var newUrlInfo = new UrlInfo(Model != null ? Model.Url() : string.Empty, true, currentCuture);
+        if (!otherUrls.Contains(newUrlInfo))
+        {
+            otherUrls.Add(newUrlInfo);
+        }
+    }
+    var languageUrls = otherUrls.OrderBy(u => u.Culture);
+    var ui = languageUrls.FirstOrDefault();
+
+    @if (WysiwgUmbracoCommunityExtensions.TestSite.Constants.Debug)// && hasUser)
     {
         var local = isEnglish ? "en-US" : "de-DE";
-        var backofficeHref = $"/umbraco/section/content/workspace/document/edit/{Model.Key}/{local}/tab/content";
+        var key = Model?.Key.ToString();
+        var backofficeHref = key == null
+            ? "/umbraco/section/content"
+            : $"/umbraco/section/content/workspace/document/edit/{key}/{local}/tab/content";
+
         <text>
             <a href="@backofficeHref" target="_blank">backoffice</a> | <a href="/umbraco/swagger/index.html?urls.primaryName=wysiwgUmbraco+Community+Extensions+Backoffice+API" target="_blank">swagger </a>
         </text>
     }
 }
 <nav>
-    @if (isEnglish)
+    @if (languageUrls.Count() > 1)
     {
-        <text>
-            <a href="/"><strong>EN</strong></a> | <a href="/de">DE</a>
-        </text>
-    }
-    else
-    {
-        <text>
-            <a href="/">EN</a> | <a href="/de"><strong>DE</strong></a>
-        </text>
-    }
+        var count = 0;
+        foreach (var url in languageUrls)
+        {
+            var divider = count > 0 ? " | " : "";
+            var label = url?.Culture?.Substring(0, 2).ToUpper() ?? "";
+            if (currentCuture == url?.Culture)
+            {
+                <text>@divider</text>
 
+                <a href="@url?.Text"><strong>@label</strong></a>
+            }
+            else
+            {
+                <text>@divider</text>
+
+                <a href="@url?.Text">@label</a>
+            }
+            count++;
+        }
+    }
 </nav>

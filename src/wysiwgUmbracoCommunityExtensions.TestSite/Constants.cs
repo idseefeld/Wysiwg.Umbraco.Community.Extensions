@@ -1,15 +1,18 @@
-public static class Constants
+namespace WysiwgUmbracoCommunityExtensions.TestSite
 {
-    public static bool Debug
+    public static class Constants
     {
-        get
+        public static bool Debug
         {
+            get
+            {
 #if DEBUG
-            return true;
+                return true;
 
 #else
                 return false;
 #endif
+            }
         }
     }
 }
