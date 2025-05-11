@@ -45,6 +45,7 @@
     <!-- Remove RazorCompileOnBuild and RazorCompileOnPublish when not using ModelsMode InMemoryAuto -->
     <RazorCompileOnBuild>false</RazorCompileOnBuild>
     <RazorCompileOnPublish>false</RazorCompileOnPublish>
+    <UserSecretsId>18dadc87-61a1-4bbe-9785-a0d82e9eb2c3</UserSecretsId>
   </PropertyGroup>
 
 </Project>

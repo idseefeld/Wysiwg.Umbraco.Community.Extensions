@@ -40,7 +40,6 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         ) : ISetupService
     {
         #region properties
-        private bool _resetExisting = false;
         private const string ErrorMsgPrefix = "Error during installation of WYSIWG Umbraco Community Extensions:";
         private readonly string _errorMsgDataTypeNotFoundStart = $"{ErrorMsgPrefix} Could not find data type:";
         private readonly string _errorMsgUpdateContentTypeStart = $"{ErrorMsgPrefix} Could not update content type";
@@ -62,7 +61,9 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         private readonly string[] _needUpdateContentTypes = [
             $"{Constants.Prefix}headline",
             $"{Constants.Prefix}paragraph",
-            $"{Constants.Prefix}croppedPicture"
+            $"{Constants.Prefix}croppedPicture",
+            $"{Constants.Prefix}paragraphSettings",
+            $"{Constants.Prefix}rowSettings"
         ];
         private string[] _deprecatedContentTypes = [$"{Constants.Prefix}pictureWithCrop"];
         private readonly string _dtContainerName = $"{Constants.Prefix.ToFirstUpper()}DataTypes";
@@ -99,7 +100,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         #endregion
 
         #region install
-        public async Task Install(bool resetExisting = false)
+        public async Task Install()
         {
             try
             {
@@ -108,7 +109,6 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 { return; }
 
                 _isInstalling = true;
-                _resetExisting = resetExisting;
 
                 _dataTypeContainer ??= (await CreateDataTypeContainer())
                     ?? throw new Exception($"{ErrorMsgPrefix} Could not find data type container.");
@@ -159,8 +159,6 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
         public async Task<VersionStatus> GetVersionStatus()
         {
-            //ToDo: use package migrations
-
             _dataTypeContainer ??= await GetDataTypeContainer();
             var install = _dataTypeContainer == null;
             if (install)
@@ -172,10 +170,17 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             if (notAllRequiredInstalled)
             { return VersionStatus.Update; }
 
-            if (!await RotationPropertyExists())
+            if (!DataTypeExists("Rotation"))
             { return VersionStatus.Update; }
 
             UpdateContentTypes();
+
+            if (!MinHeightPropertyExists("rowSettings", "minHeight"))
+            { return VersionStatus.Update; }
+
+            if (!MinHeightPropertyExists("paragraphSettings", "minHeight"))
+            { return VersionStatus.Update; }
+
             var requiredContentTypes = _allContentTypes
                .Select(t => t.Alias)
                .Intersect(_requiredContentTypes);
@@ -190,13 +195,22 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
             return VersionStatus.UpToDate;
         }
-
-        private async Task<bool> RotationPropertyExists()
+        private bool DataTypeExists(string name)
         {
-            var allDtTypes = await dataTypeService.GetAllAsync();
-            var rotationDataType = allDtTypes.FirstOrDefault(d => d.Name != null && d.Name.Equals($"{Constants.Prefix}Rotation"));
-
+            var rotationDataType = _existingDataTypes.FirstOrDefault(d => d.Name != null && d.Name.Equals($"{Constants.Prefix}{name}"));
             return rotationDataType != null;
+        }
+
+        private bool MinHeightPropertyExists(string elementName,string propertyName)
+        {
+            var rVal = false;
+            var rowSettings = GetElementByName(elementName, false);
+            if (rowSettings != null)
+            {
+                rVal = rowSettings.PropertyTypes
+                    .Any(p => p.Alias != null && p.Alias.Equals(propertyName));
+            }
+            return rVal;
         }
 
         public async Task<int> GetVersionStatusCode()
@@ -1034,102 +1048,19 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 foreach (var elementTypeAlias in missingRequired)
                 {
                     #region create new
-                    #region Block Elements
-                    //EntityContainer elementContainer = await CreateOrUpdateBContentElements(elementTypeAlias);
                     await CreateOrUpdateContentElements(elementTypeAlias);
-                    #endregion
 
-                    #region Block Layouts
                     var elementContainer = _blockContainers[BlockLayoutsName];
                     for (var index = 1; index <= 4; index++)
                     {
                         await CreateOrUpdateLayoutElementType(elementTypeAlias, $"{Constants.Prefix}layout{index}", elementContainer, index);
                     }
-                    #endregion
 
-                    #region Block Settings
                     elementContainer = _blockContainers[BlockSettingsName];
-                    await CreateOrUpdateHeadlineSettingsElementType(elementTypeAlias, $"{Constants.Prefix}headlineSettings", elementContainer);
-                    await CreateOrUpdateParagraphSettingsElementType(elementTypeAlias, $"{Constants.Prefix}paragraphSettings", elementContainer);
-                    await CreateOrUpdateRowSettingsElementType(elementTypeAlias, $"{Constants.Prefix}rowSettings", elementContainer);
-
-                    #endregion
-
+                    await CreateOrUpdateSettingElements(elementTypeAlias);
                     #endregion
                 }
             }
-            else if (_resetExisting)
-            {
-                //TODO: complete implementation
-                #region reset existing
-                #region Block Elements
-                var elementContainer = _blockContainers[BlockElementsName];
-
-                foreach (var type in _allContentTypes)
-                {
-                    switch (type.Alias.Replace(Constants.Prefix, string.Empty))
-                    {
-                        case "headline":
-                            //properties: text
-                            break;
-                        case "paragraph":
-                            //properties: text
-                            break;
-                        //case "pictureWithCrop":
-                        //    //properties: mediaItem
-                        //    break;
-                        case "croppedPicture":
-                            //properties: mediaItem
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                #endregion
-
-                #region Block Layouts
-                elementContainer = _blockContainers[BlockLayoutsName];
-                foreach (var type in _allContentTypes)
-                {
-                    switch (type.Alias.Replace(Constants.Prefix, string.Empty))
-                    {
-                        case "layout1":
-                            break;
-                        case "layout2":
-                            break;
-                        case "layout3":
-                            break;
-                        case "layout4":
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                #endregion
-
-                #region Block Settings
-                elementContainer = _blockContainers[BlockSettingsName];
-                foreach (var type in _allContentTypes)
-                {
-                    switch (type.Alias.Replace(Constants.Prefix, string.Empty))
-                    {
-                        case "HeadlineSettings":
-                            //properties: color, size, margin
-                            break;
-                        case "ParagraphSettings":
-                            //properties: color
-                            break;
-                        case "RowSettings":
-                            //properties: backgroundImage, backgroundColor
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                #endregion
-                #endregion
-            }
-
         }
 
         private async Task CreateOrUpdateContentElements(string elementTypeAlias, bool? culture = null, bool? segment = null)
@@ -1171,6 +1102,29 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 }
             }
             #endregion
+        }
+
+        private async Task CreateOrUpdateSettingElements(string elementTypeAlias)
+        {
+            var elementContainer = _blockContainers[BlockSettingsName];
+
+            var alias = $"{Constants.Prefix}headlineSettings";
+            var compareAlias = string.IsNullOrEmpty(elementTypeAlias)
+                ? alias
+                : elementTypeAlias;
+            await CreateOrUpdateHeadlineSettingsElementType(compareAlias, alias, elementContainer);
+
+            alias = $"{Constants.Prefix}paragraphSettings";
+            compareAlias = string.IsNullOrEmpty(elementTypeAlias)
+                ? alias
+                : elementTypeAlias;
+            await CreateOrUpdateParagraphSettingsElementType(compareAlias, alias, elementContainer);
+
+            alias = $"{Constants.Prefix}rowSettings";
+            compareAlias = string.IsNullOrEmpty(elementTypeAlias)
+                ? alias
+                : elementTypeAlias;
+            await CreateOrUpdateRowSettingsElementType(compareAlias, alias, elementContainer);
         }
 
         private void CreateOrUpdateContentElementContainers()
@@ -1238,34 +1192,25 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             { return; }
 
             var type = contentTypeService.Get(alias);
-            if (type != null)
+            var newType = new ContentType(shortStringHelper, elementContainer.Id)
             {
+                Alias = alias,
+                Name = "Row Settings",
+                Icon = "icon-settings color-red",
+                IsElement = true,
+                AllowedAsRoot = false,
+                Variations = ContentVariation.Nothing,
+            };
 
-            }
-            else
+            var propertyDefinitions = new List<PropertyDefinition>()
             {
-                type = new ContentType(shortStringHelper, elementContainer.Id)
-                {
-                    Alias = alias,
-                    Name = "Row Settings",
-                    Icon = "icon-settings color-red",
-                    IsElement = true,
-                    AllowedAsRoot = false,
-                    Variations = ContentVariation.Nothing,
-                };
+                new ("Background Color", $"{Constants.Prefix}CustomerColors", 1),
+                new ("Background Image", "Media Picker", 2),
+                new ("Padding", "Textstring", 3, "Any valid css value e.g.: 10px, 10px 20px, 0 etc."),
+                new ("MinHeight", "Textstring", 4, "Any valid css size e.g.: 400px, 40em, 0 etc.")
+            };
 
-                var ctAttempt = await contentTypeService.CreateAsync(type, CurrentUserKey);
-                if (ctAttempt.Success)
-                {
-                    var propertyDefinitions = new List<PropertyDefinition>()
-                {
-                    new ("Background Color", $"{Constants.Prefix}CustomerColors", 1),
-                    new ("Background Image", "Media Picker", 2),
-                    new ("Padding", "Textstring", 3)
-                };
-                    await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
-                }
-            }
+            await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);
         }
 
         private async Task CreateOrUpdateParagraphSettingsElementType(string elementTypeAlias, string alias, EntityContainer elementContainer)
@@ -1274,68 +1219,48 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             { return; }
 
             var type = contentTypeService.Get(alias);
-            if (type != null)
+            var newType = new ContentType(shortStringHelper, elementContainer.Id)
             {
+                Alias = alias,
+                Name = "Paragraph Settings",
+                Icon = "icon-settings color-red",
+                IsElement = true,
+                AllowedAsRoot = false,
+                Variations = ContentVariation.Nothing,
+            };
 
-            }
-            else
+            var propertyDefinitions = new List<PropertyDefinition>()
             {
-                type = new ContentType(shortStringHelper, elementContainer.Id)
-                {
-                    Alias = alias,
-                    Name = "Paragraph Settings",
-                    Icon = "icon-settings color-red",
-                    IsElement = true,
-                    AllowedAsRoot = false,
-                    Variations = ContentVariation.Nothing,
-                };
+                new ("Color", $"{Constants.Prefix}CustomerColors", 1),
+                new ("MinHeight", "Textstring", 4, "Any valid css size e.g.: 400px, 40em, 0 etc.")
+            };
 
-                var ctAttempt = await contentTypeService.CreateAsync(type, CurrentUserKey);
-                if (ctAttempt.Success)
-                {
-                    var propertyDefinitions = new List<PropertyDefinition>()
-                {
-                    new ("Color", $"{Constants.Prefix}CustomerColors", 1)
-                };
-                    await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
-                }
-            }
+            await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);
         }
-
         private async Task CreateOrUpdateHeadlineSettingsElementType(string elementTypeAlias, string alias, EntityContainer elementContainer)
         {
             if (elementTypeAlias != alias)
             { return; }
 
             var type = contentTypeService.Get(alias);
-            if (type != null)
+            var newType = new ContentType(shortStringHelper, elementContainer.Id)
             {
+                Alias = alias,
+                Name = "Headline Settings",
+                Icon = "icon-heading-1 color-red",
+                IsElement = true,
+                AllowedAsRoot = false,
+                Variations = ContentVariation.Nothing,
+            };
 
-            }
-            else
+            var propertyDefinitions = new List<PropertyDefinition>()
             {
-                type = new ContentType(shortStringHelper, elementContainer.Id)
-                {
-                    Alias = alias,
-                    Name = "Headline Settings",
-                    Icon = "icon-heading-1 color-red",
-                    IsElement = true,
-                    AllowedAsRoot = false,
-                    Variations = ContentVariation.Nothing,
-                };
+                new ("Color", $"{Constants.Prefix}CustomerColors", 1),
+                new ("Margin", "Textstring", 2),
+                new ("Size", $"{Constants.Prefix}HeadlineSizes", 3)
+            };
 
-                var ctAttempt = await contentTypeService.CreateAsync(type, CurrentUserKey);
-                if (ctAttempt.Success)
-                {
-                    var propertyDefinitions = new List<PropertyDefinition>()
-                {
-                    new ("Color", $"{Constants.Prefix}CustomerColors", 1),
-                    new ("Margin", "Textstring", 2),
-                    new ("Size", $"{Constants.Prefix}HeadlineSizes", 3)
-                };
-                    await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
-                }
-            }
+            await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);
         }
 
         private async Task CreateOrUpdateLayoutElementType(string elementTypeAlias, string alias, EntityContainer elementContainer, int index)
@@ -1345,11 +1270,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
             var iconColor = "color-light-blue";
             var type = contentTypeService.Get(alias);
-            if (type != null)
-            {
-
-            }
-            else
+            if (type == null)
             {
                 type = new ContentType(shortStringHelper, elementContainer.Id)
                 {
@@ -1388,32 +1309,22 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 }
             }
         }
-
         private async Task CreateOrUpdateParagraphElementType(string elementTypeAlias, string alias, EntityContainer elementContainer, bool? culture, bool? segment)
         {
             if (elementTypeAlias != alias)
             { return; }
 
-            var type = contentTypeService.Get(alias);
-            if (type == null)
+            var newType = new ContentType(shortStringHelper, elementContainer.Id)
             {
-                type = new ContentType(shortStringHelper, elementContainer.Id)
-                {
-                    Alias = alias,
-                    Name = "Paragraph",
-                    Icon = "icon-document-html",
-                    IsElement = true,
-                    AllowedAsRoot = false,
-                    Variations = ContentVariation.Culture,
-                };
-
-                var ctAttempt = await contentTypeService.CreateAsync(type, CurrentUserKey);
-                if (!ctAttempt.Success)
-                {
-                    throw new Exception($"{type.Name} [{alias}] creation failed.");
-                }
-            }
-            else
+                Alias = alias,
+                Name = "Paragraph",
+                Icon = "icon-document-html",
+                IsElement = true,
+                AllowedAsRoot = false,
+                Variations = ContentVariation.Culture,
+            };
+            var type = contentTypeService.Get(alias);
+            if (type != null)
             {
                 UpdateCultureAndSegment(culture, segment, type);
             }
@@ -1421,33 +1332,23 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             {
                 new ("Text", $"{Constants.Prefix}ParagaphRTE",1, variations: ContentVariation.Culture)
             };
-            await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
+            await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);
         }
-
         private async Task CreateOrUpdateCroppedPictureElementType(string elementTypeAlias, string alias, EntityContainer elementContainer, bool? culture, bool? segment)
         {
             if (elementTypeAlias != alias)
             { return; }
-
-            var type = contentTypeService.Get(alias);
-            if (type == null)
+            var newType = new ContentType(shortStringHelper, elementContainer.Id)
             {
-                type = new ContentType(shortStringHelper, elementContainer.Id)
-                {
-                    Alias = alias,
-                    Name = "Cropped Picture",
-                    Icon = "icon-document-image",
-                    IsElement = true,
-                    AllowedAsRoot = false,
-                    Variations = ContentVariation.Culture,
-                };
-                var ctAttempt = await contentTypeService.CreateAsync(type, CurrentUserKey);
-                if (!ctAttempt.Success)
-                {
-                    throw new Exception($"{type.Name} [{alias}] creation failed.");
-                }
-            }
-            else
+                Alias = alias,
+                Name = "Cropped Picture",
+                Icon = "icon-document-image",
+                IsElement = true,
+                AllowedAsRoot = false,
+                Variations = ContentVariation.Culture,
+            };
+            var type = contentTypeService.Get(alias);
+            if (type != null)
             {
                 UpdateCultureAndSegment(culture, segment, type);
             }
@@ -1461,7 +1362,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 new ("Rotation", $"{Constants.Prefix}Rotation", 5)
             };
 
-            await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
+            await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);
 
         }
 
@@ -1479,6 +1380,16 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             if (elementTypeAlias != alias)
             { return; }
 
+            var newType = new ContentType(shortStringHelper, elementContainer.Id)
+            {
+                Alias = alias,
+                Name = "Picture with Crop",
+                Icon = "icon-document-image",
+                IsElement = true,
+                AllowedAsRoot = false,
+                Variations = ContentVariation.Culture,
+            };
+
             var type = contentTypeService.Get(alias);
             List<PropertyDefinition>? propertyDefinitions = null;
             if (type != null)
@@ -1488,22 +1399,6 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             }
             else if (!updateOnly)
             {
-                type = new ContentType(shortStringHelper, elementContainer.Id)
-                {
-                    Alias = alias,
-                    Name = "Picture with Crop",
-                    Icon = "icon-document-image",
-                    IsElement = true,
-                    AllowedAsRoot = false,
-                    Variations = ContentVariation.Culture,
-                };
-
-                var ctAttempt = await contentTypeService.CreateAsync(type, CurrentUserKey);
-                if (!ctAttempt.Success)
-                {
-                    throw new Exception($"{type.Name} [{alias}] creation failed.");
-                }
-
                 propertyDefinitions =
                 [
                     new ("Media Item", $"{Constants.Prefix}ImageMediaPicker", 1),
@@ -1522,7 +1417,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             {
                 try
                 {
-                    await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
+                    await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);
                 }
                 catch (Exception ex)
                 {
@@ -1536,35 +1431,28 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             if (elementTypeAlias != alias)
             { return; }
 
-            var type = contentTypeService.Get(alias);
-            if (type == null)
+            var newType = new ContentType(shortStringHelper, elementContainer.Id)
             {
-                type = new ContentType(shortStringHelper, elementContainer.Id)
-                {
-                    Alias = alias,
-                    Name = "Headline",
-                    Icon = "icon-heading-1",
-                    IsElement = true,
-                    AllowedAsRoot = false,
-                    Variations = ContentVariation.Culture,
-                };
-
-                var ctAttempt = await contentTypeService.CreateAsync(type, CurrentUserKey);
-                if (!ctAttempt.Success)
-                {
-                    throw new Exception($"{type.Name} [{alias}] creation failed.");
-                }
-            }
-            else
+                Alias = alias,
+                Name = "Headline",
+                Icon = "icon-heading-1",
+                IsElement = true,
+                AllowedAsRoot = false,
+                Variations = ContentVariation.Culture,
+            };
+            var type = contentTypeService.Get(alias);
+            if (type != null)
             {
                 type.ParentId = elementContainer.Id;
                 UpdateCultureAndSegment(culture, segment, type);
             }
+
             var propertyDefinitions = new List<PropertyDefinition>()
             {
                 new ("Text", $"{Constants.Prefix}LimitedHeadline", 1, "The text of the headline", ContentVariation.Culture)
             };
-            await CreateOrUpdateContentElementProperties(type, propertyDefinitions);
+
+            await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);
         }
 
         private static void UpdateCultureAndSegment(bool? culture, bool? segment, IContentType type)
@@ -1601,8 +1489,24 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             };
             return propertyType;
         }
-        private async Task CreateOrUpdateContentElementProperties(IContentType type, IEnumerable<PropertyDefinition>? propertyDefinitions)
+        private async Task CreateOrUpdateContentElementProperties(IContentType? type, IEnumerable<PropertyDefinition>? propertyDefinitions, IContentType? newType)
         {
+            if (type == null && newType == null)
+            { return; }
+
+            if (type == null && newType != null)
+            {
+                var ctAttempt = await contentTypeService.CreateAsync(newType, CurrentUserKey);
+                if (ctAttempt.Success)
+                {
+                    type = contentTypeService.Get(newType.Alias);
+                }
+                else
+                {
+                    throw new Exception($"{newType.Name} [{newType.Alias}] creation failed.");
+                }
+            }
+
             if (type == null)
             { return; }
 
@@ -1715,32 +1619,6 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             }
         }
 
-        #region obsolete
-        //private async Task LegacySwitchPartialViews(bool restoreOriginal = false)
-        //{
-        //    var allPartialViews = await partialViewService.GetAllAsync();
-        //    if (allPartialViews == null)
-        //    { return; }
-
-        //    var prefix = "backup-";
-        //    var itemsPartial = $"blockgrid\\{(restoreOriginal ? prefix : "")}items.";
-        //    var itemsPartialViews = allPartialViews
-        //        .FirstOrDefault(v => v.Path.InvariantContains(itemsPartial));
-        //    if (itemsPartialViews == null)
-        //    { return; }
-
-        //    var updateModel = new PartialViewRenameModel
-        //    {
-        //        Name = $"{(restoreOriginal ? "" : prefix)}items.cshtml"
-        //    };
-        //    var attempt = await partialViewService.RenameAsync(itemsPartialViews.Path, updateModel, CurrentUserKey);
-        //    if (!attempt.Success)
-        //    {
-        //        throw new Exception($"{ErrorMsgPrefix} {attempt.Status}");
-        //    }
-        //}
-        #endregion
-
         private async Task SwitchPartialViews(bool restoreOriginal = false)
         {
             var folderName = "blockgrid";
@@ -1753,7 +1631,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             var backupPartialName = "backup-items.cshtml";
 
             var original = allPartialViews
-                .FirstOrDefault(v => v.Path.InvariantEndsWith($"{folderName}\\{originalPartialName}"));
+                .FirstOrDefault(v => v.Path.InvariantEndsWith($"{folderName}${Path.DirectorySeparatorChar}{originalPartialName}"));
 
             var backup = allPartialViews
                 .FirstOrDefault(v => v.Path.InvariantEndsWith(backupPartialName));
@@ -1954,6 +1832,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 UpdateContentTypes();
 
                 await CreateOrUpdateContentElements(string.Empty, culture, segment);
+
+                await CreateOrUpdateSettingElements(string.Empty);
 
                 _dataTypeContainer ??= (await CreateDataTypeContainer())
                     ?? throw new Exception($"{ErrorMsgPrefix} Could not find data type container.");

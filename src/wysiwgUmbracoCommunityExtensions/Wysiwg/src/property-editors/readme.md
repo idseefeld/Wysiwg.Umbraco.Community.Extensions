@@ -1,4 +1,4 @@
-# wysiwg Data Types
+# WYSIWYG Data Types
 
 ## Data Types
 ### Picture Crop

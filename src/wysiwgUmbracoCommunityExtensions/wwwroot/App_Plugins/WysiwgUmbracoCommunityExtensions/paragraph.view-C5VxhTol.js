@@ -1,31 +1,33 @@
-import { UmbTextStyles as v } from "@umbraco-cms/backoffice/style";
-import { unsafeHTML as y, html as m, css as c, customElement as d } from "@umbraco-cms/backoffice/external/lit";
-import { W as f } from "./wysiwg-base-block-editor-custom.view-BP--8Rci.js";
-var x = Object.getOwnPropertyDescriptor, u = (n, a, r, o) => {
-  for (var i = o > 1 ? void 0 : o ? x(a, r) : a, e = n.length - 1, s; e >= 0; e--)
-    (s = n[e]) && (i = s(i) || i);
-  return i;
+import { UmbTextStyles as c } from "@umbraco-cms/backoffice/style";
+import { unsafeHTML as d, html as f, css as x, customElement as u } from "@umbraco-cms/backoffice/external/lit";
+import { W as k } from "./wysiwg-base-block-editor-custom.view-CYVB1wdx.js";
+var z = Object.getOwnPropertyDescriptor, b = (o, i, t, g) => {
+  for (var a = g > 1 ? void 0 : g ? z(i, t) : i, e = o.length - 1, s; e >= 0; e--)
+    (s = o[e]) && (a = s(a) || a);
+  return a;
 };
-const k = "wysiwg-block-paragraph-view";
-let g = class extends f {
+const $ = "wysiwg-block-paragraph-view";
+let l = class extends k {
   render() {
-    var e, s, w, p;
-    let n = { value: "" }, a = "";
+    var e, s, p, v, y;
+    let o = { value: "" }, i = "";
     if ((e = this.datasetSettings) != null && e.length) {
-      const l = this.layout, t = ((w = ((s = this.datasetSettings.filter(
-        (h) => (l == null ? void 0 : l.settingsKey) === h.key
-      )[0]) == null ? void 0 : s.values).filter((h) => h.alias === "color")[0]) == null ? void 0 : w.value) ?? n;
-      t != null && t.value && (a = `color: ${t == null ? void 0 : t.value};`);
+      const w = this.layout, h = (s = this.datasetSettings.filter(
+        (n) => (w == null ? void 0 : w.settingsKey) === n.key
+      )[0]) == null ? void 0 : s.values, r = ((p = h.filter((n) => n.alias === "color")[0]) == null ? void 0 : p.value) ?? o;
+      r != null && r.value && (i = `color: ${r == null ? void 0 : r.value};`);
+      const m = (((v = h == null ? void 0 : h.find((n) => n.alias === "minHeight")) == null ? void 0 : v.value) ?? "0").toString();
+      m && (i += `min-height: ${m};`);
     }
-    a && (a = `style="${a}"`);
-    var r = (p = this.content) == null ? void 0 : p.text, o = r == null ? void 0 : r.markup;
-    const i = `<div class="paragraph" ${a}>${o}</div>`;
-    return m`${y(i)}`;
+    i && (i = `style="${i}"`);
+    var t = (y = this.content) == null ? void 0 : y.text, g = t == null ? void 0 : t.markup;
+    const a = `<div class="paragraph" ${i}>${g}</div>`;
+    return f`${d(a)}`;
   }
 };
-g.styles = [
-  v,
-  c`
+l.styles = [
+  c,
+  x`
       :host {
         display: block;
         height: 100%;
@@ -73,12 +75,12 @@ g.styles = [
       }
     `
 ];
-g = u([
-  d(k)
-], g);
-const E = g;
+l = b([
+  u($)
+], l);
+const P = l;
 export {
-  g as WysiwgBlockParagraphView,
-  E as default
+  l as WysiwgBlockParagraphView,
+  P as default
 };
-//# sourceMappingURL=paragraph.view-BuXeltMt.js.map
+//# sourceMappingURL=paragraph.view-C5VxhTol.js.map

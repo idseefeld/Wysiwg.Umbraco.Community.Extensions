@@ -248,11 +248,11 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
         [HttpGet("install")]
         [ProducesResponseType<string>(StatusCodes.Status200OK)]
         [ProducesResponseType<string>(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Install()//bool resetExisting = false) //TODO: implemnet reset feature in service
+        public async Task<IActionResult> Install()
         {
             try
             {
-                await installService.Install(resetExisting: false);
+                await installService.Install();
             }
             catch (Exception ex)
             {

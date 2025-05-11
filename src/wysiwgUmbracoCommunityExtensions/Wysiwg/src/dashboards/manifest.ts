@@ -3,10 +3,10 @@ import { ManifestSectionView } from '@umbraco-cms/backoffice/section';
 export const manifest: ManifestSectionView = {
   type: 'sectionView',
   alias: "WysiwgDashboardElement.Section",
-  name: "WYSIWG Extensions Section",
+  name: "WYSIWYG Extensions Section",
   element: () => import('./dashboard.element.js'),
   meta: {
-    label: "WYSIWG",
+    label: "WYSIWYG",
     icon: "icon-settings",
     pathname: "wysiwg-section"
   },

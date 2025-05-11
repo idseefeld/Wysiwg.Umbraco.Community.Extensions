@@ -30,6 +30,11 @@ export class WysiwgBlockParagraphView
       if (colorSetting?.value) {
         inlineStyle = `color: ${colorSetting?.value};`;
       }
+
+      const minHeight = (settings?.find((v) => v.alias === "minHeight")?.value ?? "0").toString();
+      if(minHeight) {
+        inlineStyle += `min-height: ${minHeight};`;
+      }
     }
 
     if (inlineStyle) {

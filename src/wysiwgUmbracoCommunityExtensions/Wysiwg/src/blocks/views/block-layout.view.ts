@@ -19,6 +19,7 @@ import { UmbBlockGridValueModel } from "@umbraco-cms/backoffice/block-grid";
 import { BlockGridLayoutModel, MediaPickerValueModel } from "../types";
 import { ImageUrlData, WysiwgUmbracoCommunityExtensionsService } from "../..";
 import WysiwgBaseBlockEditorCustomViewElement from "./wysiwg-base-block-editor-custom.view";
+import { UpdateStatus } from "../../util/updateStatusEnum";
 
 //this is based on a copy of
 // Umbraco-CMS\src\
@@ -31,6 +32,7 @@ const blockLayoutInlineStyleDefaults: StyleInfo = {
   backgroundRepeat: "no-repeat",
   backgroundColor: "transparent",
   padding: "0",
+  minHeight: "0",
 }
 
 const customElementName = "wysiwg-block-layout-view";
@@ -53,6 +55,9 @@ export class WysiwgBlockLayoutView
   @state()
   backgroundStyleMap: StyleInfo = blockLayoutInlineStyleDefaults;
 
+  @state()
+  private isfirstElement = false;
+
   private get backgroundStyles() {
     return {
       backgroundImage: this.backgroundStyleMap.backgroundImage,
@@ -60,6 +65,7 @@ export class WysiwgBlockLayoutView
       backgroundPosition: this.backgroundStyleMap.backgroundPosition,
       backgroundColor: this.backgroundStyleMap.backgroundColor,
       padding: this.backgroundStyleMap.padding,
+      minHeight: this.backgroundStyleMap.minHeight,
     } as StyleInfo;
   }
 
@@ -70,13 +76,22 @@ export class WysiwgBlockLayoutView
       backgroundPosition: blockLayoutInlineStyleDefaults.backgroundPosition,
       backgroundColor: blockLayoutInlineStyleDefaults.backgroundColor,
       padding: blockLayoutInlineStyleDefaults.padding,
+      minHeight: blockLayoutInlineStyleDefaults.minHeight,
     } as StyleInfo;
   }
 
   override async prozessSettings(gridValues: UmbBlockGridValueModel) {
     if (gridValues.settingsData?.length) {
       const viewElement = this as UmbBlockEditorCustomViewElement;
-      const layout = gridValues.layout["Umbraco.BlockGrid"]?.find(
+      const layouts = gridValues.layout["Umbraco.BlockGrid"];
+      if (!layouts) {
+        console.error("No layout found");
+        return;
+      }
+
+      const firstLayoutKey = layouts[0]['contentKey'];
+      this.isfirstElement = firstLayoutKey === viewElement.contentKey;
+      const layout = layouts?.find(
         (l) => l.contentKey === viewElement.contentKey
       );
       const setting = gridValues?.settingsData?.find(
@@ -124,13 +139,15 @@ export class WysiwgBlockLayoutView
         inlineStyles.backgroundColor = transparentBackground ? "transparent" : backgroundColor;
       }
 
-      let padding =
-        properties?.find((v) => v.alias === "padding")?.value;
+      const minHeight = (properties?.find((v) => v.alias === "minHeight")?.value ?? "0").toString();
+      inlineStyles.minHeight = minHeight;
+
+      let padding = (properties?.find((v) => v.alias === "padding")?.value ?? "0").toString();
       if (!padding) {
         padding = (backgroundColor && !transparentBackground) ? "10px" : "0";
         console.debug("padding: ", padding);
       }
-      inlineStyles.padding = `${padding}`;
+      inlineStyles.padding = padding;
     }
 
     this.backgroundStyleMap = inlineStyles;
@@ -176,11 +193,46 @@ export class WysiwgBlockLayoutView
     }
   }
 
+  renderUpdateHint() {
+    const nameHtml = html`<umb-ufm-render inline .markdown=${this.label} .value=${this.content}></umb-ufm-render>`;
+
+    if (!this.isfirstElement) { return nameHtml; }
+
+    this.setUpdateStatus();
+    if (this.updateStatus !== UpdateStatus.Update) {
+      return nameHtml;
+    } else {
+      return html`
+        <uui-button id="tooltip-toggle" popovertarget="tooltip-popover" look="primary" type="button" color="danger" compact style="margin-right: 0.5rem;">
+          <uui-icon name="alert"></uui-icon>
+        </uui-button>${nameHtml}
+
+        <uui-popover-container id="tooltip-popover">
+
+          <div class="popover-container" style="display: flex;flex-direction: column;padding: 1rem;border-radius: 3px;width: 200px;background: var(--uui-color-danger);box-shadow: var(--uui-shadow-depth-3);color: white;line-height: 1.4em;">
+            <h3>
+              <umb-localize key="wysiwg_updateAvailableTitle" .debug=${this._debug}>
+                Update Available
+              </umb-localize>
+            </h3>
+            <p>
+              <umb-localize key="wysiwg_updateAvailable" .debug=${this._debug}>
+                An update is available for the WYSIWYG extensions.
+              </umb-localize>
+            </p>
+          </div>
+
+        </uui-popover-container>
+      `;
+    }
+  }
+
   override render() {
     const pageStyles = { backgroundColor: this.pageBackroundColor } as Readonly<StyleInfo>;;
     const styles = this.backgroundStyleMap as Readonly<StyleInfo>;
 
-    return html`<umb-ref-grid-block class="wysiwg"
+    return html`
+    <umb-ref-grid-block class="wysiwg"
       style=${styleMap(pageStyles)}
       standalone
       href=${(this.config?.showContentEdit
@@ -188,12 +240,7 @@ export class WysiwgBlockLayoutView
         : undefined) ?? ""}
     >
       <umb-icon slot="icon" .name=${this.icon}></umb-icon>
-      <umb-ufm-render
-        slot="name"
-        inline
-        .markdown=${this.label}
-        .value=${this.content}
-      ></umb-ufm-render>
+      <div slot="name">${this.renderUpdateHint()}</div>
       ${this.unpublished
         ? html`<uui-tag
             slot="name"
@@ -202,6 +249,7 @@ export class WysiwgBlockLayoutView
             ><umb-localize key="wysiwg_notExposedLabel"></umb-localize
           ></uui-tag>`
         : nothing}
+
       <umb-block-grid-areas-container
         slot="areas"
         style="${styleMap(styles)}"
@@ -217,6 +265,7 @@ export class WysiwgBlockLayoutView
         height: 100%;
         box-sizing: border-box;
       }
+
       .left,
       .right {
         display: flexbox;

@@ -1,5 +1,5 @@
 import { html as l, unsafeHTML as u, css as b, property as h, customElement as $ } from "@umbraco-cms/backoffice/external/lit";
-import { W as x } from "./wysiwg-base-block-editor-custom.view-BP--8Rci.js";
+import { W as x } from "./wysiwg-base-block-editor-custom.view-CYVB1wdx.js";
 var z = Object.defineProperty, _ = Object.getOwnPropertyDescriptor, d = (i, t, o, r) => {
   for (var e = r > 1 ? void 0 : r ? _(t, o) : t, a = i.length - 1, s; a >= 0; a--)
     (s = i[a]) && (e = (r ? s(t, o, e) : s(e)) || e);
@@ -13,7 +13,8 @@ let n = class extends x {
     var e, a;
     const i = this.content;
     if (!i)
-      return l`<div class="error">
+      return l`
+      <div class="error">
         <umb-localize key="wysiwg_invalidData" .debug=${this.debugLocalize}
           >invalid data</umb-localize
         >
@@ -90,4 +91,4 @@ export {
   n as CroppedPictureCustomView,
   k as default
 };
-//# sourceMappingURL=cropped-picture.view-BHnWNjdv.js.map
+//# sourceMappingURL=cropped-picture.view-BwxvQlwj.js.map

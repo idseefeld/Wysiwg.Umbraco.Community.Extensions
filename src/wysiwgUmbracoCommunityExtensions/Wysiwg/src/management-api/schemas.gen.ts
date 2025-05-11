@@ -1655,6 +1655,9 @@ export const CreateUserGroupRequestModelSchema = {
                         '$ref': '#/components/schemas/DocumentPermissionPresentationModel'
                     },
                     {
+                        '$ref': '#/components/schemas/DocumentPropertyValuePermissionPresentationModel'
+                    },
+                    {
                         '$ref': '#/components/schemas/UnknownTypePermissionPresentationModel'
                     }
                 ]
@@ -1787,16 +1790,12 @@ export const CultureReponseModelSchema = {
     additionalProperties: false
 } as const;
 
-export const CurrenUserConfigurationResponseModelSchema = {
-    required: ['allowChangePassword', 'allowTwoFactor', 'keepUserLoggedIn', 'passwordConfiguration', 'usernameIsEmail'],
+export const CurrentUserConfigurationResponseModelSchema = {
+    required: ['allowChangePassword', 'allowTwoFactor', 'keepUserLoggedIn', 'passwordConfiguration'],
     type: 'object',
     properties: {
         keepUserLoggedIn: {
             type: 'boolean'
-        },
-        usernameIsEmail: {
-            type: 'boolean',
-            deprecated: true
         },
         passwordConfiguration: {
             oneOf: [
@@ -1907,6 +1906,9 @@ export const CurrentUserResponseModelSchema = {
                 oneOf: [
                     {
                         '$ref': '#/components/schemas/DocumentPermissionPresentationModel'
+                    },
+                    {
+                        '$ref': '#/components/schemas/DocumentPropertyValuePermissionPresentationModel'
                     },
                     {
                         '$ref': '#/components/schemas/UnknownTypePermissionPresentationModel'
@@ -2339,7 +2341,6 @@ export const DictionaryItemTranslationModelSchema = {
             type: 'string'
         },
         translation: {
-            minLength: 1,
             type: 'string'
         }
     },
@@ -2499,7 +2500,7 @@ export const DocumentBlueprintTreeItemResponseModelSchema = {
 } as const;
 
 export const DocumentCollectionResponseModelSchema = {
-    required: ['documentType', 'id', 'isProtected', 'isTrashed', 'sortOrder', 'values', 'variants'],
+    required: ['ancestors', 'documentType', 'id', 'isProtected', 'isTrashed', 'sortOrder', 'values', 'variants'],
     type: 'object',
     properties: {
         values: {
@@ -2547,6 +2548,16 @@ export const DocumentCollectionResponseModelSchema = {
         isProtected: {
             type: 'boolean'
         },
+        ancestors: {
+            type: 'array',
+            items: {
+                oneOf: [
+                    {
+                        '$ref': '#/components/schemas/ReferenceByIdModel'
+                    }
+                ]
+            }
+        },
         updater: {
             type: 'string',
             nullable: true
@@ -2556,7 +2567,7 @@ export const DocumentCollectionResponseModelSchema = {
 } as const;
 
 export const DocumentConfigurationResponseModelSchema = {
-    required: ['allowEditInvariantFromNonDefault', 'allowNonExistingSegmentsCreation', 'disableDeleteWhenReferenced', 'disableUnpublishWhenReferenced', 'reservedFieldNames'],
+    required: ['allowEditInvariantFromNonDefault', 'allowNonExistingSegmentsCreation', 'disableDeleteWhenReferenced', 'disableUnpublishWhenReferenced'],
     type: 'object',
     properties: {
         disableDeleteWhenReferenced: {
@@ -2570,14 +2581,6 @@ export const DocumentConfigurationResponseModelSchema = {
         },
         allowNonExistingSegmentsCreation: {
             type: 'boolean'
-        },
-        reservedFieldNames: {
-            uniqueItems: true,
-            type: 'array',
-            items: {
-                type: 'string'
-            },
-            deprecated: true
         }
     },
     additionalProperties: false
@@ -2677,6 +2680,44 @@ export const DocumentPermissionPresentationModelSchema = {
     }
 } as const;
 
+export const DocumentPropertyValuePermissionPresentationModelSchema = {
+    required: ['$type', 'documentType', 'propertyType', 'verbs'],
+    type: 'object',
+    properties: {
+        '$type': {
+            type: 'string'
+        },
+        documentType: {
+            oneOf: [
+                {
+                    '$ref': '#/components/schemas/ReferenceByIdModel'
+                }
+            ]
+        },
+        propertyType: {
+            oneOf: [
+                {
+                    '$ref': '#/components/schemas/ReferenceByIdModel'
+                }
+            ]
+        },
+        verbs: {
+            uniqueItems: true,
+            type: 'array',
+            items: {
+                type: 'string'
+            }
+        }
+    },
+    additionalProperties: false,
+    discriminator: {
+        propertyName: '$type',
+        mapping: {
+            DocumentPropertyValuePermissionPresentationModel: '#/components/schemas/DocumentPropertyValuePermissionPresentationModel'
+        }
+    }
+} as const;
+
 export const DocumentRecycleBinItemResponseModelSchema = {
     required: ['createDate', 'documentType', 'hasChildren', 'id', 'variants'],
     type: 'object',
@@ -2722,7 +2763,7 @@ export const DocumentRecycleBinItemResponseModelSchema = {
 } as const;
 
 export const DocumentReferenceResponseModelSchema = {
-    required: ['$type', 'documentType', 'id'],
+    required: ['$type', 'documentType', 'id', 'variants'],
     type: 'object',
     properties: {
         '$type': {
@@ -2746,6 +2787,16 @@ export const DocumentReferenceResponseModelSchema = {
                     '$ref': '#/components/schemas/TrackedReferenceDocumentTypeModel'
                 }
             ]
+        },
+        variants: {
+            type: 'array',
+            items: {
+                oneOf: [
+                    {
+                        '$ref': '#/components/schemas/DocumentVariantItemResponseModel'
+                    }
+                ]
+            }
         }
     },
     additionalProperties: false,
@@ -2800,7 +2851,8 @@ export const DocumentResponseModelSchema = {
                         '$ref': '#/components/schemas/DocumentUrlInfoModel'
                     }
                 ]
-            }
+            },
+            deprecated: true
         },
         template: {
             oneOf: [
@@ -2818,7 +2870,7 @@ export const DocumentResponseModelSchema = {
 } as const;
 
 export const DocumentTreeItemResponseModelSchema = {
-    required: ['createDate', 'documentType', 'hasChildren', 'id', 'isProtected', 'isTrashed', 'noAccess', 'variants'],
+    required: ['ancestors', 'createDate', 'documentType', 'hasChildren', 'id', 'isProtected', 'isTrashed', 'noAccess', 'variants'],
     type: 'object',
     properties: {
         hasChildren: {
@@ -2848,6 +2900,16 @@ export const DocumentTreeItemResponseModelSchema = {
         },
         isProtected: {
             type: 'boolean'
+        },
+        ancestors: {
+            type: 'array',
+            items: {
+                oneOf: [
+                    {
+                        '$ref': '#/components/schemas/ReferenceByIdModel'
+                    }
+                ]
+            }
         },
         documentType: {
             oneOf: [
@@ -3069,6 +3131,42 @@ export const DocumentTypePropertyTypeContainerResponseModelSchema = {
         }
     },
     additionalProperties: false
+} as const;
+
+export const DocumentTypePropertyTypeReferenceResponseModelSchema = {
+    required: ['$type', 'documentType', 'id'],
+    type: 'object',
+    properties: {
+        '$type': {
+            type: 'string'
+        },
+        id: {
+            type: 'string',
+            format: 'uuid'
+        },
+        name: {
+            type: 'string',
+            nullable: true
+        },
+        alias: {
+            type: 'string',
+            nullable: true
+        },
+        documentType: {
+            oneOf: [
+                {
+                    '$ref': '#/components/schemas/TrackedReferenceDocumentTypeModel'
+                }
+            ]
+        }
+    },
+    additionalProperties: false,
+    discriminator: {
+        propertyName: '$type',
+        mapping: {
+            DocumentTypePropertyTypeReferenceResponseModel: '#/components/schemas/DocumentTypePropertyTypeReferenceResponseModel'
+        }
+    }
 } as const;
 
 export const DocumentTypePropertyTypeResponseModelSchema = {
@@ -4536,7 +4634,7 @@ export const MediaCollectionResponseModelSchema = {
 } as const;
 
 export const MediaConfigurationResponseModelSchema = {
-    required: ['disableDeleteWhenReferenced', 'disableUnpublishWhenReferenced', 'reservedFieldNames'],
+    required: ['disableDeleteWhenReferenced', 'disableUnpublishWhenReferenced'],
     type: 'object',
     properties: {
         disableDeleteWhenReferenced: {
@@ -4544,14 +4642,6 @@ export const MediaConfigurationResponseModelSchema = {
         },
         disableUnpublishWhenReferenced: {
             type: 'boolean'
-        },
-        reservedFieldNames: {
-            uniqueItems: true,
-            type: 'array',
-            items: {
-                type: 'string'
-            },
-            deprecated: true
         }
     },
     additionalProperties: false
@@ -4712,7 +4802,8 @@ export const MediaResponseModelSchema = {
                         '$ref': '#/components/schemas/MediaUrlInfoModel'
                     }
                 ]
-            }
+            },
+            deprecated: true
         },
         isTrashed: {
             type: 'boolean'
@@ -4922,6 +5013,42 @@ export const MediaTypePropertyTypeContainerResponseModelSchema = {
         }
     },
     additionalProperties: false
+} as const;
+
+export const MediaTypePropertyTypeReferenceResponseModelSchema = {
+    required: ['$type', 'id', 'mediaType'],
+    type: 'object',
+    properties: {
+        '$type': {
+            type: 'string'
+        },
+        id: {
+            type: 'string',
+            format: 'uuid'
+        },
+        name: {
+            type: 'string',
+            nullable: true
+        },
+        alias: {
+            type: 'string',
+            nullable: true
+        },
+        mediaType: {
+            oneOf: [
+                {
+                    '$ref': '#/components/schemas/TrackedReferenceMediaTypeModel'
+                }
+            ]
+        }
+    },
+    additionalProperties: false,
+    discriminator: {
+        propertyName: '$type',
+        mapping: {
+            MediaTypePropertyTypeReferenceResponseModel: '#/components/schemas/MediaTypePropertyTypeReferenceResponseModel'
+        }
+    }
 } as const;
 
 export const MediaTypePropertyTypeResponseModelSchema = {
@@ -5294,18 +5421,7 @@ export const MediaVariantResponseModelSchema = {
 } as const;
 
 export const MemberConfigurationResponseModelSchema = {
-    required: ['reservedFieldNames'],
     type: 'object',
-    properties: {
-        reservedFieldNames: {
-            uniqueItems: true,
-            type: 'array',
-            items: {
-                type: 'string'
-            },
-            deprecated: true
-        }
-    },
     additionalProperties: false
 } as const;
 
@@ -5374,6 +5490,38 @@ export const MemberItemResponseModelSchema = {
 export const MemberKindModelSchema = {
     enum: ['Default', 'Api'],
     type: 'string'
+} as const;
+
+export const MemberReferenceResponseModelSchema = {
+    required: ['$type', 'id', 'memberType'],
+    type: 'object',
+    properties: {
+        '$type': {
+            type: 'string'
+        },
+        id: {
+            type: 'string',
+            format: 'uuid'
+        },
+        name: {
+            type: 'string',
+            nullable: true
+        },
+        memberType: {
+            oneOf: [
+                {
+                    '$ref': '#/components/schemas/TrackedReferenceMemberTypeModel'
+                }
+            ]
+        }
+    },
+    additionalProperties: false,
+    discriminator: {
+        propertyName: '$type',
+        mapping: {
+            MemberReferenceResponseModel: '#/components/schemas/MemberReferenceResponseModel'
+        }
+    }
 } as const;
 
 export const MemberResponseModelSchema = {
@@ -5585,6 +5733,42 @@ export const MemberTypePropertyTypeContainerResponseModelSchema = {
         }
     },
     additionalProperties: false
+} as const;
+
+export const MemberTypePropertyTypeReferenceResponseModelSchema = {
+    required: ['$type', 'id', 'memberType'],
+    type: 'object',
+    properties: {
+        '$type': {
+            type: 'string'
+        },
+        id: {
+            type: 'string',
+            format: 'uuid'
+        },
+        name: {
+            type: 'string',
+            nullable: true
+        },
+        alias: {
+            type: 'string',
+            nullable: true
+        },
+        memberType: {
+            oneOf: [
+                {
+                    '$ref': '#/components/schemas/TrackedReferenceMemberTypeModel'
+                }
+            ]
+        }
+    },
+    additionalProperties: false,
+    discriminator: {
+        propertyName: '$type',
+        mapping: {
+            MemberTypePropertyTypeReferenceResponseModel: '#/components/schemas/MemberTypePropertyTypeReferenceResponseModel'
+        }
+    }
 } as const;
 
 export const MemberTypePropertyTypeResponseModelSchema = {
@@ -6648,7 +6832,19 @@ export const PagedIReferenceResponseModelSchema = {
                         '$ref': '#/components/schemas/DocumentReferenceResponseModel'
                     },
                     {
+                        '$ref': '#/components/schemas/DocumentTypePropertyTypeReferenceResponseModel'
+                    },
+                    {
                         '$ref': '#/components/schemas/MediaReferenceResponseModel'
+                    },
+                    {
+                        '$ref': '#/components/schemas/MediaTypePropertyTypeReferenceResponseModel'
+                    },
+                    {
+                        '$ref': '#/components/schemas/MemberReferenceResponseModel'
+                    },
+                    {
+                        '$ref': '#/components/schemas/MemberTypePropertyTypeReferenceResponseModel'
                     }
                 ]
             }
@@ -7908,6 +8104,21 @@ export const PublishDocumentWithDescendantsRequestModelSchema = {
     additionalProperties: false
 } as const;
 
+export const PublishWithDescendantsResultModelSchema = {
+    required: ['isComplete', 'taskId'],
+    type: 'object',
+    properties: {
+        taskId: {
+            type: 'string',
+            format: 'uuid'
+        },
+        isComplete: {
+            type: 'boolean'
+        }
+    },
+    additionalProperties: false
+} as const;
+
 export const PublishedDocumentResponseModelSchema = {
     required: ['documentType', 'id', 'isTrashed', 'urls', 'values', 'variants'],
     type: 'object',
@@ -7951,7 +8162,8 @@ export const PublishedDocumentResponseModelSchema = {
                         '$ref': '#/components/schemas/DocumentUrlInfoModel'
                     }
                 ]
-            }
+            },
+            deprecated: true
         },
         template: {
             oneOf: [
@@ -7962,6 +8174,17 @@ export const PublishedDocumentResponseModelSchema = {
             nullable: true
         },
         isTrashed: {
+            type: 'boolean'
+        }
+    },
+    additionalProperties: false
+} as const;
+
+export const RebuildStatusModelSchema = {
+    required: ['isRebuilding'],
+    type: 'object',
+    properties: {
+        isRebuilding: {
             type: 'boolean'
         }
     },
@@ -8999,7 +9222,7 @@ export const TemporaryFileConfigurationResponseModelSchema = {
         },
         maxFileSize: {
             type: 'integer',
-            format: 'int32',
+            format: 'int64',
             nullable: true
         }
     },
@@ -9028,8 +9251,13 @@ export const TemporaryFileResponseModelSchema = {
 } as const;
 
 export const TrackedReferenceDocumentTypeModelSchema = {
+    required: ['id'],
     type: 'object',
     properties: {
+        id: {
+            type: 'string',
+            format: 'uuid'
+        },
         icon: {
             type: 'string',
             nullable: true
@@ -9047,8 +9275,37 @@ export const TrackedReferenceDocumentTypeModelSchema = {
 } as const;
 
 export const TrackedReferenceMediaTypeModelSchema = {
+    required: ['id'],
     type: 'object',
     properties: {
+        id: {
+            type: 'string',
+            format: 'uuid'
+        },
+        icon: {
+            type: 'string',
+            nullable: true
+        },
+        alias: {
+            type: 'string',
+            nullable: true
+        },
+        name: {
+            type: 'string',
+            nullable: true
+        }
+    },
+    additionalProperties: false
+} as const;
+
+export const TrackedReferenceMemberTypeModelSchema = {
+    required: ['id'],
+    type: 'object',
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid'
+        },
         icon: {
             type: 'string',
             nullable: true
@@ -10198,6 +10455,9 @@ export const UpdateUserGroupRequestModelSchema = {
                         '$ref': '#/components/schemas/DocumentPermissionPresentationModel'
                     },
                     {
+                        '$ref': '#/components/schemas/DocumentPropertyValuePermissionPresentationModel'
+                    },
+                    {
                         '$ref': '#/components/schemas/UnknownTypePermissionPresentationModel'
                     }
                 ]
@@ -10562,6 +10822,9 @@ export const UserGroupResponseModelSchema = {
                 oneOf: [
                     {
                         '$ref': '#/components/schemas/DocumentPermissionPresentationModel'
+                    },
+                    {
+                        '$ref': '#/components/schemas/DocumentPropertyValuePermissionPresentationModel'
                     },
                     {
                         '$ref': '#/components/schemas/UnknownTypePermissionPresentationModel'

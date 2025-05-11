@@ -1,4 +1,4 @@
-export enum VersionStatus {
+export enum UpdateStatus {
   Unknown,
   UpToDate,
   Update,
