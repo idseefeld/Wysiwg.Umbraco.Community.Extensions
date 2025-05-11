@@ -9,6 +9,28 @@ body, html {
   margin: 0 auto;
 }
 
+footer {
+  --footer-color: #ccc;
+  background-color: #5e5e5e73;
+  padding: 10px;
+  color: var(--footer-color);
+
+  a {
+    color: var(--footer-color);
+    text-decoration: none;
+    font-family: sans-serif;
+
+    &:hover {
+      color: white;
+      text-decoration: underline;
+    }
+
+    strong {
+      color: white;
+    }
+  }
+}
+
 .wysiwg {
   display: block;
   height: 100%;

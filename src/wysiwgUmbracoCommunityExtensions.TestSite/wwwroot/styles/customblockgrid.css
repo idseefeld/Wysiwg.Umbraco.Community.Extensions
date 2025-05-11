@@ -75,6 +75,25 @@ body, html {
   margin: 0 auto;
 }
 
+footer {
+  --footer-color: #ccc;
+  background-color: rgba(94, 94, 94, 0.4509803922);
+  padding: 10px;
+  color: var(--footer-color);
+}
+footer a {
+  color: var(--footer-color);
+  text-decoration: none;
+  font-family: sans-serif;
+}
+footer a:hover {
+  color: white;
+  text-decoration: underline;
+}
+footer a strong {
+  color: white;
+}
+
 .wysiwg {
   display: block;
   height: 100%;
