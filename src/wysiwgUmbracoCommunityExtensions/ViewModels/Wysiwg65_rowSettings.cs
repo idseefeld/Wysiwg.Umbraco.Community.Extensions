@@ -13,9 +13,11 @@ namespace WysiwgUmbracoCommunityExtensions.ViewModels
             BackgroundColor = element?.Value<PickedColor>("backgroundColor");
             BackgroundImage = element?.Value<MediaWithCrops>("backgroundImage");
             Padding = element?.Value<string>("padding");
+            MinHeight = element?.Value<string>("minHeight");
         }
         public PickedColor? BackgroundColor { get; set; }
         public MediaWithCrops? BackgroundImage { get; set; }
         public string? Padding { get; set; }
+        public string? MinHeight { get; set; }
     }
 }

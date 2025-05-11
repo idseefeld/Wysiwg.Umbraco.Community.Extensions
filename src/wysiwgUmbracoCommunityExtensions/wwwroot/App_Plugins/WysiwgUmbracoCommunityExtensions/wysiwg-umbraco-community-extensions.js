@@ -26,7 +26,7 @@ const t = [
     type: "bundle",
     name: "wysiwg block components",
     alias: "wysiwg.block.components",
-    js: () => import("./index-CqZ3qTiZ.js")
+    js: () => import("./index-DylgV1P-.js")
   }
 ], e = "wysiwg65_";
 function s() {
@@ -40,7 +40,7 @@ const n = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.Layouts",
     name: "Block Editor Custom View for Layouts",
-    element: () => import("./wysiwg-cropped-image.element-jxnxXK1I.js").then((i) => i.b),
+    element: () => import("./wysiwg-cropped-image.element-ByCEzpwp.js").then((i) => i.b),
     forContentTypeAlias: s(),
     forBlockEditor: "block-grid"
   },
@@ -56,7 +56,7 @@ const n = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockParagraph",
     name: "Block Editor Custom View for Paragraph",
-    element: () => import("./paragraph.view-V-mGIrqZ.js"),
+    element: () => import("./paragraph.view-C5VxhTol.js"),
     forContentTypeAlias: e + "paragraph",
     forBlockEditor: "block-grid"
   },

@@ -8,7 +8,10 @@
     if (content?.Text == null) return;
 
     var settings = new Wysiwg65_paragraphSettings(Model.Settings);
-    var inlineStyles = string.IsNullOrEmpty(settings?.Color?.Color) ? string.Empty : $"color: {settings?.Color?.Color};";
+    var colorStyle = string.IsNullOrEmpty(settings?.Color?.Color) ? string.Empty : $"color: {settings?.Color?.Color};";
+    var minHeightStyle = string.IsNullOrEmpty(settings?.MinHeight) ? string.Empty : $"min-height: {settings.MinHeight};";
+
+    var inlineStyles = $"{colorStyle}{minHeightStyle}";
 }
 <div class="paragraph" style="@inlineStyles">
     @content.Text.GetHtml()

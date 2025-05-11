@@ -20,6 +20,10 @@ namespace WysiwgUmbracoCommunityExtensions.Extensions
             string? colorStyle = rowSettings.BackgroundColor is PickedColor color ? $"background-{GetColorStyle(color)}" : null;
             string? imageStyle = null;
             string? paddingStyle = null;
+            string? minHeightStyle = null;
+
+            if (!string.IsNullOrEmpty(rowSettings.MinHeight))
+            { minHeightStyle = $"min-height: {rowSettings.MinHeight};"; }
 
             var src = rowSettings.BackgroundImage?.MediaUrl();
             if (!string.IsNullOrWhiteSpace(src))
@@ -30,7 +34,7 @@ namespace WysiwgUmbracoCommunityExtensions.Extensions
             if (!string.IsNullOrEmpty(padding))
             { paddingStyle = $"padding: {padding};"; }
 
-            return $"{paddingStyle}{colorStyle}{imageStyle}";
+            return $"{paddingStyle}{colorStyle}{imageStyle}{minHeightStyle}";
         }
         public static string? GetColorStyle(this PickedColor color)
         {

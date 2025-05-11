@@ -32,6 +32,7 @@ const blockLayoutInlineStyleDefaults: StyleInfo = {
   backgroundRepeat: "no-repeat",
   backgroundColor: "transparent",
   padding: "0",
+  minHeight: "0",
 }
 
 const customElementName = "wysiwg-block-layout-view";
@@ -64,6 +65,7 @@ export class WysiwgBlockLayoutView
       backgroundPosition: this.backgroundStyleMap.backgroundPosition,
       backgroundColor: this.backgroundStyleMap.backgroundColor,
       padding: this.backgroundStyleMap.padding,
+      minHeight: this.backgroundStyleMap.minHeight,
     } as StyleInfo;
   }
 
@@ -74,6 +76,7 @@ export class WysiwgBlockLayoutView
       backgroundPosition: blockLayoutInlineStyleDefaults.backgroundPosition,
       backgroundColor: blockLayoutInlineStyleDefaults.backgroundColor,
       padding: blockLayoutInlineStyleDefaults.padding,
+      minHeight: blockLayoutInlineStyleDefaults.minHeight,
     } as StyleInfo;
   }
 
@@ -136,13 +139,15 @@ export class WysiwgBlockLayoutView
         inlineStyles.backgroundColor = transparentBackground ? "transparent" : backgroundColor;
       }
 
-      let padding =
-        properties?.find((v) => v.alias === "padding")?.value;
+      const minHeight = (properties?.find((v) => v.alias === "minHeight")?.value ?? "0").toString();
+      inlineStyles.minHeight = minHeight;
+
+      let padding = (properties?.find((v) => v.alias === "padding")?.value ?? "0").toString();
       if (!padding) {
         padding = (backgroundColor && !transparentBackground) ? "10px" : "0";
         console.debug("padding: ", padding);
       }
-      inlineStyles.padding = `${padding}`;
+      inlineStyles.padding = padding;
     }
 
     this.backgroundStyleMap = inlineStyles;
@@ -195,7 +200,7 @@ export class WysiwgBlockLayoutView
 
     this.setUpdateStatus();
     if (this.updateStatus !== UpdateStatus.Update) {
-        return nameHtml;
+      return nameHtml;
     } else {
       return html`
         <uui-button id="tooltip-toggle" popovertarget="tooltip-popover" look="primary" type="button" color="danger" compact style="margin-right: 0.5rem;">

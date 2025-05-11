@@ -1,35 +1,36 @@
-import { html as s, styleMap as j, nothing as K, css as P, property as l, state as w, customElement as O, ifDefined as I } from "@umbraco-cms/backoffice/external/lit";
+import { html as s, styleMap as T, nothing as K, css as P, property as l, state as _, customElement as O, ifDefined as I } from "@umbraco-cms/backoffice/external/lit";
 import { UmbLitElement as F } from "@umbraco-cms/backoffice/lit-element";
 import { UmbTextStyles as A } from "@umbraco-cms/backoffice/style";
 import "./headline.view-Bf8XoX5J.js";
-import "./paragraph.view-V-mGIrqZ.js";
+import "./paragraph.view-C5VxhTol.js";
 import "./picture-with-crop.view-CNeKKSaf.js";
 import "./cropped-picture.view-BwxvQlwj.js";
 import "./wysiwg-datatype-picker.element-BKj-4eik.js";
 import "./wysiwg-image-crops.element-CAGvkQix.js";
 import "./wysiwg-image-and-crop-picker.element-Dheh-YuP.js";
-import { UUICardElement as Q, demandCustomElement as H } from "@umbraco-cms/backoffice/external/uui";
+import { UUICardElement as Q, demandCustomElement as j } from "@umbraco-cms/backoffice/external/uui";
 import { W as D } from "./services.gen-B_ebHh4e.js";
 import { U as le } from "./dashboard.element-co4pSfph.js";
 import { W as de } from "./wysiwg-base-block-editor-custom.view-CYVB1wdx.js";
 import { UmbPropertyValueChangeEvent as ce } from "@umbraco-cms/backoffice/property-editor";
 var ue = Object.defineProperty, pe = Object.getOwnPropertyDescriptor, V = (e) => {
   throw TypeError(e);
-}, _ = (e, t, i, r) => {
-  for (var a = r > 1 ? void 0 : r ? pe(t, i) : t, o = e.length - 1, n; o >= 0; o--)
-    (n = e[o]) && (a = (r ? n(t, i, a) : n(a)) || a);
-  return r && a && ue(t, i, a), a;
-}, he = (e, t, i) => t.has(e) || V("Cannot " + i), ge = (e, t, i) => t.has(e) ? V("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, i), me = (e, t, i) => (he(e, t, "access private method"), i), B, X;
+}, k = (e, t, i, a) => {
+  for (var r = a > 1 ? void 0 : a ? pe(t, i) : t, o = e.length - 1, n; o >= 0; o--)
+    (n = e[o]) && (r = (a ? n(t, i, r) : n(r)) || r);
+  return a && r && ue(t, i, r), r;
+}, ge = (e, t, i) => t.has(e) || V("Cannot " + i), he = (e, t, i) => t.has(e) ? V("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, i), me = (e, t, i) => (ge(e, t, "access private method"), i), B, X;
 const g = {
   backgroundImage: "none",
   backgroundPosition: "inherit",
   backgroundRepeat: "no-repeat",
   backgroundColor: "transparent",
-  padding: "0"
+  padding: "0",
+  minHeight: "0"
 }, ve = "wysiwg-block-layout-view";
-let d = class extends de {
+let u = class extends de {
   constructor() {
-    super(...arguments), ge(this, B), this.pageBackroundColor = g.backgroundColor, this.backgroundStyleMap = g, this.isfirstElement = !1;
+    super(...arguments), he(this, B), this.pageBackroundColor = g.backgroundColor, this.backgroundStyleMap = g, this.isfirstElement = !1;
   }
   get backgroundStyles() {
     return {
@@ -37,7 +38,8 @@ let d = class extends de {
       backgroundRepeat: this.backgroundStyleMap.backgroundRepeat,
       backgroundPosition: this.backgroundStyleMap.backgroundPosition,
       backgroundColor: this.backgroundStyleMap.backgroundColor,
-      padding: this.backgroundStyleMap.padding
+      padding: this.backgroundStyleMap.padding,
+      minHeight: this.backgroundStyleMap.minHeight
     };
   }
   get backgroundStyleDefaults() {
@@ -46,45 +48,48 @@ let d = class extends de {
       backgroundRepeat: g.backgroundRepeat,
       backgroundPosition: g.backgroundPosition,
       backgroundColor: g.backgroundColor,
-      padding: g.padding
+      padding: g.padding,
+      minHeight: g.minHeight
     };
   }
   async prozessSettings(e) {
-    var t, i, r;
+    var t, i, a;
     if ((t = e.settingsData) != null && t.length) {
-      const a = this, o = e.layout["Umbraco.BlockGrid"];
+      const r = this, o = e.layout["Umbraco.BlockGrid"];
       if (!o) {
         console.error("No layout found");
         return;
       }
       const n = o[0].contentKey;
-      this.isfirstElement = n === a.contentKey;
-      const u = o == null ? void 0 : o.find(
-        (h) => h.contentKey === a.contentKey
-      ), k = (i = e == null ? void 0 : e.settingsData) == null ? void 0 : i.find(
-        (h) => h.key === (u == null ? void 0 : u.settingsKey)
-      ), y = (k == null ? void 0 : k.values) ?? [];
-      this.getBackgroudStyle(y);
-      const f = (r = y == null ? void 0 : y.find((h) => h.alias === "backgroundImage")) == null ? void 0 : r.value, W = f != null && f.length ? f[0].mediaKey : "";
-      await me(this, B, X).call(this, W).then((h) => {
-        h !== void 0 && h !== "error" && this.getBackgroudImageStyle(h);
+      this.isfirstElement = n === r.contentKey;
+      const y = o == null ? void 0 : o.find(
+        (m) => m.contentKey === r.contentKey
+      ), c = (i = e == null ? void 0 : e.settingsData) == null ? void 0 : i.find(
+        (m) => m.key === (y == null ? void 0 : y.settingsKey)
+      ), d = (c == null ? void 0 : c.values) ?? [];
+      this.getBackgroudStyle(d);
+      const b = (a = d == null ? void 0 : d.find((m) => m.alias === "backgroundImage")) == null ? void 0 : a.value, W = b != null && b.length ? b[0].mediaKey : "";
+      await me(this, B, X).call(this, W).then((m) => {
+        m !== void 0 && m !== "error" && this.getBackgroudImageStyle(m);
       });
     }
   }
   async lastStepObservingProperties(e) {
     var i;
     if (!e) return;
-    let t = (i = e.find((r) => r.alias === "pageBackgroundColor")) == null ? void 0 : i.value;
+    let t = (i = e.find((a) => a.alias === "pageBackgroundColor")) == null ? void 0 : i.value;
     t != null && t.value && (this.pageBackroundColor = t.value);
   }
   getBackgroudStyle(e) {
-    var i, r;
+    var i, a, r;
     const t = this.backgroundStyleDefaults;
     if (e != null && e.length) {
-      const a = (((i = e == null ? void 0 : e.find((u) => u.alias === "backgroundColor")) == null ? void 0 : i.value) ?? {}).value, o = this.isTransparentColor(a);
-      a && (t.backgroundColor = o ? "transparent" : a);
-      let n = (r = e == null ? void 0 : e.find((u) => u.alias === "padding")) == null ? void 0 : r.value;
-      n || (n = a && !o ? "10px" : "0", console.debug("padding: ", n)), t.padding = `${n}`;
+      const o = (((i = e == null ? void 0 : e.find((d) => d.alias === "backgroundColor")) == null ? void 0 : i.value) ?? {}).value, n = this.isTransparentColor(o);
+      o && (t.backgroundColor = n ? "transparent" : o);
+      const y = (((a = e == null ? void 0 : e.find((d) => d.alias === "minHeight")) == null ? void 0 : a.value) ?? "0").toString();
+      t.minHeight = y;
+      let c = (((r = e == null ? void 0 : e.find((d) => d.alias === "padding")) == null ? void 0 : r.value) ?? "0").toString();
+      c || (c = o && !n ? "10px" : "0", console.debug("padding: ", c)), t.padding = c;
     }
     this.backgroundStyleMap = t;
   }
@@ -118,13 +123,13 @@ let d = class extends de {
       `;
   }
   render() {
-    var i, r;
+    var i, a;
     const e = { backgroundColor: this.pageBackroundColor }, t = this.backgroundStyleMap;
     return s`
     <umb-ref-grid-block class="wysiwg"
-      style=${j(e)}
+      style=${T(e)}
       standalone
-      href=${((i = this.config) != null && i.showContentEdit ? (r = this.config) == null ? void 0 : r.editContentPath : void 0) ?? ""}
+      href=${((i = this.config) != null && i.showContentEdit ? (a = this.config) == null ? void 0 : a.editContentPath : void 0) ?? ""}
     >
       <umb-icon slot="icon" .name=${this.icon}></umb-icon>
       <div slot="name">${this.renderUpdateHint()}</div>
@@ -137,7 +142,7 @@ let d = class extends de {
 
       <umb-block-grid-areas-container
         slot="areas"
-        style="${j(t)}"
+        style="${T(t)}"
       ></umb-block-grid-areas-container>
     </umb-ref-grid-block>`;
   }
@@ -150,13 +155,13 @@ X = async function(e) {
     query: {
       mediaItemId: e
     }
-  }, { data: i, error: r } = await D.imageUrl(t);
-  if (r)
-    return console.error(r), "error";
+  }, { data: i, error: a } = await D.imageUrl(t);
+  if (a)
+    return console.error(a), "error";
   if (i !== void 0)
     return i;
 };
-d.styles = [
+u.styles = [
   A,
   P`
       :host {
@@ -171,48 +176,48 @@ d.styles = [
       }
     `
 ];
-_([
+k([
   l({ attribute: !1 })
-], d.prototype, "label", 2);
-_([
+], u.prototype, "label", 2);
+k([
   l({ type: String, reflect: !1 })
-], d.prototype, "icon", 2);
-_([
+], u.prototype, "icon", 2);
+k([
   l({ type: Boolean, reflect: !0 })
-], d.prototype, "unpublished", 2);
-_([
-  w()
-], d.prototype, "pageBackroundColor", 2);
-_([
-  w()
-], d.prototype, "backgroundStyleMap", 2);
-_([
-  w()
-], d.prototype, "isfirstElement", 2);
-d = _([
+], u.prototype, "unpublished", 2);
+k([
+  _()
+], u.prototype, "pageBackroundColor", 2);
+k([
+  _()
+], u.prototype, "backgroundStyleMap", 2);
+k([
+  _()
+], u.prototype, "isfirstElement", 2);
+u = k([
   O(ve)
-], d);
-const ye = d, Ge = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+], u);
+const ye = u, Ge = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   get WysiwgBlockLayoutView() {
-    return d;
+    return u;
   },
   default: ye
 }, Symbol.toStringTag, { value: "Module" }));
 var fe = Object.defineProperty, be = Object.getOwnPropertyDescriptor, Z = (e) => {
   throw TypeError(e);
-}, S = (e, t, i, r) => {
-  for (var a = r > 1 ? void 0 : r ? be(t, i) : t, o = e.length - 1, n; o >= 0; o--)
-    (n = e[o]) && (a = (r ? n(t, i, a) : n(a)) || a);
-  return r && a && fe(t, i, a), a;
-}, we = (e, t, i) => t.has(e) || Z("Cannot " + i), _e = (e, t, i) => t.has(e) ? Z("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, i), U = (e, t, i) => (we(e, t, "access private method"), i), x, ee, te, q;
+}, S = (e, t, i, a) => {
+  for (var r = a > 1 ? void 0 : a ? be(t, i) : t, o = e.length - 1, n; o >= 0; o--)
+    (n = e[o]) && (r = (a ? n(t, i, r) : n(r)) || r);
+  return a && r && fe(t, i, r), r;
+}, we = (e, t, i) => t.has(e) || Z("Cannot " + i), _e = (e, t, i) => t.has(e) ? Z("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, i), U = (e, t, i) => (we(e, t, "access private method"), i), x, ee, te, H;
 const ke = "wysiwg-card-image";
-let b = class extends Q {
+let w = class extends Q {
   constructor() {
     super(...arguments), _e(this, x), this.name = "", this.fileExt = "", this.hasPreview = !1;
   }
   connectedCallback() {
-    super.connectedCallback(), H(this, "uui-symbol-folder"), H(this, "uui-symbol-file");
+    super.connectedCallback(), j(this, "uui-symbol-folder"), j(this, "uui-symbol-file");
   }
   queryPreviews(e) {
     this.hasPreview = e.composedPath()[0].assignedElements({
@@ -243,7 +248,7 @@ ee = function() {
         tabindex=${this.disabled ? K : "0"}
         @click=${this.handleOpenClick}
         @keydown=${this.handleOpenKeydown}>
-        ${U(this, x, q).call(this)}
+        ${U(this, x, H).call(this)}
       </button>
     `;
 };
@@ -259,11 +264,11 @@ te = function() {
       this.target === "_blank" ? "noopener noreferrer" : void 0
     )
   )}>
-        ${U(this, x, q).call(this)}
+        ${U(this, x, H).call(this)}
       </a>
     `;
 };
-q = function() {
+H = function() {
   return s`
       <div id="content" class="uui-text ellipsis">
         <span id="name" title="${this.name}">${this.name}</span>
@@ -271,7 +276,7 @@ q = function() {
       </div>
     `;
 };
-b.styles = [
+w.styles = [
   ...Q.styles,
   P`
       #entity-symbol {
@@ -418,28 +423,28 @@ b.styles = [
 ];
 S([
   l({ type: String })
-], b.prototype, "name", 2);
+], w.prototype, "name", 2);
 S([
   l({ type: String })
-], b.prototype, "detail", 2);
+], w.prototype, "detail", 2);
 S([
   l({ type: String, attribute: "file-ext" })
-], b.prototype, "fileExt", 2);
+], w.prototype, "fileExt", 2);
 S([
-  w()
-], b.prototype, "hasPreview", 2);
-b = S([
+  _()
+], w.prototype, "hasPreview", 2);
+w = S([
   O(ke)
-], b);
+], w);
 var Ce = Object.defineProperty, $e = Object.getOwnPropertyDescriptor, ie = (e) => {
   throw TypeError(e);
-}, m = (e, t, i, r) => {
-  for (var a = r > 1 ? void 0 : r ? $e(t, i) : t, o = e.length - 1, n; o >= 0; o--)
-    (n = e[o]) && (a = (r ? n(t, i, a) : n(a)) || a);
-  return r && a && Ce(t, i, a), a;
-}, N = (e, t, i) => t.has(e) || ie("Cannot " + i), M = (e, t, i) => (N(e, t, "read from private field"), t.get(e)), R = (e, t, i) => t.has(e) ? ie("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, i), xe = (e, t, i, r) => (N(e, t, "write to private field"), t.set(e, i), i), G = (e, t, i) => (N(e, t, "access private method"), i), C, z, ae, re;
+}, v = (e, t, i, a) => {
+  for (var r = a > 1 ? void 0 : a ? $e(t, i) : t, o = e.length - 1, n; o >= 0; o--)
+    (n = e[o]) && (r = (a ? n(t, i, r) : n(r)) || r);
+  return a && r && Ce(t, i, r), r;
+}, q = (e, t, i) => t.has(e) || ie("Cannot " + i), M = (e, t, i) => (q(e, t, "read from private field"), t.get(e)), R = (e, t, i) => t.has(e) ? ie("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, i), xe = (e, t, i, a) => (q(e, t, "write to private field"), t.set(e, i), i), G = (e, t, i) => (q(e, t, "access private method"), i), C, z, ae, re;
 const Se = "wysiwg-image-crop";
-let c = class extends F {
+let p = class extends F {
   constructor() {
     super(...arguments), R(this, z), this.cropAlias = "", this.width = 1200, this.icon = "icon-picture", this.loading = "lazy", this._isLoading = !0, this._imageUrl = "", R(this, C);
   }
@@ -468,8 +473,8 @@ let c = class extends F {
         cropAlias: this.cropAlias,
         width: e
       }
-    }, { data: i, error: r } = await D.cropUrl(t);
-    return this._isLoading = !1, r ? (console.error(r), "error") : i !== void 0 ? i : "no data";
+    }, { data: i, error: a } = await D.cropUrl(t);
+    return this._isLoading = !1, a ? (console.error(a), "error") : i !== void 0 ? i : "no data";
   }
   async generateImageUrl(e) {
     await this.requestCropUrl(e).then((t) => {
@@ -508,7 +513,7 @@ re = function() {
     console.error("wysiwg-image-crop.renderImageCrop error", e);
   }
 };
-c.styles = [
+p.styles = [
   A,
   P`
       :host {
@@ -549,42 +554,42 @@ c.styles = [
       }
     `
 ];
-m([
+v([
   l({ type: String })
-], c.prototype, "mediaKey", 2);
-m([
+], p.prototype, "mediaKey", 2);
+v([
   l({ type: String })
-], c.prototype, "alt", 2);
-m([
+], p.prototype, "alt", 2);
+v([
   l({ type: String })
-], c.prototype, "cropAlias", 2);
-m([
+], p.prototype, "cropAlias", 2);
+v([
   l({ type: Number })
-], c.prototype, "width", 2);
-m([
+], p.prototype, "width", 2);
+v([
   l()
-], c.prototype, "icon", 2);
-m([
+], p.prototype, "icon", 2);
+v([
   l()
-], c.prototype, "loading", 2);
-m([
-  w()
-], c.prototype, "_isLoading", 2);
-m([
-  w()
-], c.prototype, "_imageUrl", 2);
-c = m([
+], p.prototype, "loading", 2);
+v([
+  _()
+], p.prototype, "_isLoading", 2);
+v([
+  _()
+], p.prototype, "_imageUrl", 2);
+p = v([
   O(Se)
-], c);
+], p);
 var Ie = Object.defineProperty, ze = Object.getOwnPropertyDescriptor, oe = (e) => {
   throw TypeError(e);
-}, v = (e, t, i, r) => {
-  for (var a = r > 1 ? void 0 : r ? ze(t, i) : t, o = e.length - 1, n; o >= 0; o--)
-    (n = e[o]) && (a = (r ? n(t, i, a) : n(a)) || a);
-  return r && a && Ie(t, i, a), a;
-}, T = (e, t, i) => t.has(e) || oe("Cannot " + i), L = (e, t, i) => (T(e, t, "read from private field"), t.get(e)), J = (e, t, i) => t.has(e) ? oe("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, i), Ee = (e, t, i, r) => (T(e, t, "write to private field"), t.set(e, i), i), Y = (e, t, i) => (T(e, t, "access private method"), i), $, E, ne, se;
+}, f = (e, t, i, a) => {
+  for (var r = a > 1 ? void 0 : a ? ze(t, i) : t, o = e.length - 1, n; o >= 0; o--)
+    (n = e[o]) && (r = (a ? n(t, i, r) : n(r)) || r);
+  return a && r && Ie(t, i, r), r;
+}, N = (e, t, i) => t.has(e) || oe("Cannot " + i), L = (e, t, i) => (N(e, t, "read from private field"), t.get(e)), J = (e, t, i) => t.has(e) ? oe("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, i), Ee = (e, t, i, a) => (N(e, t, "write to private field"), t.set(e, i), i), Y = (e, t, i) => (N(e, t, "access private method"), i), $, E, ne, se;
 const Ue = "wysiwg-cropped-image";
-let p = class extends F {
+let h = class extends F {
   constructor() {
     super(...arguments), J(this, E), this.value = "", this.alt = "", this.mediaItem = null, this.width = 1200, this.icon = "icon-picture", this.loading = "lazy", this._isLoading = !0, this._prevImgSrc = "", J(this, $);
   }
@@ -609,19 +614,19 @@ let p = class extends F {
     })), L(this, $).observe(this)) : this.generateImageUrl(this.width);
   }
   async requestCropUrl(e) {
-    var k, y, f;
-    if (!((k = this.mediaItem) != null && k.mediaKey))
+    var c, d, b;
+    if (!((c = this.mediaItem) != null && c.mediaKey))
       return;
-    const t = ((y = this.mediaItem.selectedCropAlias) == null ? void 0 : y.toLowerCase()) ?? "", i = (f = this.mediaItem.crops) == null ? void 0 : f.find((W) => W.alias === t), r = i ? JSON.stringify(i) : "", a = this.mediaItem.focalPoint ? JSON.stringify(this.mediaItem.focalPoint) : "", o = {
+    const t = ((d = this.mediaItem.selectedCropAlias) == null ? void 0 : d.toLowerCase()) ?? "", i = (b = this.mediaItem.crops) == null ? void 0 : b.find((W) => W.alias === t), a = i ? JSON.stringify(i) : "", r = this.mediaItem.focalPoint ? JSON.stringify(this.mediaItem.focalPoint) : "", o = {
       query: {
         mediaItemId: this.mediaItem.mediaKey,
         cropAlias: t,
         width: e,
-        selectedCrop: r,
-        selectedFocalPoint: a
+        selectedCrop: a,
+        selectedFocalPoint: r
       }
-    }, { data: n, error: u } = await D.v2CropUrl(o);
-    return this._isLoading = !1, u ? (console.error(u), "error") : n !== void 0 ? n : "no data";
+    }, { data: n, error: y } = await D.v2CropUrl(o);
+    return this._isLoading = !1, y ? (console.error(y), "error") : n !== void 0 ? n : "no data";
   }
   async generateImageUrl(e) {
     await this.requestCropUrl(e).then((t) => {
@@ -656,7 +661,7 @@ se = function() {
     console.error("wysiwg-image-crop.renderImageCrop error", t);
   }
 };
-p.styles = [
+h.styles = [
   A,
   P`
       :host {
@@ -694,33 +699,33 @@ p.styles = [
       }
     `
 ];
-v([
+f([
   l({ type: String })
-], p.prototype, "value", 2);
-v([
+], h.prototype, "value", 2);
+f([
   l({ type: String })
-], p.prototype, "alt", 2);
-v([
+], h.prototype, "alt", 2);
+f([
   l({ type: Object })
-], p.prototype, "mediaItem", 2);
-v([
+], h.prototype, "mediaItem", 2);
+f([
   l({ type: Number })
-], p.prototype, "width", 2);
-v([
+], h.prototype, "width", 2);
+f([
   l()
-], p.prototype, "icon", 2);
-v([
+], h.prototype, "icon", 2);
+f([
   l()
-], p.prototype, "loading", 2);
-v([
-  w()
-], p.prototype, "_isLoading", 2);
-p = v([
+], h.prototype, "loading", 2);
+f([
+  _()
+], h.prototype, "_isLoading", 2);
+h = f([
   O(Ue)
-], p);
+], h);
 export {
-  c as W,
-  p as a,
+  p as W,
+  h as a,
   Ge as b
 };
-//# sourceMappingURL=wysiwg-cropped-image.element-jxnxXK1I.js.map
+//# sourceMappingURL=wysiwg-cropped-image.element-ByCEzpwp.js.map
