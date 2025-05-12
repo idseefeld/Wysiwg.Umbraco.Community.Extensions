@@ -12,15 +12,15 @@
   "DocumentationUrl": "https://github.com/idseefeld/Wysiwg.Umbraco.Community.Extensions/wiki",
   "IssueTrackerUrl": "https://github.com/idseefeld/Wysiwg.Umbraco.Community.Extensions/issues",
   "PackageType": "Package",
-  "Tags": [ "package starter", "tutorial", "inspiration" ],
+  "Tags": [ "package starter", "tutorial", "inspiration", "block grid", "blockgrid", "preview" ],
   "Title": "WYSIWYG in the Umbraco Backoffice",
-  "AlternatePackageNames": [ "wysiwgUmbracoCommunityExtensions" ],
   "LookingForContributors": true,
   "VersionDependencyMode": "SemVer",
   "Screenshots": [
     {
-      "ImageUrl": "https://github.com/idseefeld/Wysiwg.Umbraco.Community.Extensions/blob/aa8ee6f36c64ecd331713beb6a9849380dc2064c/docs/screenshots/BOvsFrontend-v2.jpg",
+      "ImageUrl": "https://raw.githubusercontent.com/idseefeld/Wysiwg.Umbraco.Community.Extensions/blob/contributions/docs/screenshots/BOvsFrontend-v3.jpg",
       "Caption": "Block Grid with custom view"
     }
-  ]
+  ],
+  "VideoUrl": "https://youtu.be/myfRycBckF8"
 }
