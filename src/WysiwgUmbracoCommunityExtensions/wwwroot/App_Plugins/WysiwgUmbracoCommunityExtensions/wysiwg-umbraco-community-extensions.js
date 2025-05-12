@@ -26,7 +26,7 @@ const o = [
     type: "bundle",
     name: "wysiwg block components",
     alias: "wysiwg.block.components",
-    js: () => import("./index-DylgV1P-.js")
+    js: () => import("./index-ClocuwdO.js")
   }
 ], e = "wysiwg65_";
 function s() {
@@ -40,7 +40,7 @@ const n = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.Layouts",
     name: "Block Editor Custom View for Layouts",
-    element: () => import("./wysiwg-cropped-image.element-ByCEzpwp.js").then((i) => i.b),
+    element: () => import("./wysiwg-cropped-image.element-V1msS2hc.js").then((i) => i.b),
     forContentTypeAlias: s(),
     forBlockEditor: "block-grid"
   },
@@ -76,10 +76,10 @@ const n = [
     forContentTypeAlias: e + "croppedPicture",
     forBlockEditor: "block-grid"
   }
-], p = [
+], l = [
   ...a,
   ...n
-], l = {
+], p = {
   type: "propertyEditorSchema",
   name: "Data Type Picker",
   alias: "wysiwg.DataTypePicker",
@@ -100,7 +100,7 @@ const n = [
       supportsReadOnly: !0
     }
   },
-  l
+  p
 ], m = {
   type: "propertyEditorSchema",
   name: "Media and Crop Picker",
@@ -175,6 +175,15 @@ const n = [
 ], u = [
   {
     type: "localization",
+    alias: "WysiwgUmbracoCommunityExtensions.Localize.EnGB",
+    name: "English (UK)",
+    meta: {
+      culture: "en-GB"
+    },
+    js: "/App_Plugins/WysiwgUmbracoCommunityExtensions/Localization/en-gb.js"
+  },
+  {
+    type: "localization",
     alias: "WysiwgUmbracoCommunityExtensions.Localize.EnUS",
     name: "English (US)",
     meta: {
@@ -194,7 +203,7 @@ const n = [
 ], E = [
   ...o,
   r,
-  ...p,
+  ...l,
   ...g,
   ...u
 ];
