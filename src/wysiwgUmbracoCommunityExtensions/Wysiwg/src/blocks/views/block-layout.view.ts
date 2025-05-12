@@ -31,7 +31,7 @@ const blockLayoutInlineStyleDefaults: StyleInfo = {
   backgroundPosition: "inherit",
   backgroundRepeat: "no-repeat",
   backgroundColor: "transparent",
-  padding: "0",
+  padding: undefined,
   minHeight: "0",
 }
 
@@ -142,9 +142,9 @@ export class WysiwgBlockLayoutView
       const minHeight = (properties?.find((v) => v.alias === "minHeight")?.value ?? "0").toString();
       inlineStyles.minHeight = minHeight;
 
-      let padding = (properties?.find((v) => v.alias === "padding")?.value ?? "0").toString();
+      let padding = properties?.find((v) => v.alias === "padding")?.value.toString();
       if (!padding) {
-        padding = (backgroundColor && !transparentBackground) ? "10px" : "0";
+        padding = (backgroundColor && !transparentBackground) ? "10px" : "";
         console.debug("padding: ", padding);
       }
       inlineStyles.padding = padding;
