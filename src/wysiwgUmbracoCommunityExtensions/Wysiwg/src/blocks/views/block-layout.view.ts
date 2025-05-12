@@ -160,7 +160,7 @@ export class WysiwgBlockLayoutView
     if (imageUrl) {
       inlineStyles.backgroundImage = `url('${imageUrl}')`;
       inlineStyles.backgroundPosition = "inherit";
-      inlineStyles.padding = padding === blockLayoutInlineStyleDefaults.padding
+      inlineStyles.padding = !padding || padding === blockLayoutInlineStyleDefaults.padding
         ? "10px"
         : padding;
     } else {
