@@ -1,6 +1,15 @@
 export const manifests: Array<UmbExtensionManifest> = [
   {
     "type": "localization",
+    "alias": "WysiwgUmbracoCommunityExtensions.Localize.EnGB",
+    "name": "English (UK)",
+    "meta": {
+      "culture": "en"
+    },
+    "js": "/App_Plugins/WysiwgUmbracoCommunityExtensions/Localization/en-gb.js"
+  },
+  {
+    "type": "localization",
     "alias": "WysiwgUmbracoCommunityExtensions.Localize.EnUS",
     "name": "English (US)",
     "meta": {
