@@ -3,58 +3,48 @@
 @using Umbraco.Cms.Core.Cache
 @using Umbraco.Cms.Core.Models.PublishedContent
 @using Umbraco.Cms.Core.Routing
+@using Umbraco.Cms.Core.Services
+@using Umbraco.Cms.Core.Web
 @using Umbraco.Extensions
 @using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
 
 @inject IPublishedUrlProvider PublishedUrlProvider
+@inject IVariationContextAccessor VariationContextAccessor
+@inject IUmbracoContextAccessor UmbracoContextAccessor
+@inject IDomainService domainService
 @{
-    var lang = System.Threading.Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName;
-    var isEnglish = lang.InvariantEquals("en");
-    var umbUContext = Context.Request.Cookies["UMB_UCONTEXT"];
-    var hasUser = !string.IsNullOrEmpty(umbUContext);
+    var root = Model.Root();
+    var domainCultures = domainService.GetAssignedDomainsAsync(root.Key, false).Result
+        .Select(d => d.LanguageIsoCode).ToArray();
 
-    var root = Model;
-    while (root?.Parent() != null)
+    var currentUrl = Model.Url();
+    var otherUrls = new List<UrlInfo>();
+    var currentCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+    var currentCultureName = currentCulture.Name;
+    var newUrlInfo = new UrlInfo(currentUrl, true, currentCultureName);
+    if (!otherUrls.Contains(newUrlInfo))
     {
-        root = root.Parent();
+        otherUrls.Add(newUrlInfo);
     }
-    var authority = UmbracoContext?.CleanedUmbracoUrl.Authority;
-    var liveAuthortiyStart = "www.idseefeld";
-    var isLivehost = authority?.InvariantStartsWith(liveAuthortiyStart) ?? false;
-    var isLocalhost = !isLivehost || (authority?.InvariantEquals("localhost") ?? false);
-    var authortiyStart = isLivehost ? liveAuthortiyStart : Context.Request.Host.ToString();
-    var currentCuture = Umbraco.CultureDictionary.Culture.ToString();
-    var currentUrl = Model?.Url();
-    var isRoot = root?.Id == Model?.Id;
-    var id = Model?.Id ?? 0;
-
-    var allOtherUrls = PublishedUrlProvider
-        .GetOtherUrls(id)
-        .ToList();
-
-    var otherUrls = PublishedUrlProvider
-        .GetOtherUrls(id)
-        .Where(u => u.IsUrl && u.Text.InvariantContains(authortiyStart) && (isRoot || !u.Culture.InvariantEquals(currentCuture)))
-        .DistinctBy(u => u.Culture)
-        .ToList();
-    if (!isRoot)
+    foreach (var cultureName in domainCultures.Where(l => l != currentCultureName))
     {
-        var newUrlInfo = new UrlInfo(Model != null ? Model.Url() : string.Empty, true, currentCuture);
+        VariationContextAccessor.VariationContext = new VariationContext(cultureName);
+        newUrlInfo = new UrlInfo(Model.Url(), true, cultureName);
         if (!otherUrls.Contains(newUrlInfo))
         {
             otherUrls.Add(newUrlInfo);
         }
     }
-    var languageUrls = otherUrls.OrderBy(u => u.Culture);
-    var ui = languageUrls.FirstOrDefault();
+    var orderedLanguageUrls = otherUrls.OrderBy(u => u.Culture);
 
+    var umbUContext = Context.Request.Cookies["UMB_UCONTEXT"];
+    var hasUser = !string.IsNullOrEmpty(umbUContext);
     @if (WysiwgUmbracoCommunityExtensions.TestSite.Constants.Debug)// && hasUser)
     {
-        var local = isEnglish ? "en-US" : "de-DE";
         var key = Model?.Key.ToString();
         var backofficeHref = key == null
             ? "/umbraco/section/content"
-            : $"/umbraco/section/content/workspace/document/edit/{key}/{local}/tab/content";
+            : $"/umbraco/section/content/workspace/document/edit/{key}/{currentCultureName}/tab/content";
 
         <text>
             <a href="@backofficeHref" target="_blank">backoffice</a> | <a href="/umbraco/swagger/index.html?urls.primaryName=wysiwgUmbraco+Community+Extensions+Backoffice+API" target="_blank">swagger </a>
@@ -62,14 +52,18 @@
     }
 }
 <nav>
-    @if (languageUrls.Count() > 1)
+    @if (orderedLanguageUrls.Count() > 1)
     {
         var count = 0;
-        foreach (var url in languageUrls)
+        foreach (var url in orderedLanguageUrls)
         {
+            if (url.Text == "#")
+            {
+                continue;
+            }
             var divider = count > 0 ? " | " : "";
             var label = url?.Culture?.Substring(0, 2).ToUpper() ?? "";
-            if (currentCuture == url?.Culture)
+            if (currentCultureName == url?.Culture)
             {
                 <text>@divider</text>
 

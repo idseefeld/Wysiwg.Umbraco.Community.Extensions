@@ -1,9 +1,8 @@
-@using Umbraco.Cms.Web.Common.PublishedModels;
-@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<SimplePage>
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<SimpleRootPage>
 @{
     Layout = null;
-    var culture = System.Threading.Thread.CurrentThread.CurrentCulture;
-    var lang = culture.Name;
+    var lang = System.Threading.Thread.CurrentThread.CurrentCulture.Name;
 }
 <!DOCTYPE html>
 <html lang="@lang">
