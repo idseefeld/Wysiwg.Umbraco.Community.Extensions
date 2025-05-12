@@ -16,6 +16,7 @@
   "Title": "WYSIWYG in the Umbraco Backoffice",
   "AlternatePackageNames": [ "wysiwgUmbracoCommunityExtensions" ],
   "LookingForContributors": true,
+  "VersionDependencyMode": "SemVer",
   "Screenshots": [
     {
       "ImageUrl": "https://github.com/idseefeld/Wysiwg.Umbraco.Community.Extensions/blob/aa8ee6f36c64ecd331713beb6a9849380dc2064c/docs/screenshots/BOvsFrontend-v2.jpg",
