@@ -10,9 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\umbraco-marketplace.json = ..\umbraco-marketplace.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WysiwgUmbracoCommunityExtensions.TestSite", "wysiwgUmbracoCommunityExtensions.TestSite\WysiwgUmbracoCommunityExtensions.TestSite.csproj", "{B46061C1-621F-46EA-9142-23D51C12032B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WysiwgUmbracoCommunityExtensions.TestSite", "WysiwgUmbracoCommunityExtensions.TestSite\WysiwgUmbracoCommunityExtensions.TestSite.csproj", "{B46061C1-621F-46EA-9142-23D51C12032B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WysiwgUmbracoCommunityExtensions", "wysiwgUmbracoCommunityExtensions\WysiwgUmbracoCommunityExtensions.csproj", "{E3332BDA-A1B7-4C57-9836-A26EFFB542CC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WysiwgUmbracoCommunityExtensions", "WysiwgUmbracoCommunityExtensions\WysiwgUmbracoCommunityExtensions.csproj", "{E3332BDA-A1B7-4C57-9836-A26EFFB542CC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{86DCB238-F4B9-4C73-A8F0-BB5C187BF1D5}"
 	ProjectSection(SolutionItems) = preProject
