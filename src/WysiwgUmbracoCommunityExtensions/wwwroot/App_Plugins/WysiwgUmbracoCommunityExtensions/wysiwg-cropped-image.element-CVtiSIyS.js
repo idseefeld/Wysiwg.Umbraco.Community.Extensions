@@ -95,7 +95,7 @@ let u = class extends de {
   }
   getBackgroudImageStyle(e) {
     const t = this.backgroundStyles, i = t.padding ?? g.padding;
-    e ? (t.backgroundImage = `url('${e}')`, t.backgroundPosition = "inherit", t.padding = i === g.padding ? "10px" : i) : (t.backgroundImage = "none", t.backgroundPosition = "-10000px"), this.backgroundStyleMap = t;
+    e ? (t.backgroundImage = `url('${e}')`, t.backgroundPosition = "inherit", t.padding = !i || i === g.padding ? "10px" : i) : (t.backgroundImage = "none", t.backgroundPosition = "-10000px"), this.backgroundStyleMap = t;
   }
   renderUpdateHint() {
     const e = s`<umb-ufm-render inline .markdown=${this.label} .value=${this.content}></umb-ufm-render>`;
@@ -728,4 +728,4 @@ export {
   h as a,
   Ge as b
 };
-//# sourceMappingURL=wysiwg-cropped-image.element-V1msS2hc.js.map
+//# sourceMappingURL=wysiwg-cropped-image.element-CVtiSIyS.js.map
