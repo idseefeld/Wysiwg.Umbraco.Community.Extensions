@@ -178,7 +178,7 @@ const n = [
     alias: "WysiwgUmbracoCommunityExtensions.Localize.EnGB",
     name: "English (UK)",
     meta: {
-      culture: "en"
+      culture: "en-GB"
     },
     js: "/App_Plugins/WysiwgUmbracoCommunityExtensions/Localization/en-gb.js"
   },
