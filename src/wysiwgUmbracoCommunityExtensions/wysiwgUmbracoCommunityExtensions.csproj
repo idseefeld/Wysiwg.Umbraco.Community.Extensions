@@ -70,5 +70,9 @@
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
+  
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="cd Wysiwg&#xD;&#xA;npm run build" />
+  </Target>
 
 </Project>

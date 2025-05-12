@@ -361,3 +361,4 @@ src/.idea
 /src/wysiwgUCExt-local.sln
 /src/u16
 *.7z
+/src/wysiwgUmbracoCommunityExtensions/wwwroot
