@@ -483,10 +483,11 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                         Alias = "items",
                         Value = @"
 [
+    {""value"":""d60000"",""label"":""Red""},
+    {""value"":""029400"",""label"":""Green""},
     {""value"":""5c9aff"",""label"":""Blue""},
     {""value"":""fee648"",""label"":""Yellow""},
     {""value"":""ffffff"",""label"":""White""},
-    {""value"":""fff"",""label"":""Transparent""},
     {""value"":""000"",""label"":""Black""}
 ]".GetJsonArrayFromString()
                     }

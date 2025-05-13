@@ -2,9 +2,9 @@ import { LitElement as k, html as l, css as z, state as g, customElement as x } 
 import { UmbElementMixin as C } from "@umbraco-cms/backoffice/element-api";
 import { UMB_NOTIFICATION_CONTEXT as U } from "@umbraco-cms/backoffice/notification";
 import { UMB_CURRENT_USER_CONTEXT as $ } from "@umbraco-cms/backoffice/current-user";
-import { W as d } from "./services.gen-B_ebHh4e.js";
+import { W as d } from "./services.gen-ya8kz8Ij.js";
 import { umbConfirmModal as B } from "@umbraco-cms/backoffice/modal";
-import { D as E, C as D } from "./constants-BvAuY3a0.js";
+import { D as E, C as D } from "./constants-C13VoIZD.js";
 var h = /* @__PURE__ */ ((t) => (t[t.Unknown = 0] = "Unknown", t[t.UpToDate = 1] = "UpToDate", t[t.Update = 2] = "Update", t[t.Install = 3] = "Install", t))(h || {}), T = Object.defineProperty, W = Object.getOwnPropertyDescriptor, f = (t) => {
   throw TypeError(t);
 }, c = (t, e, a, r) => {
@@ -278,4 +278,4 @@ export {
   h as U,
   P as d
 };
-//# sourceMappingURL=dashboard.element-co4pSfph.js.map
+//# sourceMappingURL=dashboard.element-S6yezZM9.js.map

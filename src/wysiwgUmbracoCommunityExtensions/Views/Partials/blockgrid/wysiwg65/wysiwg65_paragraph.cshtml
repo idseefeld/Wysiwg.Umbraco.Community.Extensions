@@ -2,13 +2,15 @@
 @using Umbraco.Cms.Core.Models.Blocks
 @using WysiwgUmbracoCommunityExtensions.Extensions
 @using WysiwgUmbracoCommunityExtensions.ViewModels
-@model BlockGridItem
+@model WysiwygBlockGridItem
 @{
     var content = new Wysiwg65_paragraph(Model.Content);
     if (content?.Text == null) return;
 
+    var pageBackgroundColor = Model.BackgroundColor;
+
     var settings = new Wysiwg65_paragraphSettings(Model.Settings);
-    var colorStyle = string.IsNullOrEmpty(settings?.Color?.Color) ? string.Empty : $"color: {settings?.Color?.Color};";
+    var colorStyle = string.IsNullOrEmpty(settings?.Color?.Color) ? string.Empty : settings?.Color?.GetColorStyle();
     var minHeightStyle = string.IsNullOrEmpty(settings?.MinHeight) ? string.Empty : $"min-height: {settings.MinHeight};";
 
     var inlineStyles = $"{colorStyle}{minHeightStyle}";

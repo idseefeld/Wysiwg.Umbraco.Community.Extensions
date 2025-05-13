@@ -14,6 +14,7 @@ using Umbraco.Cms.Core.Services;
 using Umbraco.Extensions;
 using WysiwgUmbracoCommunityExtensions.Models;
 using WysiwgUmbracoCommunityExtensions.Services;
+using static Umbraco.Cms.Core.PropertyEditors.ValueConverters.ColorPickerValueConverter;
 using static Umbraco.Cms.Core.PropertyEditors.ValueConverters.ImageCropperValue;
 using MediaConventions = Umbraco.Cms.Core.Constants.Conventions.Media;
 
@@ -27,7 +28,8 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
         ISetupService installService,
         IMediaTypeService mediaTypeService,
         ILogger<WysiwgUmbracoCommunityExtensionsApiController> logger,
-        ISetupService setupService
+        ISetupService setupService,
+        IWysiwygPublishedContentService wysiwygPublishedContentService
         ) : WysiwgUmbracoCommunityExtensionsApiControllerBase
     {
         [HttpGet("crops")]
@@ -124,6 +126,13 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
                 return NotFound($"No media found for: {mediaItemId}");
             }
             return Ok(url);
+        }
+
+        [HttpGet("site-background-color")]
+        [ProducesResponseType<string>(StatusCodes.Status200OK)]
+        public IActionResult SiteBackgroundColor(string pageKey)
+        {
+            return Ok(wysiwygPublishedContentService.GetBackgroundColor(pageKey));
         }
 
         [HttpGet("mediatypes")]

@@ -1,4 +1,4 @@
-import { J as a, x as t } from "./services.gen-B_ebHh4e.js";
+import { J as a, x as t } from "./services.gen-ya8kz8Ij.js";
 const r = a(t());
 class g {
   static getServerConfiguration(e) {
@@ -36,4 +36,4 @@ export {
   g as S,
   r as c
 };
-//# sourceMappingURL=services.gen-CS9qDZj5.js.map
+//# sourceMappingURL=services.gen-DXgDAJ2g.js.map

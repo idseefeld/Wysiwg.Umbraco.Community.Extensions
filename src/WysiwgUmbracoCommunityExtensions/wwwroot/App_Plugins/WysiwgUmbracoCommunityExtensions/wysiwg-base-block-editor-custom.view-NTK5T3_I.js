@@ -2,7 +2,7 @@ import { LitElement as w, property as u, state as v, customElement as T } from "
 import { UmbElementMixin as E } from "@umbraco-cms/backoffice/element-api";
 import { UMB_PROPERTY_DATASET_CONTEXT as O } from "@umbraco-cms/backoffice/property";
 import { UMB_NOTIFICATION_CONTEXT as P } from "@umbraco-cms/backoffice/notification";
-import { D as U, C as b, T as x } from "./constants-BvAuY3a0.js";
+import { D as U, C as b, T as x } from "./constants-C13VoIZD.js";
 var B = Object.defineProperty, D = Object.getOwnPropertyDescriptor, S = (t) => {
   throw TypeError(t);
 }, n = (t, e, s, i) => {
@@ -83,4 +83,4 @@ o = n([
 export {
   o as W
 };
-//# sourceMappingURL=wysiwg-base-block-editor-custom.view-CYVB1wdx.js.map
+//# sourceMappingURL=wysiwg-base-block-editor-custom.view-NTK5T3_I.js.map

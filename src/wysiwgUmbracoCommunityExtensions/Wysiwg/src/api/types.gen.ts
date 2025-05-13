@@ -766,6 +766,16 @@ export type MediaTypesResponse = (Array<(MediaTypeModel)>);
 
 export type MediaTypesError = (unknown | Array<(MediaTypeModel)>);
 
+export type SiteBackgroundColorData = {
+    query?: {
+        pageKey?: string;
+    };
+};
+
+export type SiteBackgroundColorResponse = (string);
+
+export type SiteBackgroundColorError = (unknown);
+
 export type UnInstallResponse = (string);
 
 export type UnInstallError = (unknown);
