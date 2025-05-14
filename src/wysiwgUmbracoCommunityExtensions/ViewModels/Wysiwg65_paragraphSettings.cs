@@ -9,10 +9,11 @@ namespace WysiwgUmbracoCommunityExtensions.ViewModels
         public Wysiwg65_paragraphSettings() { }
         public Wysiwg65_paragraphSettings(IPublishedElement? element)
         {
-            Color = element?.Value<PickedColor>("color");
+            Color = element?.Value<PickedColor>("color")?.Color
+                ?? element?.Value<string>("color");
             MinHeight = element?.Value<string>("minHeight");
         }
-        public PickedColor? Color { get; set; }
+        public string? Color { get; set; }
         public string? MinHeight { get; set; }
     }
 }

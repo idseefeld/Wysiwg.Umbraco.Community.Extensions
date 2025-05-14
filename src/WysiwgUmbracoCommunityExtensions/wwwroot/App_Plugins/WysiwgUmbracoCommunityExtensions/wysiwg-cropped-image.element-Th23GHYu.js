@@ -1,7 +1,7 @@
 import { html as s, styleMap as T, nothing as A, css as B, property as l, state as f, customElement as W, ifDefined as z } from "@umbraco-cms/backoffice/external/lit";
 import { UmbLitElement as Q } from "@umbraco-cms/backoffice/lit-element";
 import { UmbTextStyles as D } from "@umbraco-cms/backoffice/style";
-import "./headline.view-COuW1SWS.js";
+import "./headline.view-BgP8BlaY.js";
 import "./paragraph.view-Cgl476Q3.js";
 import "./picture-with-crop.view-kzoApq1k.js";
 import "./cropped-picture.view-B5GVEUBU.js";
@@ -747,4 +747,4 @@ export {
   m as a,
   Ye as b
 };
-//# sourceMappingURL=wysiwg-cropped-image.element-CV1-IOOi.js.map
+//# sourceMappingURL=wysiwg-cropped-image.element-Th23GHYu.js.map

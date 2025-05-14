@@ -7,9 +7,14 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 {
     public class WysiwygPublishedContentService(IPublishedContentQuery publishedContentQuery) : IWysiwygPublishedContentService
     {
+
+        public static string? GetColor(PickedColor? pickedColor) { return pickedColor?.Color; }
+
+        public static string? GetColor(string? color) { return color; }
+
         public string GetBackgroundColor(string contentKey)
         {
-            if(string.IsNullOrEmpty(contentKey) || !Guid.TryParse(contentKey, out var guid))
+            if (string.IsNullOrEmpty(contentKey) || !Guid.TryParse(contentKey, out var guid))
             { return string.Empty; }
 
             return GetBackgroundColor(guid);

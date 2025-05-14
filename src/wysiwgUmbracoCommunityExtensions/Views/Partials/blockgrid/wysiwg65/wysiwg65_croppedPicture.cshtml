@@ -8,6 +8,7 @@
 @using Umbraco.Extensions
 @using WysiwgUmbracoCommunityExtensions.Controllers
 @using WysiwgUmbracoCommunityExtensions.Models
+@using WysiwgUmbracoCommunityExtensions.Services
 @using WysiwgUmbracoCommunityExtensions.ViewModels
 @using WysiwgUmbracoCommunityExtensions.Extensions
 @using Conventions = Umbraco.Cms.Core.Constants.Conventions
@@ -21,7 +22,7 @@
     var width = 1200;
 
     var figCaption = content.FigCaption ?? "";
-    var color = content.CaptionColor?.Color ?? "";
+    var color = WysiwygPublishedContentService.GetColor(content.CaptionColor) ?? string.Empty;
     var selectedCrop = content.MediaItem.SelectedCropAlias ?? "";
     var alternativeText = content.AlternativeText ?? content.MediaItem.Name ?? selectedCrop;
     var rotateStyle = new HtmlFormattableString(content.Rotation == null ? "" : $"style=\"transform: rotate({content.Rotation}deg);\"");

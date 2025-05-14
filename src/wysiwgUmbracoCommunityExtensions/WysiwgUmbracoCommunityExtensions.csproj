@@ -38,15 +38,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Umbraco.Cms.Web.Website" Version="[15.3.1,17)" />
-    <PackageReference Include="Umbraco.Cms.Web.Common" Version="[15.3.1,17)" />
-    <PackageReference Include="Umbraco.Cms.Api.Common" Version="[15.3.1,17)" />
-    <PackageReference Include="Umbraco.Cms.Api.Management" Version="[15.3.1,17)" />
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="[15.4.1,17)" />
+    <PackageReference Include="Umbraco.Cms.Web.Common" Version="[15.4.1,17)" />
+    <PackageReference Include="Umbraco.Cms.Api.Common" Version="[15.4.1,17)" />
+    <PackageReference Include="Umbraco.Cms.Api.Management" Version="[15.4.1,17)" />
   </ItemGroup>
   
   <ItemGroup>
     <!-- Dont include the client folder as part of packaging nuget build -->
+    <Compile Remove="BlockGridStyles\**" />
+    <Compile Remove="Wysiwg\**" />
+    <Content Remove="BlockGridStyles\**" />
     <Content Remove="Wysiwg\**" />
+    <EmbeddedResource Remove="BlockGridStyles\**" />
+    <EmbeddedResource Remove="Wysiwg\**" />
+    <None Remove="BlockGridStyles\**" />
+    <None Remove="Wysiwg\**" />
     <Compile Remove="Composers\ApplicationLifetimeComposer.cs" />
     <Compile Remove="Models\CropModel.cs" />
     <Compile Remove="Models\ImageCropperCropExtended.cs" />
@@ -61,7 +68,6 @@
     </None>
 
     <!-- However make the Umbraco-package.json included for dotnet pack or nuget package and visible to the solution -->
-    <None Include="Wysiwg\public\umbraco-package.json" Pack="false" />
   </ItemGroup>
   
   <ItemGroup>
@@ -69,5 +75,6 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+    <None Include="BlockGridStyles\wysiwyg-default-blockgrid.scss" />
   </ItemGroup>
 </Project>

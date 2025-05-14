@@ -14,8 +14,6 @@ const customElementName = "wysiwg-block-headline-view";
 export class WysiwgBlockHeadlineView
   extends WysiwgBaseBlockEditorCustomViewElement {
 
-  defaultColor: ColorType = { label: "Black", value: "#000" };
-
   override render() {
     let size = "h1";
     let inlineStyle = "";
@@ -33,7 +31,7 @@ export class WysiwgBlockHeadlineView
 
       const color =
         (settings.filter((v) => v.alias === "color")[0]?.value as ColorType)
-          ?.value ?? this.defaultColor.value;
+          ?.value ?? "";
       if (color && !this.isTransparentColor(color)) {
         inlineStyle = `color: ${color};`;
       }

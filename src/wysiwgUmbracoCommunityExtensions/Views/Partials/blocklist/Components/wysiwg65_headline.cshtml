@@ -1,26 +1,16 @@
 @using Microsoft.AspNetCore.Html
 @using Umbraco.Cms.Core.Models.Blocks
+@using WysiwgUmbracoCommunityExtensions.Extensions
+@using WysiwgUmbracoCommunityExtensions.Services
 @using WysiwgUmbracoCommunityExtensions.ViewModels
-@model IBlockReference
+@model WysiwygBlockListItem
 @{
-    Wysiwg65_headline? content = null;
-    Wysiwg65_headlineSettings? settings = null;
-    if (Model is BlockListItem listItem)
-    {
-        content = new Wysiwg65_headline(listItem.Content);
-        if (content == null) return;
+    var content = new Wysiwg65_headline(Model.Content);
+    if (content == null) return;
 
-        settings = new Wysiwg65_headlineSettings(listItem.Settings);
-    }
-    else if (Model is BlockGridItem gridItem)
-    {
-        content = new Wysiwg65_headline(gridItem.Content);
-        if (content == null) return;
-
-        settings = new Wysiwg65_headlineSettings(gridItem.Settings);
-    }
-
-    var inlineStyles = string.IsNullOrEmpty(settings?.Color?.Color) ? string.Empty : $"color: {settings?.Color?.Color};";
+    var settings = new Wysiwg65_headlineSettings(Model.Settings);
+    var color = WysiwygPublishedContentService.GetColor(settings?.Color);
+    var inlineStyles = string.IsNullOrEmpty(color) ? string.Empty : color.GetColorStyle();
     inlineStyles += string.IsNullOrEmpty(settings?.Margin) ? string.Empty : $"margin: {settings?.Margin};";
     var size = settings?.Size?.ToLower() ?? "h2";
     var margin = settings?.Margin ?? string.Empty;

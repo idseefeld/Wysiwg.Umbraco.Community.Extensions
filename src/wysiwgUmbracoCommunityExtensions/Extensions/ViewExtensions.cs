@@ -1,3 +1,4 @@
+using System.Drawing;
 using System.Text;
 using Microsoft.AspNetCore.Html;
 using Umbraco.Cms.Core.Models.PublishedContent;
@@ -18,7 +19,10 @@ namespace WysiwgUmbracoCommunityExtensions.Extensions
             if (rowSettings == null)
             { return null; }
 
-            string? colorStyle = rowSettings.BackgroundColor is PickedColor color ? $"background-{color.GetColorStyle(pageColor)}" : null;
+            var color = string.IsNullOrEmpty(rowSettings.BackgroundColor)
+                ? pageColor
+                : rowSettings.BackgroundColor;
+            string? colorStyle = string.IsNullOrEmpty(color) ? null : $"background-color: {color}";
             string? imageStyle = null;
             string? paddingStyle = null;
             string? minHeightStyle = null;
@@ -37,6 +41,23 @@ namespace WysiwgUmbracoCommunityExtensions.Extensions
 
             return $"{paddingStyle}{colorStyle}{imageStyle}{minHeightStyle}";
         }
+        public static string? GetColorStyle(this string color, string? pageColor = null)
+        {
+            string? colorStyle = null;
+
+            var colorValue = string.IsNullOrEmpty(color)
+                ? pageColor
+                : color;
+            if (!string.IsNullOrWhiteSpace(colorValue))
+            {
+                // work-a-round for missing transparent definition in default ColorPicker data type
+                var isTransparent = colorValue.InvariantEquals("#fff");
+                if (!isTransparent)
+                { colorStyle = $"color: {colorValue};"; }
+            }
+
+            return colorStyle;
+        }
         public static string? GetColorStyle(this PickedColor color, string? pageColor = null)
         {
             string? colorStyle = null;
@@ -50,7 +71,7 @@ namespace WysiwgUmbracoCommunityExtensions.Extensions
 
             if (!string.IsNullOrWhiteSpace(colorValue))
             {
-                // work-a-round for missing tranparent definition in default ColorPicker data type
+                // work-a-round for missing transparent definition in default ColorPicker data type
                 var isTransparent = colorValue.InvariantEquals("#fff")
                         || (!string.IsNullOrWhiteSpace(colorLabel)
                             && colorLabel.InvariantEquals("transparent"));

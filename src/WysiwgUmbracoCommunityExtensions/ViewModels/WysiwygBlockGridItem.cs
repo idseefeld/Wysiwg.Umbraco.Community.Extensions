@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models.Blocks;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using WysiwgUmbracoCommunityExtensions.Services;
@@ -13,7 +7,7 @@ namespace WysiwgUmbracoCommunityExtensions.ViewModels
     public class WysiwygBlockGridItem : BlockGridItem
     {
         private readonly IWysiwygPublishedContentService? _wysiwygPublishedContentService;
-        private readonly BlockGridItem _item;
+        private readonly BlockGridItem? _item;
         public WysiwygBlockGridItem(Guid contentKey, IPublishedElement content, Guid? settingsKey, IPublishedElement? settings) : base(contentKey, content, settingsKey, settings)
         { }
 
@@ -37,9 +31,9 @@ namespace WysiwgUmbracoCommunityExtensions.ViewModels
             BackgroundColor = _wysiwygPublishedContentService?
                     .GetBackgroundColor(item.ContentKey.ToString());
         }
-        public new IPublishedElement? Settings => _item.Settings;
+        public new IPublishedElement? Settings => _item?.Settings;
 
-        public new IPublishedElement Content => _item.Content;
+        public new IPublishedElement? Content => _item?.Content;
 
 
         // may be used to automatically choose an inverted color

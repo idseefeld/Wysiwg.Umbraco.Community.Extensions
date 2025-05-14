@@ -1,3 +1,5 @@
+using static Umbraco.Cms.Core.PropertyEditors.ValueConverters.ColorPickerValueConverter;
+
 namespace WysiwgUmbracoCommunityExtensions.Services
 {
     public interface IWysiwygPublishedContentService

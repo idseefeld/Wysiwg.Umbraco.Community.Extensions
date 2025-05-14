@@ -2,9 +2,9 @@ using System.Text;
 using Microsoft.AspNetCore.Html;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Strings;
-using static Umbraco.Cms.Core.PropertyEditors.ValueConverters.ColorPickerValueConverter;
 using Umbraco.Cms.Web.Common.PublishedModels;
 using WysiwgUmbracoCommunityExtensions.TestSite.Models;
+using WysiwgUmbracoCommunityExtensions.Services;
 
 namespace WysiwgUmbracoCommunityExtensions.TestSite.Extensions
 {
@@ -15,16 +15,15 @@ namespace WysiwgUmbracoCommunityExtensions.TestSite.Extensions
             if (settings is not Wysiwg65_rowSettings rowSettings)
             { return null; }
 
-            var backgroundColor = rowSettings.BackgroundColor;
             var row = new Row
             {
                 BackgroundColor = new PickerColor()
                 {
-                    Color = backgroundColor?.Color,
-                    Label = backgroundColor?.Label
+                    Color = WysiwygPublishedContentService.GetColor(rowSettings.BackgroundColor) ?? string.Empty
                 },
-                BackgroundImageSrc = rowSettings.BackgroundImage?.MediaUrl()
+                BackgroundImageSrc = rowSettings?.BackgroundImage?.MediaUrl()
             };
+
             var style = new StringBuilder();
             var pickerColor = row.BackgroundColor;
             if (!string.IsNullOrWhiteSpace(pickerColor?.Color) && !pickerColor.Color.InvariantEquals("#fff")
@@ -38,6 +37,7 @@ namespace WysiwgUmbracoCommunityExtensions.TestSite.Extensions
             }
             return style.ToString();
         }
+
         public static HtmlString GetHtml(this IHtmlEncodedString text)
         {
             return new HtmlString(text.ToHtmlString());

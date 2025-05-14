@@ -9,11 +9,12 @@ namespace WysiwgUmbracoCommunityExtensions.ViewModels
         public Wysiwg65_headlineSettings() { }
         public Wysiwg65_headlineSettings(IPublishedElement? element)
         {
-            Color = element?.Value<PickedColor>("color");
+            Color = element?.Value<PickedColor>("color")?.Color
+                ?? element?.Value<string>("color");
             Size = element?.Value<string>("size");
             Margin = element?.Value<string>("margin");
         }
-        public PickedColor? Color { get; set; }
+        public string? Color { get; set; }
         public string? Size { get; set; }
         public string? Margin { get; set; }
     }

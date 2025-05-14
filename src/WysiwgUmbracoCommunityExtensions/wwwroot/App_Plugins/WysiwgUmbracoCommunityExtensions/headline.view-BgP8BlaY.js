@@ -1,35 +1,32 @@
-import { UmbTextStyles as u } from "@umbraco-cms/backoffice/style";
-import { unsafeHTML as p, html as x, css as z, customElement as $ } from "@umbraco-cms/backoffice/external/lit";
+import { UmbTextStyles as p } from "@umbraco-cms/backoffice/style";
+import { unsafeHTML as u, html as x, css as z, customElement as $ } from "@umbraco-cms/backoffice/external/lit";
 import { W as b } from "./wysiwg-base-block-editor-custom.view-NTK5T3_I.js";
-var k = Object.getOwnPropertyDescriptor, C = (i, e, o, l) => {
-  for (var t = l > 1 ? void 0 : l ? k(e, o) : e, s = i.length - 1, n; s >= 0; s--)
-    (n = i[s]) && (t = n(t) || t);
+var k = Object.getOwnPropertyDescriptor, H = (i, e, o, l) => {
+  for (var t = l > 1 ? void 0 : l ? k(e, o) : e, s = i.length - 1, a; s >= 0; s--)
+    (a = i[s]) && (t = a(t) || t);
   return t;
 };
-const B = "wysiwg-block-headline-view";
+const S = "wysiwg-block-headline-view";
 let r = class extends b {
-  constructor() {
-    super(...arguments), this.defaultColor = { label: "Black", value: "#000" };
-  }
   render() {
-    var t, s, n, m, d, c, f, y;
+    var t, s, a, m, d, c, y, f;
     let i = "h1", e = "";
     if ((t = this.datasetSettings) != null && t.length) {
       const h = this.layout, g = (s = this.datasetSettings.filter(
-        (a) => (h == null ? void 0 : h.settingsKey) === a.key
+        (n) => (h == null ? void 0 : h.settingsKey) === n.key
       )[0]) == null ? void 0 : s.values;
-      i = ((m = (n = g.filter((a) => a.alias === "size")[0]) == null ? void 0 : n.value) == null ? void 0 : m.toString().toLowerCase()) ?? i;
-      const w = ((c = (d = g.filter((a) => a.alias === "color")[0]) == null ? void 0 : d.value) == null ? void 0 : c.value) ?? this.defaultColor.value;
+      i = ((m = (a = g.filter((n) => n.alias === "size")[0]) == null ? void 0 : a.value) == null ? void 0 : m.toString().toLowerCase()) ?? i;
+      const w = ((c = (d = g.filter((n) => n.alias === "color")[0]) == null ? void 0 : d.value) == null ? void 0 : c.value) ?? "";
       w && !this.isTransparentColor(w) && (e = `color: ${w};`);
-      const v = ((f = g.filter((a) => a.alias === "margin")[0]) == null ? void 0 : f.value) ?? "";
+      const v = ((y = g.filter((n) => n.alias === "margin")[0]) == null ? void 0 : y.value) ?? "";
       v && (e += `margin: ${v};`), e && (e = `style="${e}"`);
     }
-    const o = ((y = this.content) == null ? void 0 : y.text) ?? "Headline", l = `<${i} class="headline" ${e}>${o}</${i}>`;
-    return x`${p(l)}`;
+    const o = ((f = this.content) == null ? void 0 : f.text) ?? "Headline", l = `<${i} class="headline" ${e}>${o}</${i}>`;
+    return x`${u(l)}`;
   }
 };
 r.styles = [
-  u,
+  p,
   z`
       :host {
         display: block;
@@ -63,12 +60,12 @@ r.styles = [
       }
     `
 ];
-r = C([
-  $(B)
+r = H([
+  $(S)
 ], r);
 const W = r;
 export {
   r as WysiwgBlockHeadlineView,
   W as default
 };
-//# sourceMappingURL=headline.view-COuW1SWS.js.map
+//# sourceMappingURL=headline.view-BgP8BlaY.js.map

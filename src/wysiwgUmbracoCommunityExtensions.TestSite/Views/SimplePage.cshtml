@@ -1,9 +1,11 @@
 @using Umbraco.Cms.Web.Common.PublishedModels;
+@using WysiwgUmbracoCommunityExtensions.Services
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<SimplePage>
 @{
     Layout = null;
     var culture = System.Threading.Thread.CurrentThread.CurrentCulture;
     var lang = culture.Name;
+    var pageBackgroundColor = WysiwygPublishedContentService.GetColor(Model.PageBackgroundColor);
 }
 <!DOCTYPE html>
 <html lang="@lang">
@@ -19,7 +21,7 @@
     <link href="~/styles/customblockgrid.min.css" rel="stylesheet" />
     <style>
         body{
-            background-color: @(Model.PageBackgroundColor ?? "inherit");
+            background-color: @(pageBackgroundColor ?? "inherit");
         }
     </style>
 </head>
