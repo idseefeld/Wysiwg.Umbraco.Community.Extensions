@@ -30,7 +30,7 @@ const blockLayoutInlineStyleDefaults: StyleInfo = {
   backgroundImage: "none",
   backgroundPosition: "inherit",
   backgroundRepeat: "no-repeat",
-  backgroundColor: "transparent",
+  backgroundColor: "",
   padding: undefined,
   minHeight: "0",
 }
@@ -148,12 +148,12 @@ export class WysiwgBlockLayoutView
         }
       ).value;
       const backgroundColor = !settingsbackgroundColor
-        ? !this.pageBackgroundColor ? "transparent" : this.pageBackgroundColor
+        ? !this.pageBackgroundColor ? "" : this.pageBackgroundColor
         : settingsbackgroundColor;
 
       const transparentBackground = this.isTransparentColor(backgroundColor);
       if (backgroundColor) {
-        inlineStyles.backgroundColor = transparentBackground ? "transparent" : backgroundColor;
+        inlineStyles.backgroundColor = !transparentBackground ? backgroundColor : "";
       }
 
       const minHeight = (properties?.find((v) => v.alias === "minHeight")?.value ?? "0").toString();

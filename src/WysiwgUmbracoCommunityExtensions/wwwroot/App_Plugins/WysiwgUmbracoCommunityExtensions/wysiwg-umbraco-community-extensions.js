@@ -26,7 +26,7 @@ const o = [
     type: "bundle",
     name: "wysiwg block components",
     alias: "wysiwg.block.components",
-    js: () => import("./index-cyyy8LZ7.js")
+    js: () => import("./index-B5tIgmXH.js")
   }
 ], e = "wysiwg65_";
 function s() {
@@ -40,7 +40,7 @@ const n = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.Layouts",
     name: "Block Editor Custom View for Layouts",
-    element: () => import("./wysiwg-cropped-image.element-Th23GHYu.js").then((i) => i.b),
+    element: () => import("./wysiwg-cropped-image.element-DTdhud4t.js").then((i) => i.b),
     forContentTypeAlias: s(),
     forBlockEditor: "block-grid"
   },
@@ -48,7 +48,7 @@ const n = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockHeadline",
     name: "Block Editor Custom View for Headline",
-    element: () => import("./headline.view-BgP8BlaY.js"),
+    element: () => import("./headline.view-Bs57Ozuv.js"),
     forContentTypeAlias: e + "headline",
     forBlockEditor: "block-grid"
   },
@@ -56,7 +56,7 @@ const n = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockParagraph",
     name: "Block Editor Custom View for Paragraph",
-    element: () => import("./paragraph.view-Cgl476Q3.js"),
+    element: () => import("./paragraph.view-bEw0hP76.js"),
     forContentTypeAlias: e + "paragraph",
     forBlockEditor: "block-grid"
   },
@@ -64,7 +64,7 @@ const n = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.pictureWithCrop",
     name: "Block Editor Custom View for Picture with Crop",
-    element: () => import("./picture-with-crop.view-kzoApq1k.js"),
+    element: () => import("./picture-with-crop.view-_QUOV5FD.js"),
     forContentTypeAlias: e + "pictureWithCrop",
     forBlockEditor: "block-grid"
   },
@@ -72,7 +72,7 @@ const n = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.croppedPicture",
     name: "Block Editor Custom View for Cropped Picture",
-    element: () => import("./cropped-picture.view-B5GVEUBU.js"),
+    element: () => import("./cropped-picture.view-DUCKyoaH.js"),
     forContentTypeAlias: e + "croppedPicture",
     forBlockEditor: "block-grid"
   }

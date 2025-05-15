@@ -384,7 +384,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     Values = [
                         new DataTypePropertyPresentationModel {
                         Alias = "useLabel",
-                        Value = true
+                        Value = false
                     },
                     new DataTypePropertyPresentationModel {
                         Alias = "items",

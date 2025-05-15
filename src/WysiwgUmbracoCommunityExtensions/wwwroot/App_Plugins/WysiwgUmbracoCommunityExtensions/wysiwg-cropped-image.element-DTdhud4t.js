@@ -1,17 +1,17 @@
 import { html as s, styleMap as T, nothing as A, css as B, property as l, state as f, customElement as W, ifDefined as z } from "@umbraco-cms/backoffice/external/lit";
 import { UmbLitElement as Q } from "@umbraco-cms/backoffice/lit-element";
 import { UmbTextStyles as D } from "@umbraco-cms/backoffice/style";
-import "./headline.view-BgP8BlaY.js";
-import "./paragraph.view-Cgl476Q3.js";
-import "./picture-with-crop.view-kzoApq1k.js";
-import "./cropped-picture.view-B5GVEUBU.js";
+import "./headline.view-Bs57Ozuv.js";
+import "./paragraph.view-bEw0hP76.js";
+import "./picture-with-crop.view-_QUOV5FD.js";
+import "./cropped-picture.view-DUCKyoaH.js";
 import "./wysiwg-datatype-picker.element-BKj-4eik.js";
 import "./wysiwg-image-crops.element-CAGvkQix.js";
 import "./wysiwg-image-and-crop-picker.element-BjfauK8v.js";
 import { UUICardElement as V, demandCustomElement as j } from "@umbraco-cms/backoffice/external/uui";
 import { W as M } from "./services.gen-ya8kz8Ij.js";
 import { U as ue } from "./dashboard.element-S6yezZM9.js";
-import { W as pe } from "./wysiwg-base-block-editor-custom.view-NTK5T3_I.js";
+import { W as pe } from "./wysiwg-base-block-editor-custom.view-DVhqiDDI.js";
 import { UmbPropertyValueChangeEvent as ge } from "@umbraco-cms/backoffice/property-editor";
 var he = Object.defineProperty, me = Object.getOwnPropertyDescriptor, X = (e) => {
   throw TypeError(e);
@@ -24,7 +24,7 @@ const h = {
   backgroundImage: "none",
   backgroundPosition: "inherit",
   backgroundRepeat: "no-repeat",
-  backgroundColor: "transparent",
+  backgroundColor: "",
   padding: void 0,
   minHeight: "0"
 }, fe = "wysiwg-block-layout-view";
@@ -87,8 +87,8 @@ let u = class extends pe {
     var i, o, r;
     const t = this.backgroundStyleDefaults;
     if (e != null && e.length) {
-      const n = (((i = e == null ? void 0 : e.find((d) => d.alias === "backgroundColor")) == null ? void 0 : i.value) ?? {}).value, a = n || (this.pageBackgroundColor ? this.pageBackgroundColor : "transparent"), _ = this.isTransparentColor(a);
-      a && (t.backgroundColor = _ ? "transparent" : a);
+      const n = (((i = e == null ? void 0 : e.find((d) => d.alias === "backgroundColor")) == null ? void 0 : i.value) ?? {}).value, a = n || (this.pageBackgroundColor ? this.pageBackgroundColor : ""), _ = this.isTransparentColor(a);
+      a && (t.backgroundColor = _ ? "" : a);
       const y = (((o = e == null ? void 0 : e.find((d) => d.alias === "minHeight")) == null ? void 0 : o.value) ?? "0").toString();
       t.minHeight = y;
       let p = (r = e == null ? void 0 : e.find((d) => d.alias === "padding")) == null ? void 0 : r.value.toString();
@@ -747,4 +747,4 @@ export {
   m as a,
   Ye as b
 };
-//# sourceMappingURL=wysiwg-cropped-image.element-Th23GHYu.js.map
+//# sourceMappingURL=wysiwg-cropped-image.element-DTdhud4t.js.map

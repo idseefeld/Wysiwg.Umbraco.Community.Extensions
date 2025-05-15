@@ -71,7 +71,7 @@ export class WysiwgBaseBlockEditorCustomViewElement
   }
 
   protected isTransparentColor(color: string) {
-    return color === TransparentBackgroundColor;
+    return color === TransparentBackgroundColor || color === 'transparent' || color === 'rgba(0, 0, 0, 0)' || color === 'rgba(255, 255, 255, 0)';
   }
 
   protected async getSettings(context: any) {
