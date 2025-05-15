@@ -1,5 +1,7 @@
 @using Umbraco.Cms.Core.Models.Blocks
+@using Umbraco.Cms.Core.Strings
 @using Umbraco.Extensions
+@using WysiwgUmbracoCommunityExtensions.Services
 @using WysiwgUmbracoCommunityExtensions.ViewModels
 @model BlockGridItem
 @{
@@ -15,9 +17,11 @@
 
     @if (!string.IsNullOrEmpty(content.FigCaption))
     {
-        if (!string.IsNullOrEmpty(content.CaptionColor?.Color))
+        string color = WysiwygPublishedContentService.GetColor(content.CaptionColor) ?? string.Empty;
+
+        if (!string.IsNullOrEmpty(color))
         {
-            <figcaption style="color: @(content.CaptionColor?.Color ?? "#000")">
+            <figcaption style="color: @color;">
                 @content.FigCaption
             </figcaption>
         }

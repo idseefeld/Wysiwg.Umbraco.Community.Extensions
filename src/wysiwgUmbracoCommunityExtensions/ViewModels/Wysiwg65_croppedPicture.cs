@@ -15,14 +15,14 @@ namespace WysiwgUmbracoCommunityExtensions.ViewModels
             AlternativeText = element?.Value<string>("alternativeText");
             FigCaption = element?.Value<string>("figCaption");
             CropAlias = element?.Value<string>("cropAlias");
-            CaptionColor = element?.Value<PickedColor>("captionColor");
+            CaptionColor = element?.Value<PickedColor>("captionColor")?.Color ?? element?.Value<string>("captionColor");
             Rotation = element?.Value<decimal?>("rotation");
         }
 
         public MediaWithSelectedCrop? MediaItem { get; set; }
         public string? AlternativeText { get; set; }
         public string? FigCaption { get; set; }
-        public PickedColor? CaptionColor { get; set; }
+        public string? CaptionColor { get; set; }
         public string? CropAlias { get; set; }
         public decimal? Rotation { get; set; }
     }

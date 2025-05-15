@@ -10,12 +10,13 @@ namespace WysiwgUmbracoCommunityExtensions.ViewModels
         public Wysiwg65_rowSettings() { }
         public Wysiwg65_rowSettings(IPublishedElement? element)
         {
-            BackgroundColor = element?.Value<PickedColor>("backgroundColor");
+            BackgroundColor = element?.Value<PickedColor>("backgroundColor")?.Color
+                ?? element?.Value<string>("backgroundColor");
             BackgroundImage = element?.Value<MediaWithCrops>("backgroundImage");
             Padding = element?.Value<string>("padding");
             MinHeight = element?.Value<string>("minHeight");
         }
-        public PickedColor? BackgroundColor { get; set; }
+        public string? BackgroundColor { get; set; }
         public MediaWithCrops? BackgroundImage { get; set; }
         public string? Padding { get; set; }
         public string? MinHeight { get; set; }

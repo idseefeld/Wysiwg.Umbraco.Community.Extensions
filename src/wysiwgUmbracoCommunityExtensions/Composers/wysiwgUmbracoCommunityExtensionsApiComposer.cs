@@ -20,6 +20,8 @@ namespace WysiwgUmbracoCommunityExtensions.Composers
         {
             _ = builder.Services.AddSingleton<IOperationIdHandler, CustomOperationHandler>();
 
+            _ = builder.Services.AddTransient<IWysiwygPublishedContentService, WysiwygPublishedContentService>();
+
             _ = builder.Services.AddSingleton<ISetupService, SetupService>();
 
             _ = builder.Services.Configure<SwaggerGenOptions>(opt =>

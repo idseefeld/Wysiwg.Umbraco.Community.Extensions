@@ -1,11 +1,14 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using StackExchange.Profiling.Internal;
 using Umbraco.Cms.Api.Management.ViewModels.DataType;
 using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Extensions;
 using Umbraco.Cms.Core.Models;
+using Umbraco.Cms.Core.Models.Entities;
 using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Cms.Core.Security;
 using Umbraco.Cms.Core.Serialization;
@@ -36,7 +39,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         IPartialViewService partialViewService,
         IConfigurationEditorJsonSerializer jsonSerializer,
         IHttpContextAccessor httpContextAccessor,
-        IBackOfficeSecurityAccessor backOfficeSecurityAccessor
+        IBackOfficeSecurityAccessor backOfficeSecurityAccessor,
+        IHostEnvironment hostEnvironment
         ) : ISetupService
     {
         #region properties
@@ -97,11 +101,14 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
         private bool _isInstalling = false;
         private bool _isUninstalling = false;
+        private bool _restoreAll = false;
+        private string? _blockGridCssPath;
         #endregion
 
         #region install
-        public async Task Install()
+        public async Task Install(bool restoreAll = false)
         {
+            _restoreAll = restoreAll;
             try
             {
                 var versionStatus = await GetVersionStatus();
@@ -149,138 +156,6 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 _isInstalling = false;
             }
         }
-
-        #region miscellaneous
-        private void CompleteUpdate()
-        {
-
-            //ToDo: use package migrations
-        }
-
-        public async Task<VersionStatus> GetVersionStatus()
-        {
-            _dataTypeContainer ??= await GetDataTypeContainer();
-            var install = _dataTypeContainer == null;
-            if (install)
-            { return VersionStatus.Install; }
-
-            var allRequiredDataTypes = new List<string>(_requiredDataTypes) { _requiredBlockGridName };
-            _existingDataTypes = await GetAllWysiwgDataTypes();
-            var notAllRequiredInstalled = allRequiredDataTypes.Any(d => _existingDataTypes.FirstOrDefault(e => e.Name != null && e.Name.Equals(d)) == null);
-            if (notAllRequiredInstalled)
-            { return VersionStatus.Update; }
-
-            if (!DataTypeExists("Rotation"))
-            { return VersionStatus.Update; }
-
-            UpdateContentTypes();
-
-            if (!MinHeightPropertyExists("rowSettings", "minHeight"))
-            { return VersionStatus.Update; }
-
-            if (!MinHeightPropertyExists("paragraphSettings", "minHeight"))
-            { return VersionStatus.Update; }
-
-            var requiredContentTypes = _allContentTypes
-               .Select(t => t.Alias)
-               .Intersect(_requiredContentTypes);
-            var requiredContentTypesExists = requiredContentTypes
-               .Count() == _requiredContentTypes.Length;
-            if (!requiredContentTypesExists)
-            { return VersionStatus.Update; }
-
-            var notAllRemoved = _removedDataTypes.Any(d => _existingDataTypes.FirstOrDefault(e => e.Name != null && e.Name.Equals(d)) != null);
-            if (notAllRemoved)
-            { return VersionStatus.Update; }
-
-            return VersionStatus.UpToDate;
-        }
-        private bool DataTypeExists(string name)
-        {
-            var rotationDataType = _existingDataTypes.FirstOrDefault(d => d.Name != null && d.Name.Equals($"{Constants.Prefix}{name}"));
-            return rotationDataType != null;
-        }
-
-        private bool MinHeightPropertyExists(string elementName,string propertyName)
-        {
-            var rVal = false;
-            var rowSettings = GetElementByName(elementName, false);
-            if (rowSettings != null)
-            {
-                rVal = rowSettings.PropertyTypes
-                    .Any(p => p.Alias != null && p.Alias.Equals(propertyName));
-            }
-            return rVal;
-        }
-
-        public async Task<int> GetVersionStatusCode()
-        {
-            var status = await GetVersionStatus();
-            return (int)status;
-        }
-
-        private async Task<IDataType[]> GetAllWysiwgDataTypes()
-        {
-            var allDtTypes = await dataTypeService.GetAllAsync();
-
-            var rVal = allDtTypes
-                .Where(d => d.Name != null && d.Name.StartsWith(Constants.Prefix))
-                .ToArray();
-
-            return rVal;
-        }
-
-        private static string GetErrorMessage(string name, bool isDataType = false)
-        {
-            if (isDataType)
-            {
-                return $"{ErrorMsgPrefix} Could not create data type {name}.";
-            }
-            return $"{ErrorMsgPrefix} Could not create content type {name}.";
-        }
-
-        private Guid CurrentUserKey
-        {
-            get
-            {
-                var key = httpContextAccessor.HttpContext?.User?.Identity?.GetUserKey()
-                    ?? backOfficeSecurityAccessor.BackOfficeSecurity?.CurrentUser?.Key;
-                return key ?? Guid.Empty;
-            }
-        }
-
-        private IContentType? GetElementByName(string name, bool throwIfNotExist = true)
-        {
-            var prefixedName = $"{Constants.Prefix}{name}";
-            var type = _allContentTypes
-                .FirstOrDefault(t => t.Alias.Equals(prefixedName));
-            if (type == null)
-            {
-                if (throwIfNotExist)
-                {
-                    throw new Exception($"{_errorMsgDataTypeNotFoundStart} {prefixedName}");
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                return type;
-            }
-        }
-
-        private string GetElementKeyByName(string name)
-        {
-            return GetElementKeyGuidByName(name)?.ToString() ?? string.Empty;
-        }
-
-        private Guid? GetElementKeyGuidByName(string name, bool throwIfNotExist = true)
-        {
-            return GetElementByName(name, throwIfNotExist)?.Key;
-        }
-        #endregion
 
         #region data types
         private async Task CreateOrUpdateDataTypesForBlockElements(uReferenceByIdModel parent)
@@ -468,30 +343,65 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
         private async Task CreateDataTypeCustomerColors(string name, uReferenceByIdModel parent)
         {
-            var createDataTypeRequestModel = new CreateDataTypeRequestModel
+            CreateDataTypeRequestModel createDataTypeRequestModel;
+            IDataType? dataType = _existingDataTypes?.FirstOrDefault(d => d.Name != null && d.Name.Equals(name));
+            if (dataType == null)
             {
-                Parent = parent,
-                Name = name,
-                EditorAlias = "Umbraco.ColorPicker",
-                EditorUiAlias = "Umb.PropertyEditorUi.ColorPicker",
-                Values = [
-                    new DataTypePropertyPresentationModel {
+                createDataTypeRequestModel = new CreateDataTypeRequestModel
+                {
+                    Parent = parent,
+                    Name = name,
+                    EditorAlias = "Umbraco.ColorPicker",
+                    EditorUiAlias = "Umb.PropertyEditorUi.ColorPicker",
+                    Values = [
+                        new DataTypePropertyPresentationModel {
                         Alias = "useLabel",
-                        Value = true
+                        Value = false
                     },
                     new DataTypePropertyPresentationModel {
                         Alias = "items",
                         Value = @"
 [
+    {""value"":""d60000"",""label"":""""},
+    {""value"":""029400"",""label"":""""},
+    {""value"":""5c9aff"",""label"":""""},
+    {""value"":""fee648"",""label"":""""},
+    {""value"":""ffffff"",""label"":""""},
+    {""value"":""000"",""label"":""""}
+]".GetJsonArrayFromString()
+                    }
+                    ]
+                };
+            }
+            else
+            {
+                createDataTypeRequestModel = new CreateDataTypeRequestModel
+                {
+                    Parent = parent,
+                    Name = name,
+                    EditorAlias = "Umbraco.ColorPicker",
+                    EditorUiAlias = "Umb.PropertyEditorUi.ColorPicker",
+                    Values = [
+                        new DataTypePropertyPresentationModel {
+                        Alias = "useLabel",
+                        Value = false
+                    },
+                    new DataTypePropertyPresentationModel {
+                        Alias = "items",
+                        Value = @"
+[
+    {""value"":""d60000"",""label"":""Red""},
+    {""value"":""029400"",""label"":""Green""},
     {""value"":""5c9aff"",""label"":""Blue""},
     {""value"":""fee648"",""label"":""Yellow""},
     {""value"":""ffffff"",""label"":""White""},
-    {""value"":""fff"",""label"":""Transparent""},
-    {""value"":""000"",""label"":""Black""}
+    {""value"":""000"",""label"":""Black""},
+    {""value"":""fff"",""label"":""transparent""}
 ]".GetJsonArrayFromString()
                     }
-                ]
-            };
+                    ]
+                };
+            }
             await CreateOrUpdateDataType(createDataTypeRequestModel);
         }
 
@@ -573,6 +483,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     .ToDictionary(v => v.Alias, v => v.Value ?? new object())
                     ?? [];
 
+                dataType.SetParent(_dataTypeContainer);
                 dataType.Name = dataTypeRequestModel.Name;
                 dataType.Editor = new DataEditor(dataValueEditorFactory)
                 {
@@ -637,6 +548,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         #region Block Grid Data Type
         private async Task CreateOrUpdateDataTypeBlockGrid(uReferenceByIdModel parent)
         {
+            CopyBlockGridCss();
+
             UpdateContentTypes();
 
             _existingDataTypes = [.. await dataTypeService.GetAllAsync()];
@@ -851,6 +764,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     Name = _requiredBlockGridName,
                     EditorAlias = "Umbraco.BlockGrid",
                     EditorUiAlias = "Umb.PropertyEditorUi.BlockGrid",
+
                     Values =
                     [
                         new DataTypePropertyPresentationModel {
@@ -868,7 +782,12 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     new DataTypePropertyPresentationModel {
                         Alias = "maxPropertyWidth",
                         Value = "1204px"
-                    }
+                    },
+                    new DataTypePropertyPresentationModel {
+                        Alias = "layoutStylesheet",
+                        Value = _blockGridCssPath
+
+    }
                     ]
                 };
                 await CreateOrUpdateDataType(createDataTypeRequestModel);
@@ -1619,24 +1538,94 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             }
         }
 
+        #endregion
+
+        #endregion
+
+        #region miscellaneous
+        private void CopyBlockGridCss()
+        {
+            var contentRootPath = hostEnvironment.ContentRootPath;
+            var webRootPath = hostEnvironment.MapPathContentRoot("~/");
+
+            var source = Path.Combine(webRootPath, "wysiwyg", "wysiwyg-default-blockgrid.min.css");
+            var dest = GetBlockGridCssPath();
+
+            try
+            {
+                var destExists = System.IO.File.Exists(dest);
+                if (_restoreAll && destExists)
+                {
+                    destExists = false;
+                    System.IO.File.Delete(dest);
+                }
+
+                string? sourceContent = null;
+                if (System.IO.File.Exists(source))
+                {
+                    System.IO.File.ReadAllText(source);
+                }
+                if (string.IsNullOrEmpty(sourceContent))
+                {
+                    sourceContent = CssSource.SOURCE;
+                }
+
+                if (!destExists && !string.IsNullOrEmpty(sourceContent))
+                {
+                    System.IO.File.WriteAllText(dest, sourceContent);
+                    _blockGridCssPath = "/wwwroot/styles/wysiwyg-blockgrid.min.css";
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Could not copy BlockGrid CSS file {message}", ex.Message);
+            }
+        }
+        private void DeleteBlockGridCss()
+        {
+            var dest = GetBlockGridCssPath();
+            try
+            {
+                if (System.IO.File.Exists(dest))
+                {
+                    System.IO.File.Delete(dest);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Could not delete BlockGrid CSS file {message}", ex.Message);
+            }
+        }
+        private string GetBlockGridCssPath()
+        {
+            var webRootPath = hostEnvironment.MapPathContentRoot("~/");
+            var cssPath = Path.Combine(webRootPath, "wwwroot", "styles", "wysiwyg-blockgrid.min.css");
+            return cssPath;
+        }
+
         private async Task SwitchPartialViews(bool restoreOriginal = false)
         {
             var folderName = "blockgrid";
             var allPartialViews = (await partialViewService.GetAllAsync())
-                ?.Where(v => v.Path.InvariantContains(folderName));
+                ?.Where(v => v.Path.InvariantContains(folderName))
+                .ToArray();
             if (allPartialViews == null)
             { return; }
 
             var originalPartialName = "items.cshtml";
             var backupPartialName = "backup-items.cshtml";
 
+            var comparePathPart = $"{folderName}{Path.DirectorySeparatorChar}{originalPartialName}";
+            comparePathPart = Path.Combine(folderName, originalPartialName);
             var original = allPartialViews
-                .FirstOrDefault(v => v.Path.InvariantEndsWith($"{folderName}${Path.DirectorySeparatorChar}{originalPartialName}"));
+                .FirstOrDefault(v => v.Path.InvariantEndsWith(comparePathPart));
 
+            comparePathPart = $"{folderName}{Path.DirectorySeparatorChar}{backupPartialName}";
+            comparePathPart = Path.Combine(folderName, backupPartialName);
             var backup = allPartialViews
-                .FirstOrDefault(v => v.Path.InvariantEndsWith(backupPartialName));
+                .FirstOrDefault(v => v.Path.InvariantEndsWith(comparePathPart));
 
-            if (restoreOriginal)
+            if (restoreOriginal || _restoreAll)
             {
                 await RestoreItemsPartial(backup, original, originalPartialName);
             }
@@ -1686,9 +1675,137 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 throw new Exception($"{ErrorMsgPrefix} {attempt.Status}");
             }
         }
+        private void CompleteUpdate()
+        {
+
+            //ToDo: use package migrations
+        }
+
+        public async Task<VersionStatus> GetVersionStatus()
+        {
+            _dataTypeContainer ??= await GetDataTypeContainer();
+            var install = _dataTypeContainer == null;
+            if (install)
+            { return VersionStatus.Install; }
+
+            var allRequiredDataTypes = new List<string>(_requiredDataTypes) { _requiredBlockGridName };
+            _existingDataTypes = await GetAllWysiwgDataTypes();
+            var notAllRequiredInstalled = allRequiredDataTypes.Any(d => _existingDataTypes.FirstOrDefault(e => e.Name != null && e.Name.Equals(d)) == null);
+            if (notAllRequiredInstalled)
+            { return VersionStatus.Update; }
+
+            if (!DataTypeExists("Rotation"))
+            { return VersionStatus.Update; }
+
+            UpdateContentTypes();
+
+            if (!MinHeightPropertyExists("rowSettings", "minHeight"))
+            { return VersionStatus.Update; }
+
+            if (!MinHeightPropertyExists("paragraphSettings", "minHeight"))
+            { return VersionStatus.Update; }
+
+            var requiredContentTypes = _allContentTypes
+               .Select(t => t.Alias)
+               .Intersect(_requiredContentTypes);
+            var requiredContentTypesExists = requiredContentTypes
+               .Count() == _requiredContentTypes.Length;
+            if (!requiredContentTypesExists)
+            { return VersionStatus.Update; }
+
+            var notAllRemoved = _removedDataTypes.Any(d => _existingDataTypes.FirstOrDefault(e => e.Name != null && e.Name.Equals(d)) != null);
+            if (notAllRemoved)
+            { return VersionStatus.Update; }
+
+            return VersionStatus.UpToDate;
+        }
+        private bool DataTypeExists(string name)
+        {
+            var rotationDataType = _existingDataTypes.FirstOrDefault(d => d.Name != null && d.Name.Equals($"{Constants.Prefix}{name}"));
+            return rotationDataType != null;
+        }
+
+        private bool MinHeightPropertyExists(string elementName, string propertyName)
+        {
+            var rVal = false;
+            var rowSettings = GetElementByName(elementName, false);
+            if (rowSettings != null)
+            {
+                rVal = rowSettings.PropertyTypes
+                    .Any(p => p.Alias != null && p.Alias.Equals(propertyName));
+            }
+            return rVal;
+        }
+
+        public async Task<int> GetVersionStatusCode()
+        {
+            var status = await GetVersionStatus();
+            return (int)status;
+        }
+
+        private async Task<IDataType[]> GetAllWysiwgDataTypes()
+        {
+            var allDtTypes = await dataTypeService.GetAllAsync();
+
+            var rVal = allDtTypes
+                .Where(d => d.Name != null && d.Name.StartsWith(Constants.Prefix))
+                .ToArray();
+
+            return rVal;
+        }
+
+        private static string GetErrorMessage(string name, bool isDataType = false)
+        {
+            if (isDataType)
+            {
+                return $"{ErrorMsgPrefix} Could not create data type {name}.";
+            }
+            return $"{ErrorMsgPrefix} Could not create content type {name}.";
+        }
+
+        private Guid CurrentUserKey
+        {
+            get
+            {
+                var key = httpContextAccessor.HttpContext?.User?.Identity?.GetUserKey()
+                    ?? backOfficeSecurityAccessor.BackOfficeSecurity?.CurrentUser?.Key;
+                return key ?? Guid.Empty;
+            }
+        }
+
+        private IContentType? GetElementByName(string name, bool throwIfNotExist = true)
+        {
+            var prefixedName = $"{Constants.Prefix}{name}";
+            var type = _allContentTypes
+                .FirstOrDefault(t => t.Alias.Equals(prefixedName));
+            if (type == null)
+            {
+                if (throwIfNotExist)
+                {
+                    throw new Exception($"{_errorMsgDataTypeNotFoundStart} {prefixedName}");
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return type;
+            }
+        }
+
+        private string GetElementKeyByName(string name)
+        {
+            return GetElementKeyGuidByName(name)?.ToString() ?? string.Empty;
+        }
+
+        private Guid? GetElementKeyGuidByName(string name, bool throwIfNotExist = true)
+        {
+            return GetElementByName(name, throwIfNotExist)?.Key;
+        }
         #endregion
 
-        #endregion
 
         #region uninstall
         public async Task Uninstall()
@@ -1711,6 +1828,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 await DeleteDataTypeContainer(errorStart);
 
                 await RecoverPartialViews();
+
+                DeleteBlockGridCss();
             }
             catch
             {

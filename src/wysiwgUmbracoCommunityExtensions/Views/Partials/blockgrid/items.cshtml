@@ -1,13 +1,27 @@
 @using Umbraco.Cms.Core.Models.Blocks
 @using Umbraco.Extensions
+@using WysiwgUmbracoCommunityExtensions.Services
+@using WysiwgUmbracoCommunityExtensions.ViewModels
+@inject IWysiwygPublishedContentService WysiwygPublishedContentService
 @model IEnumerable<BlockGridItem>
 @{
     if (Model?.Any() != true) { return; }
+
+    var items = new List<WysiwygBlockGridItem>();
+    foreach (var item in Model)
+    {
+        var gridItem = new WysiwygBlockGridItem(item, WysiwygPublishedContentService);
+        items.Add(gridItem);
+    }
 }
 
 <div class="umb-block-grid__layout-container">
-    @foreach (var item in Model)
+    @foreach (var item in items)
     {
+        if (item == null || item.Content == null || item.Content.ContentType == null)
+        {
+            continue;
+        }
         var areasTemplates = new List<string>();
         for (var i = 1; i <= 50; i++)
         {

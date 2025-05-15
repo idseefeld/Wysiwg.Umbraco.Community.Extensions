@@ -1,6 +1,6 @@
 ﻿[
   {
-    "outputFile": "assets/styles/customblockgrid.css",
-    "inputFile": "assets/styles/customblockgrid.scss"
+    "outputFile": "BlockGridStyles/wysiwyg-default-blockgrid.css",
+    "inputFile": "BlockGridStyles/wysiwyg-default-blockgrid.scss"
   }
 ]

@@ -1,14 +1,18 @@
 @using Microsoft.AspNetCore.Html
 @using Umbraco.Cms.Core.Models.Blocks
 @using WysiwgUmbracoCommunityExtensions.Extensions
+@using WysiwgUmbracoCommunityExtensions.Services
 @using WysiwgUmbracoCommunityExtensions.ViewModels
-@model BlockGridItem
+@model WysiwygBlockGridItem
 @{
     var content = new Wysiwg65_paragraph(Model.Content);
     if (content?.Text == null) return;
 
+    // var pageBackgroundColor = WysiwygPublishedContentService.GetColor(Model.BackgroundColor);
+
     var settings = new Wysiwg65_paragraphSettings(Model.Settings);
-    var colorStyle = string.IsNullOrEmpty(settings?.Color?.Color) ? string.Empty : $"color: {settings?.Color?.Color};";
+    var color = WysiwygPublishedContentService.GetColor(settings?.Color);
+    var colorStyle = string.IsNullOrEmpty(color) ? string.Empty :color.GetColorStyle();
     var minHeightStyle = string.IsNullOrEmpty(settings?.MinHeight) ? string.Empty : $"min-height: {settings.MinHeight};";
 
     var inlineStyles = $"{colorStyle}{minHeightStyle}";

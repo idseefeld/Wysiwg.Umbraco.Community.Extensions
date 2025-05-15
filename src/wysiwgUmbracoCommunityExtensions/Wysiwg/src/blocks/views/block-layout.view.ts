@@ -30,7 +30,7 @@ const blockLayoutInlineStyleDefaults: StyleInfo = {
   backgroundImage: "none",
   backgroundPosition: "inherit",
   backgroundRepeat: "no-repeat",
-  backgroundColor: "transparent",
+  backgroundColor: "",
   padding: undefined,
   minHeight: "0",
 }
@@ -58,6 +58,9 @@ export class WysiwgBlockLayoutView
   @state()
   private isfirstElement = false;
 
+  @state()
+  private pageBackgroundColor: string | undefined = undefined;
+
   private get backgroundStyles() {
     return {
       backgroundImage: this.backgroundStyleMap.backgroundImage,
@@ -81,6 +84,8 @@ export class WysiwgBlockLayoutView
   }
 
   override async prozessSettings(gridValues: UmbBlockGridValueModel) {
+    const contentKey = "";// get from URL segment with RouteProvider?
+
     if (gridValues.settingsData?.length) {
       const viewElement = this as UmbBlockEditorCustomViewElement;
       const layouts = gridValues.layout["Umbraco.BlockGrid"];
@@ -98,7 +103,7 @@ export class WysiwgBlockLayoutView
         (s) => s.key === layout?.settingsKey
       );
       const properties = setting?.values as BlockGridLayoutModel[] ?? [];
-      this.getBackgroudStyle(properties);
+      this.setBackgroudStyle(properties);
       const backgroundImage = properties?.find((v) => v.alias === "backgroundImage")?.value as MediaPickerValueModel;
       const mediaKey = backgroundImage?.length
         ? backgroundImage[0].mediaKey
@@ -106,9 +111,17 @@ export class WysiwgBlockLayoutView
       await this.#requestImageUrl(mediaKey)
         .then((data) => {
           if (data !== undefined && data !== "error") {
-            this.getBackgroudImageStyle(data);
+            this.setBackgroudImageStyle(data);
           }
         });
+      if (!contentKey) {
+        await this.#requestBackgroundColor(contentKey.toString())
+          .then((data) => {
+            if (data !== undefined && data !== "error") {
+              this.pageBackgroundColor = data;
+            }
+          });
+      }
     }
   }
 
@@ -124,19 +137,23 @@ export class WysiwgBlockLayoutView
     }
   }
 
-  getBackgroudStyle(properties: BlockGridLayoutModel[]) {
+  setBackgroudStyle(properties: BlockGridLayoutModel[]) {
     const inlineStyles = this.backgroundStyleDefaults;
 
     if (properties?.length) {
-      const backgroundColor = (
+      const settingsbackgroundColor = (
         (properties?.find((v) => v.alias === "backgroundColor")?.value ?? {}) as {
           label: string;
           value: string;
         }
       ).value;
+      const backgroundColor = !settingsbackgroundColor
+        ? !this.pageBackgroundColor ? "" : this.pageBackgroundColor
+        : settingsbackgroundColor;
+
       const transparentBackground = this.isTransparentColor(backgroundColor);
       if (backgroundColor) {
-        inlineStyles.backgroundColor = transparentBackground ? "transparent" : backgroundColor;
+        inlineStyles.backgroundColor = !transparentBackground ? backgroundColor : "";
       }
 
       const minHeight = (properties?.find((v) => v.alias === "minHeight")?.value ?? "0").toString();
@@ -153,7 +170,7 @@ export class WysiwgBlockLayoutView
     this.backgroundStyleMap = inlineStyles;
   }
 
-  getBackgroudImageStyle(imageUrl?: String) {
+  setBackgroudImageStyle(imageUrl?: String) {
     const inlineStyles = this.backgroundStyles;
 
     const padding = inlineStyles.padding ?? blockLayoutInlineStyleDefaults.padding;
@@ -182,6 +199,28 @@ export class WysiwgBlockLayoutView
     };
     const { data, error } =
       await WysiwgUmbracoCommunityExtensionsService.imageUrl(options);
+
+    if (error) {
+      console.error(error);
+      return "error";
+    }
+
+    if (data !== undefined) {
+      return data;
+    }
+  }
+
+  async #requestBackgroundColor(mediaItemId: string) {
+    if (!mediaItemId) {
+      return;
+    }
+    const options: ImageUrlData = {
+      query: {
+        mediaItemId,
+      },
+    };
+    const { data, error } =
+      await WysiwgUmbracoCommunityExtensionsService.siteBackgroundColor(options);
 
     if (error) {
       console.error(error);

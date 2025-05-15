@@ -13,9 +13,9 @@
 
     @if (!string.IsNullOrEmpty(content.FigCaption))
     {
-        if (!string.IsNullOrEmpty(content.CaptionColor?.Color))
+        if (!string.IsNullOrEmpty(content.CaptionColor))
         {
-            <figcaption style="color: @(content.CaptionColor?.Color ?? "#000")">
+            <figcaption style="color: @(content.CaptionColor ?? "#000")">
                 @content.FigCaption
             </figcaption>
         }
