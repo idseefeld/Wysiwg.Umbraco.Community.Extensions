@@ -4,6 +4,7 @@ import {
   customElement,
   css,
   unsafeHTML,
+  PropertyValues,
 } from "@umbraco-cms/backoffice/external/lit";
 import type { UmbBlockEditorCustomViewElement } from "@umbraco-cms/backoffice/block-custom-view";
 import WysiwgBaseBlockEditorCustomViewElement from "./wysiwg-base-block-editor-custom.view";
@@ -13,6 +14,23 @@ const customElementName = "wysiwg-block-paragraph-view";
 export class WysiwgBlockParagraphView
   extends WysiwgBaseBlockEditorCustomViewElement {
 
+  protected override update(changedProperties: PropertyValues): void {
+    super.update(changedProperties);
+    if (changedProperties.has("content")) {
+      const paragraphElement = this.shadowRoot?.querySelector('div.paragraph') as HTMLFormElement;
+      if (!paragraphElement) return;
+
+      const links = paragraphElement.querySelector('a');
+      if (links) {
+        links.addEventListener("click", (e) => {
+          e.preventDefault();
+        });
+      }
+
+      this.requestUpdate();
+    }
+
+  }
   override render() {
     let color = { label: "", value: "" };
     let inlineStyle = "";
@@ -32,7 +50,7 @@ export class WysiwgBlockParagraphView
       }
 
       const minHeight = (settings?.find((v) => v.alias === "minHeight")?.value ?? "0").toString();
-      if(minHeight) {
+      if (minHeight) {
         inlineStyle += `min-height: ${minHeight};`;
       }
     }
