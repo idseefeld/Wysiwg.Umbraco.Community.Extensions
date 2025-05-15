@@ -1,13 +1,17 @@
 using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Cache;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Extensions;
 using static Umbraco.Cms.Core.PropertyEditors.ValueConverters.ColorPickerValueConverter;
 
 namespace WysiwgUmbracoCommunityExtensions.Services
 {
-    public class WysiwygPublishedContentService(IPublishedContentQuery publishedContentQuery) : IWysiwygPublishedContentService
+    /// <summary>
+    /// Add as transient to the DI container. See: ..\Composers\wysiwgUmbracoCommunityExtensionsApiComposer.cs
+    /// </summary>
+    /// <param name="publishedContentQuery"></param>
+    public class WysiwygPublishedContentService(IPublishedContentQuery publishedContentQuery, AppCaches appCaches) : IWysiwygPublishedContentService
     {
-
         public static string? GetColor(PickedColor? pickedColor) { return pickedColor?.Color; }
 
         public static string? GetColor(string? color) { return color; }
@@ -21,22 +25,58 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         }
         public string GetBackgroundColor(Guid contentKey)
         {
+            return GetBackgroundColorInternal(contentKey);
+        }
+        public string GetSiteBackgroundColor(string contentKey)
+        {
+            if (string.IsNullOrEmpty(contentKey) || !Guid.TryParse(contentKey, out var guid))
+            { return string.Empty; }
+
+            return GetSiteBackgroundColor(guid);
+        }
+        public string GetSiteBackgroundColor(Guid contentKey)
+        {
+            return GetBackgroundColorInternal(contentKey, true);
+        }
+
+        private string GetBackgroundColorInternal(Guid contentKey, bool rootOnly = false)
+        {
+            var color = string.Empty;
+
+            if (contentKey == Guid.Empty)
+            { return color; }
+
             var content = publishedContentQuery.Content(contentKey);
-            var color = GetColor(content);
-            if (string.IsNullOrEmpty(color))
+            if (content == null)
+            { return color; }
+
+            if (rootOnly)
             {
-                color = GetColor(content?.Root());
+                color = GetColorByPropertyAlias(content.Root(), "siteBackgroundColor");
             }
+            else
+            {
+                color = GetColorByPropertyAlias(content, "pageBackgroundColor");
+                if (string.IsNullOrEmpty(color))
+                {
+                    color = GetColorByPropertyAlias(content.Root(), "siteBackgroundColor");
+                }
+            }
+
             return color ?? string.Empty;
         }
-        private static string? GetColor(IPublishedContent? content)
+
+        private string GetColorByPropertyAlias(IPublishedContent content, string propertyAlias)
         {
-            if (content == null)
-            { return null; }
+            string? color = appCaches.RequestCache.GetCacheItem(
+                $"WysiwygPublishedContentService.GetColorByPropertyAlias-{content.Key}-{propertyAlias}",
+                () => GetColorByPropertyAliasInternal(content, propertyAlias));
 
-            string? color = null;
-
-            var propertyAlias = "siteBackgroundColor";
+            return color ?? string.Empty;
+        }
+        private static string GetColorByPropertyAliasInternal(IPublishedContent content, string propertyAlias)
+        {
+            string color = string.Empty;
             if (content.HasProperty(propertyAlias))
             {
                 var backgroundColor = content.GetProperty(propertyAlias);
