@@ -6,7 +6,6 @@ import {
   unsafeHTML,
   PropertyValues,
 } from "@umbraco-cms/backoffice/external/lit";
-import type { UmbBlockEditorCustomViewElement } from "@umbraco-cms/backoffice/block-custom-view";
 import WysiwgBaseBlockEditorCustomViewElement from "./wysiwg-base-block-editor-custom.view";
 
 const customElementName = "wysiwg-block-paragraph-view";
@@ -16,51 +15,32 @@ export class WysiwgBlockParagraphView
 
   protected override update(changedProperties: PropertyValues): void {
     super.update(changedProperties);
-    if (changedProperties.has("content")) {
-      const paragraphElement = this.shadowRoot?.querySelector('div.paragraph') as HTMLFormElement;
-      if (!paragraphElement) return;
 
-      const links = paragraphElement.querySelector('a');
-      if (links) {
-        links.addEventListener("click", (e) => {
-          e.preventDefault();
-        });
-      }
+    if (changedProperties.has("content")) {
+      this.disableLinks();
+    }
+  }
+
+  private disableLinks() {
+    const paragraphElement = this.shadowRoot?.querySelector('div.paragraph') as HTMLFormElement;
+    if (!paragraphElement) return;
+
+    const links = paragraphElement.querySelector('a');
+    if (links) {
+      links.addEventListener("click", (e) => {
+        e.preventDefault();
+      });
 
       this.requestUpdate();
     }
-
   }
-  override render() {
-    let color = { label: "", value: "" };
-    let inlineStyle = "";
-    if (this.datasetSettings?.length) {
-      const layout = (this as UmbBlockEditorCustomViewElement).layout;
-      const settings = this.datasetSettings.filter(
-        (s) => layout?.settingsKey === s.key
-      )[0]?.values;
 
-      const colorSetting =
-        (settings.filter((v) => v.alias === "color")[0]?.value as {
-          label: string;
-          value: string;
-        }) ?? color;
-      if (colorSetting?.value) {
-        inlineStyle = `color: ${colorSetting?.value};`;
-      }
+  render() {
+    const settings = this.getLayoutSettings()
 
-      const minHeight = (settings?.find((v) => v.alias === "minHeight")?.value ?? "0").toString();
-      if (minHeight) {
-        inlineStyle += `min-height: ${minHeight};`;
-      }
-    }
-
-    if (inlineStyle) {
-      inlineStyle = `style="${inlineStyle}"`;
-    }
     var property = this.content?.text as { blocks: {}; markup: string };
     var markup = property?.markup;
-    const innerHtml = `<div class="paragraph" ${inlineStyle}>${markup}</div>`;
+    const innerHtml = `<div class="paragraph" ${settings.inlineStyle}>${markup}</div>`;
     return html`${unsafeHTML(innerHtml)}`;
   }
 

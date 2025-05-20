@@ -1,8 +1,13 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Web.Common.PublishedModels;
+@using WysiwgUmbracoCommunityExtensions.Services
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<SimpleRootPage>
+@inject IWysiwygPublishedContentService WysiwygPublishedContentService
 @{
     Layout = null;
-    var lang = System.Threading.Thread.CurrentThread.CurrentCulture.Name;
+    var culture = System.Threading.Thread.CurrentThread.CurrentCulture;
+    var lang = culture.Name;
+    var siteBackgroundColor = WysiwygPublishedContentService.GetSiteBackgroundColor(Model.Key);
+    var pageBackgroundColor = WysiwygPublishedContentService.GetBackgroundColor(Model.Key);
 }
 <!DOCTYPE html>
 <html lang="@lang">
@@ -17,8 +22,12 @@
     <link href="~/styles/Demo.min.css" rel="stylesheet" />
     <link href="~/styles/customblockgrid.min.css" rel="stylesheet" />
     <style>
-        body{
-            background-color: @(Model.PageBackgroundColor ?? "inherit");
+        body {
+            background-color: @(siteBackgroundColor ?? "inherit");
+        }
+
+        #canvas {
+            background-color: @(pageBackgroundColor ?? "inherit");
         }
     </style>
 </head>

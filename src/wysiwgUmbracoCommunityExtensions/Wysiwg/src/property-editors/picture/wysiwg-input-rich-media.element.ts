@@ -2,7 +2,7 @@ import { UmbChangeEvent } from "@umbraco-cms/backoffice/event";
 import { css, customElement, html, nothing, property, repeat, state } from "@umbraco-cms/backoffice/external/lit";
 import { UmbId } from "@umbraco-cms/backoffice/id";
 import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
-import { UMB_IMAGE_CROPPER_EDITOR_MODAL, UMB_MEDIA_ITEM_REPOSITORY_ALIAS, UMB_MEDIA_PICKER_MODAL, UmbCropModel, UmbMediaItemModel, UmbMediaPickerPropertyValueEntry, UmbUploadableItem } from "@umbraco-cms/backoffice/media";
+import { UMB_IMAGE_CROPPER_EDITOR_MODAL, UMB_MEDIA_ITEM_REPOSITORY_ALIAS, UMB_MEDIA_PICKER_MODAL, UmbCropModel, UmbMediaItemModel, UmbMediaPickerPropertyValueEntry } from "@umbraco-cms/backoffice/media";
 import { UMB_MODAL_MANAGER_CONTEXT, umbConfirmModal } from "@umbraco-cms/backoffice/modal";
 import { UmbRepositoryItemsManager } from "@umbraco-cms/backoffice/repository";
 import { UmbModalRouteBuilder, UmbModalRouteRegistrationController } from "@umbraco-cms/backoffice/router";
@@ -12,7 +12,7 @@ import { UMB_VALIDATION_EMPTY_LOCALIZATION_KEY, UmbFormControlMixin } from "@umb
 import { UmbVariantId } from "@umbraco-cms/backoffice/variant";
 import { WysiwgCroppedImageElement } from "../../blocks/components/wysiwg-cropped-image.element";
 import { WysiwgMediaPickerPropertyValueEntry, WysiwgMediaPickerPropertyValues } from "./types";
-import { UmbPropertyValueChangeEvent } from "@umbraco-cms/backoffice/property-editor";
+import { UmbUploadableItem } from "@umbraco-cms/backoffice/dropzone";
 
 type RichMediaCardModel = {
   unique: string;
@@ -434,7 +434,7 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
       }
     }
     this.value = newValue;
-    this.dispatchEvent(new UmbPropertyValueChangeEvent());
+    this.dispatchEvent(new UmbChangeEvent());
   }
 
   #renderActions(item: RichMediaCardModel) {

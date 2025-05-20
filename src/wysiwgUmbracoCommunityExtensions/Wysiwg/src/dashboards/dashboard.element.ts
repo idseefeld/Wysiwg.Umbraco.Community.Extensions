@@ -53,7 +53,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
 
     this.consumeContext(UMB_NOTIFICATION_CONTEXT, (notificationContext) => {
       this.#notificationContext = notificationContext;
-      this._commonUtilities = new CommonUtilities(this.localize, notificationContext);
+      this._commonUtilities = new CommonUtilities(this.localize, this.#notificationContext);
     });
 
     this.consumeContext(UMB_CURRENT_USER_CONTEXT, (currentUserContext) => {

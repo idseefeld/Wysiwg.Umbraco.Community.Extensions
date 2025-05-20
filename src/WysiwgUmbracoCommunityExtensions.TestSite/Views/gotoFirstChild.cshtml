@@ -1,0 +1,10 @@
+@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@{
+    Layout = null;
+    var firstChild = Model?.Children()?.FirstOrDefault();
+    if (firstChild != null)
+    {
+        Context.Response.Redirect(firstChild.Url());
+    }
+}

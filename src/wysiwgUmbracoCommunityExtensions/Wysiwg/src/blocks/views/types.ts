@@ -27,3 +27,7 @@ export type ColorType = {
   value: string;
 };
 
+export type LayoutSettings = {
+  size: string,
+  inlineStyle: string
+};

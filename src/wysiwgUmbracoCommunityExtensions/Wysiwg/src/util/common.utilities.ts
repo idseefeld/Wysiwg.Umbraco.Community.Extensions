@@ -7,12 +7,14 @@ import { WysiwgUmbracoCommunityExtensionsService } from "../api";
 
 export class CommonUtilities {
   private _localize: UmbLocalizationController;
-  private _notificationContext: UmbNotificationContext;
+  private _notificationContext?: UmbNotificationContext;
 
-  constructor(localize: UmbLocalizationController, notificationContext: UmbNotificationContext) {
+  constructor(localize: UmbLocalizationController, notificationContext?: UmbNotificationContext) {
     this._localize = localize;
     this._notificationContext = notificationContext;
   }
+
+  public destroy(){}
 
   public async getUmbracoVersion(notificationContext?: UmbNotificationContext): Promise<SemVersion | undefined> {
     if (!notificationContext) { return; }
