@@ -1,16 +1,16 @@
 import { html as s, styleMap as T, nothing as A, css as B, property as l, state as f, customElement as W, ifDefined as z } from "@umbraco-cms/backoffice/external/lit";
 import { UmbLitElement as Q } from "@umbraco-cms/backoffice/lit-element";
 import { UmbTextStyles as D } from "@umbraco-cms/backoffice/style";
-import "./headline.view-C0xQLh0P.js";
-import "./paragraph.view-C_ly2Ujn.js";
-import "./picture-with-crop.view-FUc4QusA.js";
-import "./cropped-picture.view-Bhbhnqbz.js";
+import "./headline.view-DntOrAj0.js";
+import "./paragraph.view-Baz2iLtC.js";
+import "./picture-with-crop.view-yRN1eSVr.js";
+import "./cropped-picture.view-C48QUSf1.js";
 import "./wysiwg-image-crops.element-WzjeAO76.js";
 import "./wysiwg-image-and-crop-picker.element-pFNAOPFJ.js";
 import { UUICardElement as X, demandCustomElement as j } from "@umbraco-cms/backoffice/external/uui";
 import { W as M } from "./services.gen-ya8kz8Ij.js";
-import { U as ue } from "./dashboard.element-ClEh_KFU.js";
-import { W as pe } from "./wysiwg-base-block-editor-custom.view-Bzwoj4f9.js";
+import { U as ue } from "./dashboard.element-KXYT37Cl.js";
+import { W as pe } from "./wysiwg-base-block-editor-custom.view-BLbrLgrQ.js";
 import { UmbChangeEvent as ge } from "@umbraco-cms/backoffice/event";
 var he = Object.defineProperty, me = Object.getOwnPropertyDescriptor, Z = (e) => {
   throw TypeError(e);
@@ -746,4 +746,4 @@ export {
   m as a,
   Je as b
 };
-//# sourceMappingURL=wysiwg-cropped-image.element-C_nFCFKF.js.map
+//# sourceMappingURL=wysiwg-cropped-image.element-ChvZCHKW.js.map

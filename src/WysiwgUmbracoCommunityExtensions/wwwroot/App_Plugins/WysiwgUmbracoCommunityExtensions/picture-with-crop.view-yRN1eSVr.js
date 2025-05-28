@@ -1,5 +1,5 @@
 import { html as l, unsafeHTML as u, css as p, property as v, customElement as w } from "@umbraco-cms/backoffice/external/lit";
-import { W as y } from "./wysiwg-base-block-editor-custom.view-Bzwoj4f9.js";
+import { W as y } from "./wysiwg-base-block-editor-custom.view-BLbrLgrQ.js";
 var b = Object.defineProperty, $ = Object.getOwnPropertyDescriptor, d = (e, o, r, s) => {
   for (var t = s > 1 ? void 0 : s ? $(o, r) : o, a = e.length - 1, i; a >= 0; a--)
     (i = e[a]) && (t = (s ? i(o, r, t) : i(t)) || t);
@@ -7,14 +7,14 @@ var b = Object.defineProperty, $ = Object.getOwnPropertyDescriptor, d = (e, o, r
 };
 let n = class extends y {
   constructor() {
-    super(...arguments), this.defaultColor = { label: "Black", value: "#000" };
+    super(...arguments), this._defaultColor = { label: "Black", value: "#000" };
   }
   render() {
     var i, c;
     const e = this.content;
     if (!e)
       return l`<div class="error">Invalid data</div>`;
-    const o = (e == null ? void 0 : e.mediaItem) ?? [], r = o.length ? o[0].mediaKey : "", s = (e == null ? void 0 : e.cropAlias[0]) ?? "", t = ((i = e == null ? void 0 : e.captionColor) == null ? void 0 : i.value) ?? this.defaultColor.value, a = e == null ? void 0 : e.figCaption;
+    const o = (e == null ? void 0 : e.mediaItem) ?? [], r = o.length ? o[0].mediaKey : "", s = (e == null ? void 0 : e.cropAlias[0]) ?? "", t = ((i = e == null ? void 0 : e.captionColor) == null ? void 0 : i.value) ?? this._defaultColor.value, a = e == null ? void 0 : e.figCaption;
     if (r) {
       const g = l`<wysiwg-image-crop
         mediaKey="${r}"
@@ -54,9 +54,9 @@ d([
 n = d([
   w("wysiwg-picturewithcrop-view")
 ], n);
-const P = n;
+const x = n;
 export {
   n as PictureWithCropCustomView,
-  P as default
+  x as default
 };
-//# sourceMappingURL=picture-with-crop.view-FUc4QusA.js.map
+//# sourceMappingURL=picture-with-crop.view-yRN1eSVr.js.map

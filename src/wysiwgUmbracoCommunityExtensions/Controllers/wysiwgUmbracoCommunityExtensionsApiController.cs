@@ -95,7 +95,7 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
             { allowedWidth = 10; }
             var mediaItem = publishedContent.Media(mediaItemId);
 
-            //ToDo: frontend resolves mediaItemId to Umbraco.Cms.Core.Models.MediaWithCrops and GetCropUrl respects localCrops. How can I achieve same behaviour here? Idea: MediaItems crop is not the same as the MediaPicker item which might has its own crop configuration. Thus I need another method ór more input parameters...
+            //ToDo: frontend resolves mediaItemId to Umbraco.Cms.Core.Models.MediaWithCrops and GetCropUrl respects localCrops. How can I achieve same behavior here? Idea: MediaItems crop is not the same as the MediaPicker item which might has its own crop configuration. Thus I need another method ór more input parameters...
 
             var umbracoFile = mediaItem?.GetProperty(MediaConventions.File)?.GetValue() as Umbraco.Cms.Core.PropertyEditors.ValueConverters.ImageCropperValue;
             var hasCrop = (umbracoFile?.Crops) != null && umbracoFile.Crops.FirstOrDefault(c => c.Alias.InvariantEquals(cropAlias)) != null;
@@ -107,7 +107,7 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
             }
             else
             {
-                logger.LogWarning("There are no crops definded on the Image data types cropper configuration! You should add: square, portrait and landscape");
+                logger.LogWarning("There are no crops defined on the Image data types cropper configuration! You should add: square, portrait and landscape");
                 url = mediaItem?.GetCropUrl(width: allowedWidth);
             }
 
@@ -218,24 +218,6 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
             url = mediaItem?.GetCropUrl(width: allowedWidth, cropAlias: cropAlias);
             return url == null ? ImageUrl(mediaItemId) : Ok(url);
         }
-
-        // I could not figure out how to use the VersionStatus enum in Typescript
-        //[HttpGet("updateStatus")]
-        //[ProducesResponseType<VersionStatus>(StatusCodes.Status200OK)]
-        //[ProducesResponseType<VersionStatus>(StatusCodes.Status500InternalServerError)]
-        //public async Task<IActionResult> GetUpdateStatus()
-        //{
-        //    try
-        //    {
-        //        var version = await setupService.GetVersionStatus();
-        //        return Ok(version);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        logger.LogError(ex, "Error checking version");
-        //        return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-        //    }
-        //}
 
         [HttpGet("updateStatusCode")]
         [ProducesResponseType<int>(StatusCodes.Status200OK)]

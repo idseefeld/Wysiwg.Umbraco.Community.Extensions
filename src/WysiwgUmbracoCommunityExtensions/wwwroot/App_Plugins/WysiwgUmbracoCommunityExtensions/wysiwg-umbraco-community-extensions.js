@@ -5,28 +5,30 @@ const e = [
     type: "backofficeEntryPoint",
     js: () => import("./entrypoint-Cbcjt8C-.js")
   }
-], a = {
-  type: "sectionView",
-  alias: "WysiwgDashboardElement.Section",
-  name: "WYSIWYG Extensions Section",
-  element: () => import("./dashboard.element-ClEh_KFU.js").then((i) => i.d),
-  meta: {
-    label: "WYSIWYG",
-    icon: "icon-settings",
-    pathname: "wysiwg-section"
-  },
-  conditions: [
-    {
-      alias: "Umb.Condition.SectionAlias",
-      match: "Umb.Section.Packages"
-    }
-  ]
-}, r = [
+], a = [
+  {
+    type: "sectionView",
+    alias: "WysiwgDashboardElement.Section",
+    name: "WYSIWYG Extensions Section",
+    element: () => import("./dashboard.element-KXYT37Cl.js").then((i) => i.d),
+    meta: {
+      label: "WYSIWYG",
+      icon: "icon-settings",
+      pathname: "wysiwg-section"
+    },
+    conditions: [
+      {
+        alias: "Umb.Condition.SectionAlias",
+        match: "Umb.Section.Packages"
+      }
+    ]
+  }
+], r = [
   {
     type: "bundle",
     name: "wysiwg block components",
     alias: "wysiwg.block.components",
-    js: () => import("./index-BpfUbrJL.js")
+    js: () => import("./index-CMGJlljz.js")
   }
 ], o = "wysiwg65_";
 function n() {
@@ -40,7 +42,7 @@ const s = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.Layouts",
     name: "Block Editor Custom View for Layouts",
-    element: () => import("./wysiwg-cropped-image.element-C_nFCFKF.js").then((i) => i.b),
+    element: () => import("./wysiwg-cropped-image.element-ChvZCHKW.js").then((i) => i.b),
     forContentTypeAlias: n(),
     forBlockEditor: "block-grid"
   },
@@ -48,7 +50,7 @@ const s = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockHeadline",
     name: "Block Editor Custom View for Headline",
-    element: () => import("./headline.view-C0xQLh0P.js"),
+    element: () => import("./headline.view-DntOrAj0.js"),
     forContentTypeAlias: o + "headline",
     forBlockEditor: "block-grid"
   },
@@ -56,7 +58,7 @@ const s = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockParagraph",
     name: "Block Editor Custom View for Paragraph",
-    element: () => import("./paragraph.view-C_ly2Ujn.js"),
+    element: () => import("./paragraph.view-Baz2iLtC.js"),
     forContentTypeAlias: o + "paragraph",
     forBlockEditor: "block-grid"
   },
@@ -64,7 +66,7 @@ const s = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.pictureWithCrop",
     name: "Block Editor Custom View for Picture with Crop",
-    element: () => import("./picture-with-crop.view-FUc4QusA.js"),
+    element: () => import("./picture-with-crop.view-yRN1eSVr.js"),
     forContentTypeAlias: o + "pictureWithCrop",
     forBlockEditor: "block-grid"
   },
@@ -72,54 +74,14 @@ const s = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.croppedPicture",
     name: "Block Editor Custom View for Cropped Picture",
-    element: () => import("./cropped-picture.view-Bhbhnqbz.js"),
+    element: () => import("./cropped-picture.view-C48QUSf1.js"),
     forContentTypeAlias: o + "croppedPicture",
     forBlockEditor: "block-grid"
   }
 ], l = [
   ...r,
   ...s
-], c = {
-  type: "propertyEditorSchema",
-  name: "Media and Crop Picker",
-  alias: "Wysiwg.ImageAndCropPicker",
-  meta: {
-    defaultPropertyEditorUiAlias: "wysiwg.PropertyEditorUi.ImageAndCropPicker",
-    settings: {
-      properties: [
-        {
-          alias: "filter",
-          label: "Accepted types",
-          description: "Limit to specific types. Currently only Image and Folder types are supported.",
-          propertyEditorUiAlias: "Umb.PropertyEditorUi.MediaTypePicker"
-        },
-        {
-          alias: "startNodeId",
-          label: "Start node",
-          propertyEditorUiAlias: "Umb.PropertyEditorUi.MediaEntityPicker",
-          config: [{ alias: "validationLimit", value: { min: 0, max: 1 } }]
-        },
-        {
-          alias: "enableLocalFocalPoint",
-          label: "Enable Focal Point",
-          propertyEditorUiAlias: "Umb.PropertyEditorUi.Toggle"
-        },
-        {
-          alias: "crops",
-          label: "Image Crops",
-          description: "Local crops, stored on document",
-          propertyEditorUiAlias: "Wysiwg.ImageCropsWithDefaultConfiguration"
-        },
-        {
-          alias: "ignoreUserStartNodes",
-          label: "Ignore User Start Nodes",
-          description: "Selecting this option allows a user to choose nodes that they normally dont have access to.",
-          propertyEditorUiAlias: "Umb.PropertyEditorUi.Toggle"
-        }
-      ]
-    }
-  }
-}, m = [
+], p = [
   {
     type: "propertyEditorUi",
     alias: "Wysiwg.ImageCropsWithDefaultConfiguration",
@@ -144,12 +106,50 @@ const s = [
       supportsReadOnly: !0
     }
   },
-  c
-], p = [
-  ...m
-], y = [
+  {
+    type: "propertyEditorSchema",
+    name: "Media and Crop Picker",
+    alias: "Wysiwg.ImageAndCropPicker",
+    meta: {
+      defaultPropertyEditorUiAlias: "wysiwg.PropertyEditorUi.ImageAndCropPicker",
+      settings: {
+        properties: [
+          {
+            alias: "filter",
+            label: "Accepted types",
+            description: "Limit to specific types. Currently only Image and Folder types are supported.",
+            propertyEditorUiAlias: "Umb.PropertyEditorUi.MediaTypePicker"
+          },
+          {
+            alias: "startNodeId",
+            label: "Start node",
+            propertyEditorUiAlias: "Umb.PropertyEditorUi.MediaEntityPicker",
+            config: [{ alias: "validationLimit", value: { min: 0, max: 1 } }]
+          },
+          {
+            alias: "enableLocalFocalPoint",
+            label: "Enable Focal Point",
+            propertyEditorUiAlias: "Umb.PropertyEditorUi.Toggle"
+          },
+          {
+            alias: "crops",
+            label: "Image Crops",
+            description: "Local crops, stored on document",
+            propertyEditorUiAlias: "Wysiwg.ImageCropsWithDefaultConfiguration"
+          },
+          {
+            alias: "ignoreUserStartNodes",
+            label: "Ignore User Start Nodes",
+            description: "Selecting this option allows a user to choose nodes that they normally dont have access to.",
+            propertyEditorUiAlias: "Umb.PropertyEditorUi.Toggle"
+          }
+        ]
+      }
+    }
+  }
+], c = [
   ...p
-], d = [
+], m = [
   {
     type: "localization",
     alias: "WysiwgUmbracoCommunityExtensions.Localize.En",
@@ -195,14 +195,22 @@ const s = [
     },
     js: "/App_Plugins/WysiwgUmbracoCommunityExtensions/Localization/de.js"
   }
-], g = [
+], y = [
+  {
+    type: "globalContext",
+    alias: "Wysiwg.GlobalContext.BlockGrid",
+    name: "Wysiwg BlockGrid Context",
+    api: () => import("./wysiwg.context-DFPEezZn.js")
+  }
+], d = [
   ...e,
-  a,
-  ...l,
+  ...a,
   ...y,
-  ...d
+  ...l,
+  ...c,
+  ...m
 ];
 export {
-  g as manifests
+  d as manifests
 };
 //# sourceMappingURL=wysiwg-umbraco-community-extensions.js.map

@@ -49,23 +49,23 @@ export class WysiwgBaseBlockEditorCustomViewElement
 
   protected _debug = Debugging;
 
-  #datasetContext?: UmbPropertyDatasetContext;
+  private _datasetContext?: UmbPropertyDatasetContext;
 
-  #notificationContext: UmbNotificationContext | undefined = undefined;
+  private _notificationContext: UmbNotificationContext | undefined = undefined;
 
-  #workspaceContext: UmbDocumentWorkspaceContext | undefined = undefined;
+  private _workspaceContext: UmbDocumentWorkspaceContext | undefined = undefined;
 
   constructor() {
     super();
 
     this.consumeContext(UMB_NOTIFICATION_CONTEXT, (notificationContext) => {
-      this.#notificationContext = notificationContext;
-      this._commonUtilities = new CommonUtilities(this.localize, this.#notificationContext);//ToDo: should be singleton via context(?)
+      this._notificationContext = notificationContext;
+      this._commonUtilities = new CommonUtilities(this.localize, this._notificationContext);//ToDo: should be singleton via context(?)
     });
 
     this.consumeContext(UMB_DOCUMENT_WORKSPACE_CONTEXT, (context) => {
-      this.#workspaceContext = context;
-      this.observe(this.#workspaceContext?.unique, (key) => {
+      this._workspaceContext = context;
+      this.observe(this._workspaceContext?.unique, (key) => {
         if (key) {
           this.documentUnique = key;
         }
@@ -92,13 +92,13 @@ export class WysiwgBaseBlockEditorCustomViewElement
     try {
       super.disconnectedCallback();
 
-      // this.#workspaceContext?.destroy();
-      // this.#datasetContext?.destroy();
+      // this._workspaceContext?.destroy();
+      // this._datasetContext?.destroy();
       // this._commonUtilities?.destroy();
 
-      this.#workspaceContext = undefined;
-      this.#datasetContext = undefined;
-      this.#notificationContext = undefined;
+      this._workspaceContext = undefined;
+      this._datasetContext = undefined;
+      this._notificationContext = undefined;
       this._commonUtilities = undefined;
     } catch (e) {
       console.error("Error in disconnectedCallback:", e);
@@ -115,7 +115,7 @@ export class WysiwgBaseBlockEditorCustomViewElement
   protected async setUpdateStatus() {
     if (this.updateStatus) return;
 
-    await this._commonUtilities?.getUpdateStatus(this.#notificationContext).then((status) => {
+    await this._commonUtilities?.getUpdateStatus(this._notificationContext).then((status) => {
       if (status) {
         this.updateStatus = status;
       }
@@ -179,9 +179,9 @@ export class WysiwgBaseBlockEditorCustomViewElement
   }
 
   protected async getSettings(context: any) {
-    this.#datasetContext = context;
+    this._datasetContext = context;
     this.observe(
-      this.#datasetContext?.properties,
+      this._datasetContext?.properties,
       async (properties) => {
         const pageProperties = properties as Array<UmbPropertyValueDataPotentiallyWithEditorAlias>;
         if (pageProperties?.length) {

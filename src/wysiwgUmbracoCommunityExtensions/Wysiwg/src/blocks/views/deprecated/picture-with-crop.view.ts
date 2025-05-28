@@ -13,7 +13,7 @@ import WysiwgBaseBlockEditorCustomViewElement from "../wysiwg-base-block-editor-
 export class PictureWithCropCustomView
   extends WysiwgBaseBlockEditorCustomViewElement {
 
-  defaultColor: ColorType = { label: "Black", value: "#000" };
+  private _defaultColor: ColorType = { label: "Black", value: "#000" };
 
   @property({ attribute: false })
   content?: UmbBlockDataType;
@@ -27,7 +27,7 @@ export class PictureWithCropCustomView
     const mediaKey = mediaItems.length ? mediaItems[0].mediaKey : "";
     const cropAlias = pictureWithCrop?.cropAlias[0] ?? "";
     const captionColor =
-      pictureWithCrop?.captionColor?.value ?? this.defaultColor.value;
+      pictureWithCrop?.captionColor?.value ?? this._defaultColor.value;
     const caption = pictureWithCrop?.figCaption;
 
     if (!mediaKey) {

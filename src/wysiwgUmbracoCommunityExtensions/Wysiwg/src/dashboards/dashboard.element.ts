@@ -46,14 +46,14 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
 
   private _commonUtilities: CommonUtilities | undefined = undefined;
 
-  #notificationContext: UmbNotificationContext | undefined = undefined;
+  private _notificationContext: UmbNotificationContext | undefined = undefined;
 
   constructor() {
     super();
 
     this.consumeContext(UMB_NOTIFICATION_CONTEXT, (notificationContext) => {
-      this.#notificationContext = notificationContext;
-      this._commonUtilities = new CommonUtilities(this.localize, this.#notificationContext);
+      this._notificationContext = notificationContext;
+      this._commonUtilities = new CommonUtilities(this.localize, this._notificationContext);
     });
 
     this.consumeContext(UMB_CURRENT_USER_CONTEXT, (currentUserContext) => {
@@ -71,16 +71,16 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
 
   }
 
-  #onChangeCulture = (ev: Event) => {
+  private _onChangeCulture = (ev: Event) => {
     const checkboxElement = ev.target as HTMLInputElement;
     this._varyByCulture = checkboxElement.checked;
   }
-  #onChangeSegment = (ev: Event) => {
+  private _onChangeSegment = (ev: Event) => {
     const checkboxElement = ev.target as HTMLInputElement;
     this._varyBySegment = checkboxElement.checked;
   }
 
-  #onClickUpdateSettings = async (ev: Event) => {
+  private _onClickUpdateSettings = async (ev: Event) => {
     const buttonElement = ev.target as UUIButtonElement;
     if (!buttonElement || buttonElement.state === "waiting") return;
     buttonElement.state = "waiting";
@@ -97,8 +97,8 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     const { data, error } = await WysiwgUmbracoCommunityExtensionsService.fixUpgrade(options);
 
     if (error) {
-      if (this.#notificationContext) {
-        this.#notificationContext.stay("danger", {
+      if (this._notificationContext) {
+        this._notificationContext.stay("danger", {
           data: {
             headline: this.localize.term("wysiwg_updateSettingsError"),
             message: `${this.localize.term("wysiwg_updateSettingsErrorDescription")} ${error}`,
@@ -110,8 +110,8 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
       return "error";
     }
     if (data !== undefined) {
-      if (this.#notificationContext) {
-        this.#notificationContext.peek("positive", {
+      if (this._notificationContext) {
+        this._notificationContext.peek("positive", {
           data: {
             headline: this.localize.term("wysiwg_updateSettingsSuccess"),
             message: `${this.localize.term("wysiwg_updateSettingsSuccessDescription")}`,
@@ -123,7 +123,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     }
   }
 
-  #onClickInstall = async (ev: Event) => {
+  _onClickInstall = async (ev: Event) => {
     const buttonElement = ev.target as UUIButtonElement;
     if (!buttonElement || buttonElement.state === "waiting") return;
     buttonElement.state = "waiting";
@@ -131,8 +131,8 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     const { data, error } = await WysiwgUmbracoCommunityExtensionsService.install();
 
     if (error) {
-      if (this.#notificationContext) {
-        this.#notificationContext.stay("danger", {
+      if (this._notificationContext) {
+        this._notificationContext.stay("danger", {
           data: {
             headline: this.localize.term("wysiwg_installError"),
             message: `${this.localize.term("wysiwg_installErrorDescription")} ${error}`,
@@ -146,8 +146,8 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
 
     if (data !== undefined) {
       if (data === "Installed") {
-        if (this.#notificationContext) {
-          this.#notificationContext.peek("positive", {
+        if (this._notificationContext) {
+          this._notificationContext.peek("positive", {
             data: {
               headline: this.localize.term("wysiwg_installSuccess"),
               message: this.localize.term("wysiwg_installSuccessDescription"),
@@ -162,7 +162,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     }
   };
 
-  #onClickUninstall = async (ev: Event) => {
+  private _onClickUninstall = async (ev: Event) => {
     const buttonElement = ev.target as UUIButtonElement;
     if (!buttonElement || buttonElement.state === "waiting") return;
 
@@ -184,8 +184,8 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     this._uninstalling = false;
 
     if (error) {
-      if (this.#notificationContext) {
-        this.#notificationContext.stay("danger", {
+      if (this._notificationContext) {
+        this._notificationContext.stay("danger", {
           data: {
             headline: this.localize.term("wysiwg_uninstallError"),
             message: `${this.localize.term("wysiwg_uninstallErrorDescription")} ${error}`,
@@ -199,8 +199,8 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
 
     if (data !== undefined) {
       if (data === "Uninstalled") {
-        if (this.#notificationContext) {
-          this.#notificationContext.peek("positive", {
+        if (this._notificationContext) {
+          this._notificationContext.peek("positive", {
             data: {
               headline: this.localize.term("wysiwg_uninstallSuccessTitle"),
               message: this.localize.term("wysiwg_uninstallSuccessDescription")
@@ -219,8 +219,8 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     const { data, error } = await WysiwgUmbracoCommunityExtensionsService.getVariations();
 
     if (error) {
-      if (this.#notificationContext) {
-        this.#notificationContext.stay("danger", {
+      if (this._notificationContext) {
+        this._notificationContext.stay("danger", {
           data: {
             headline: this.localize.term("wysiwg_variationsError"),
             message: `${this.localize.term("wysiwg_variationsErrorDescription")} ${error}`,
@@ -260,7 +260,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
   private async setUpdateStatus() {
     if (this._updateStatus) return;
 
-    await this._commonUtilities?.getUpdateStatus(this.#notificationContext).then((status) => {
+    await this._commonUtilities?.getUpdateStatus(this._notificationContext).then((status) => {
       if (status) {
         this._updateStatus = status;
       }
@@ -268,7 +268,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
   }
 
   private async setSemVersion() {
-    await this._commonUtilities?.getUmbracoVersion(this.#notificationContext).then((version) => {
+    await this._commonUtilities?.getUmbracoVersion(this._notificationContext).then((version) => {
       if (version) {
         this._version = version;
       }
@@ -291,7 +291,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
         <uui-button
           color="positive"
           look="primary"
-          @click="${this.#onClickInstall}"
+          @click="${this._onClickInstall}"
         >
         ${buttonLabel}
         </uui-button>
@@ -325,14 +325,14 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
         </umb-localize>
         <p>
           <uui-checkbox
-            @change="${this.#onChangeCulture}"
+            @change="${this._onChangeCulture}"
             ?checked=${this._varyByCulture}>Vary by culture</uui-checkbox><br />
           ${this.renderSegmentCheckbox()}
         </p>
         <uui-button
           color="positive"
           look="primary"
-          @click="${this.#onClickUpdateSettings}"
+          @click="${this._onClickUpdateSettings}"
         >
         ${buttonLabel}
         </uui-button>
@@ -351,7 +351,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
 
     return html`
     <uui-checkbox
-      @change="${this.#onChangeSegment}"
+      @change="${this._onChangeSegment}"
       ?checked=${this._varyBySegment}>Vary by segment</uui-checkbox>
     `;
   }
@@ -375,7 +375,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
         <uui-button
           color="danger"
           look="primary"
-          @click="${this.#onClickUninstall}"
+          @click="${this._onClickUninstall}"
         >
         ${buttonLabel}
         </uui-button>
