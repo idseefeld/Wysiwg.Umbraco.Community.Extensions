@@ -13,6 +13,10 @@ const customElementName = "wysiwg-block-paragraph-view";
 export class WysiwgBlockParagraphView
   extends WysiwgBaseBlockEditorCustomViewElement {
 
+  #paragraphElement: HTMLFormElement | null = null;
+
+  #links: NodeListOf<HTMLAnchorElement> | undefined = undefined;
+
   protected override update(changedProperties: PropertyValues): void {
     super.update(changedProperties);
 
@@ -21,26 +25,57 @@ export class WysiwgBlockParagraphView
     }
   }
 
+  override connectedCallback(): void {
+    super.connectedCallback();
+  }
+
+  override disconnectedCallback(): void {
+    this.enableLinks();
+
+    super.disconnectedCallback();
+  }
+
   private disableLinks() {
-    const paragraphElement = this.shadowRoot?.querySelector('div.paragraph') as HTMLFormElement;
-    if (!paragraphElement) return;
+    if (!this.#paragraphElement) {
+      this.#paragraphElement = this.shadowRoot?.querySelector('#paragraph') as HTMLFormElement;
+      if (!this.#paragraphElement) return;
+    }
 
-    const links = paragraphElement.querySelector('a');
-    if (links) {
-      links.addEventListener("click", (e) => {
-        e.preventDefault();
-      });
+    this.enableLinks();
 
-      this.requestUpdate();
+    this.#links = this.#paragraphElement.querySelectorAll('a');
+    if (this.#links?.length) {
+      this.#links.forEach((a) =>
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+        }));
     }
   }
+
+  private enableLinks() {
+    if (!this.#links) return;
+
+    if (this.#links.length) {
+      try {
+        this.#links.forEach((a) =>
+          a.removeEventListener("click", (e) => {
+            e.preventDefault();
+          }));
+      } catch (error) {
+        console.warn("Error removing event listeners from links:", error);
+      }
+    }
+
+    this.#links = undefined;
+  }
+
 
   render() {
     const settings = this.getLayoutSettings()
 
     var property = this.content?.text as { blocks: {}; markup: string };
     var markup = property?.markup;
-    const innerHtml = `<div class="paragraph" ${settings.inlineStyle}>${markup}</div>`;
+    const innerHtml = `<div id="paragraph" ${settings.inlineStyle}>${markup}</div>`;
     return html`${unsafeHTML(innerHtml)}`;
   }
 

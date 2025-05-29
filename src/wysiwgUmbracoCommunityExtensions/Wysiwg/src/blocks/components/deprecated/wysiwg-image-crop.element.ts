@@ -56,7 +56,6 @@ export class WysiwgBlocksImageCropElement extends UmbLitElement {
   }
 
   override disconnectedCallback() {
-
     super.disconnectedCallback();
     this.#intersectionObserver?.disconnect();
   }
