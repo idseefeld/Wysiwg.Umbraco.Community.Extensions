@@ -162,7 +162,6 @@ export class WysiwgBlockLayoutView
       let padding = properties?.find((v) => v.alias === "padding")?.value.toString();
       if (!padding) {
         padding = (backgroundColor && !transparentBackground) ? "10px" : "";
-        console.debug("padding: ", padding);
       }
       inlineStyles.padding = padding;
     }
@@ -266,7 +265,7 @@ export class WysiwgBlockLayoutView
     }
   }
 
-  override render() {
+  render() {
     const pageStyles = { backgroundColor: this.pageBackroundColor } as Readonly<StyleInfo>;;
     const styles = this.backgroundStyleMap as Readonly<StyleInfo>;
 

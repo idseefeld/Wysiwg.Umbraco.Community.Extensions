@@ -22,7 +22,7 @@ namespace WysiwgUmbracoCommunityExtensions.Extensions
             var color = string.IsNullOrEmpty(rowSettings.BackgroundColor)
                 ? pageColor
                 : rowSettings.BackgroundColor;
-            string? colorStyle = string.IsNullOrEmpty(color) ? null : $"background-color: {color}";
+            string? colorStyle = string.IsNullOrEmpty(color) ? null : $"background-color: {color};";
             string? imageStyle = null;
             string? paddingStyle = null;
             string? minHeightStyle = null;

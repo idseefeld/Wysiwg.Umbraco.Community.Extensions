@@ -2,9 +2,9 @@ import { html, customElement, property, css, repeat, state, query } from '@umbra
 import { UmbTextStyles } from '@umbraco-cms/backoffice/style';
 import type { UmbPropertyEditorUiElement } from '@umbraco-cms/backoffice/property-editor';
 import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element';
-import { UmbPropertyValueChangeEvent } from '@umbraco-cms/backoffice/property-editor';
 import { generateAlias } from '@umbraco-cms/backoffice/utils';
 import { UmbSorterController } from '@umbraco-cms/backoffice/sorter';
+import { UmbChangeEvent } from '@umbraco-cms/backoffice/event';
 
 export type WysiwgCrop = {
   label: string;
@@ -55,13 +55,13 @@ export class WysiwgPropertyEditorUIImageCropsElement extends UmbLitElement imple
       const oldValue = this._value;
       this._value = model;
       this.requestUpdate('_value', oldValue);
-      this.dispatchEvent(new UmbPropertyValueChangeEvent());
+      this.dispatchEvent(new UmbChangeEvent());
     },
   });
 
   #onRemove(alias: string) {
     this.value = [...this.value.filter((item) => item.alias !== alias)];
-    this.dispatchEvent(new UmbPropertyValueChangeEvent());
+    this.dispatchEvent(new UmbChangeEvent());
   }
 
   #onEdit(crop: WysiwgCrop) {
@@ -133,7 +133,7 @@ export class WysiwgPropertyEditorUIImageCropsElement extends UmbLitElement imple
     if (updateDefaults) {
       this.value = [...this.value.map((item) => ({ ...item, defaultCrop: item.alias === alias }))];
     }
-    this.dispatchEvent(new UmbPropertyValueChangeEvent());
+    this.dispatchEvent(new UmbChangeEvent());
 
     form.reset();
     this._labelInput.focus();

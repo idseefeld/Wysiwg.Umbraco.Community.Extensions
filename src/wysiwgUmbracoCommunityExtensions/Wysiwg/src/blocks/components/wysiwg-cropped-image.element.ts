@@ -9,7 +9,8 @@ import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
 import { UmbTextStyles } from "@umbraco-cms/backoffice/style";
 import { V2CropUrlData, WysiwgUmbracoCommunityExtensionsService } from "../..";
 import { WysiwgMediaPickerPropertyValueEntry } from "../../property-editors/picture/types";
-import { UmbPropertyEditorUiElement, UmbPropertyValueChangeEvent } from "@umbraco-cms/backoffice/property-editor";
+import { UmbPropertyEditorUiElement } from "@umbraco-cms/backoffice/property-editor";
+import { UmbChangeEvent } from "@umbraco-cms/backoffice/event";
 
 const elementName = "wysiwg-cropped-image";
 @customElement(elementName)
@@ -75,7 +76,7 @@ export class WysiwgCroppedImageElement extends UmbLitElement implements UmbPrope
     }
     if (changedProperties.has("value")) {
       if (this._prevImgSrc !== this.value) {
-        this.dispatchEvent(new UmbPropertyValueChangeEvent());
+        this.dispatchEvent(new UmbChangeEvent());
         this._prevImgSrc = this.value;
       }
     }

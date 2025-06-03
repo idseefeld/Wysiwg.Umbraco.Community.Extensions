@@ -6,7 +6,6 @@ import {
   unsafeHTML,
   PropertyValues,
 } from "@umbraco-cms/backoffice/external/lit";
-import type { UmbBlockEditorCustomViewElement } from "@umbraco-cms/backoffice/block-custom-view";
 import WysiwgBaseBlockEditorCustomViewElement from "./wysiwg-base-block-editor-custom.view";
 
 const customElementName = "wysiwg-block-paragraph-view";
@@ -14,53 +13,40 @@ const customElementName = "wysiwg-block-paragraph-view";
 export class WysiwgBlockParagraphView
   extends WysiwgBaseBlockEditorCustomViewElement {
 
-  protected override update(changedProperties: PropertyValues): void {
-    super.update(changedProperties);
-    if (changedProperties.has("content")) {
-      const paragraphElement = this.shadowRoot?.querySelector('div.paragraph') as HTMLFormElement;
-      if (!paragraphElement) return;
+  private disableLinks() {
+    const paragraphElement = this.shadowRoot?.querySelector('#paragraph') as HTMLFormElement;
+    if (!paragraphElement) return;
 
-      const links = paragraphElement.querySelector('a');
-      if (links) {
-        links.addEventListener("click", (e) => {
-          e.preventDefault();
-        });
-      }
-
-      this.requestUpdate();
+    const links = paragraphElement.querySelectorAll('a');
+    if (links?.length) {
+      links.forEach((a) => {
+        try {
+          a.addEventListener(
+            "click",
+            (e) => {
+              e.preventDefault();
+            },
+            { capture: true } // Use capture to prevent the event from bubbling up
+          );
+        } catch (error) {
+          console.warn("Error adding event listeners to links:", error);
+        }
+      });
     }
-
   }
-  override render() {
-    let color = { label: "", value: "" };
-    let inlineStyle = "";
-    if (this.datasetSettings?.length) {
-      const layout = (this as UmbBlockEditorCustomViewElement).layout;
-      const settings = this.datasetSettings.filter(
-        (s) => layout?.settingsKey === s.key
-      )[0]?.values;
 
-      const colorSetting =
-        (settings.filter((v) => v.alias === "color")[0]?.value as {
-          label: string;
-          value: string;
-        }) ?? color;
-      if (colorSetting?.value) {
-        inlineStyle = `color: ${colorSetting?.value};`;
-      }
+  protected override updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
 
-      const minHeight = (settings?.find((v) => v.alias === "minHeight")?.value ?? "0").toString();
-      if (minHeight) {
-        inlineStyle += `min-height: ${minHeight};`;
-      }
-    }
+    this.disableLinks();
+  }
 
-    if (inlineStyle) {
-      inlineStyle = `style="${inlineStyle}"`;
-    }
+  render() {
+    const settings = this.getLayoutSettings()
+
     var property = this.content?.text as { blocks: {}; markup: string };
     var markup = property?.markup;
-    const innerHtml = `<div class="paragraph" ${inlineStyle}>${markup}</div>`;
+    const innerHtml = `<div id="paragraph" ${settings.inlineStyle}>${markup}</div>`;
     return html`${unsafeHTML(innerHtml)}`;
   }
 
@@ -102,6 +88,7 @@ export class WysiwgBlockParagraphView
         line-height: var(--wysiwg-line-height-24, 24px);
         margin: var(--wysiwg-p-paragraph-margin, 0);
         padding: var(--wysiwg-p-paragraph-padding, 0);
+        color: var(--wysiwg-paragraph-color, inherit);
       }
 
       a{

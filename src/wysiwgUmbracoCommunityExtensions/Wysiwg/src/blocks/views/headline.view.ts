@@ -5,9 +5,7 @@ import {
   css,
   unsafeHTML,
 } from "@umbraco-cms/backoffice/external/lit";
-import type { UmbBlockEditorCustomViewElement } from "@umbraco-cms/backoffice/block-custom-view";
 import WysiwgBaseBlockEditorCustomViewElement from "./wysiwg-base-block-editor-custom.view";
-import { ColorType } from "./types";
 
 const customElementName = "wysiwg-block-headline-view";
 @customElement(customElementName)
@@ -15,39 +13,10 @@ export class WysiwgBlockHeadlineView
   extends WysiwgBaseBlockEditorCustomViewElement {
 
   override render() {
-    let size = "h1";
-    let inlineStyle = "";
-    if (this.datasetSettings?.length) {
-      const layout = (this as UmbBlockEditorCustomViewElement).layout;
-      const settings = this.datasetSettings.filter(
-        (s) => layout?.settingsKey === s.key
-      )[0]?.values;
+    const settings = this.getLayoutSettings()
 
-      size =
-        settings
-          .filter((v) => v.alias === "size")[0]
-          ?.value?.toString()
-          .toLowerCase() ?? size;
-
-      const color =
-        (settings.filter((v) => v.alias === "color")[0]?.value as ColorType)
-          ?.value ?? "";
-      if (color && !this.isTransparentColor(color)) {
-        inlineStyle = `color: ${color};`;
-      }
-      const margin =
-        (settings.filter((v) => v.alias === "margin")[0]?.value as string) ??
-        "";
-      if (margin) {
-        inlineStyle += `margin: ${margin};`;
-      }
-
-      if (inlineStyle) {
-        inlineStyle = `style="${inlineStyle}"`;
-      }
-    }
     const headline = this.content?.text ?? "Headline";
-    const innerHtml = `<${size} class="headline" ${inlineStyle}>${headline}</${size}>`;
+    const innerHtml = `<${settings.size} class="headline" ${settings.inlineStyle}>${headline}</${settings.size}>`;
     return html`${unsafeHTML(innerHtml)}`;
   }
 
