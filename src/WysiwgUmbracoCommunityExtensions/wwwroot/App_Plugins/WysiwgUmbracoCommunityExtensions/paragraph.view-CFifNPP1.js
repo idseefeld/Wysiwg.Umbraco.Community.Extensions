@@ -1,34 +1,45 @@
 import { UmbTextStyles as g } from "@umbraco-cms/backoffice/style";
 import { unsafeHTML as h, html as l, css as w, customElement as p } from "@umbraco-cms/backoffice/external/lit";
-import { W as v } from "./wysiwg-base-block-editor-custom.view-BLbrLgrQ.js";
-var d = Object.getOwnPropertyDescriptor, y = (a, e, r, t) => {
-  for (var i = t > 1 ? void 0 : t ? d(e, r) : e, n = a.length - 1, o; n >= 0; n--)
-    (o = a[n]) && (i = o(i) || i);
-  return i;
+import { W as c } from "./wysiwg-base-block-editor-custom.view-BLbrLgrQ.js";
+var d = Object.getOwnPropertyDescriptor, v = (a, e, i, t) => {
+  for (var r = t > 1 ? void 0 : t ? d(e, i) : e, s = a.length - 1, o; s >= 0; s--)
+    (o = a[s]) && (r = o(r) || r);
+  return r;
 };
-const c = "wysiwg-block-paragraph-view";
-let s = class extends v {
-  update(a) {
-    super.update(a), a.has("content") && this.disableLinks();
-  }
+const y = "wysiwg-block-paragraph-view";
+let n = class extends c {
   disableLinks() {
-    var r;
-    const a = (r = this.shadowRoot) == null ? void 0 : r.querySelector("div.paragraph");
+    var i;
+    const a = (i = this.shadowRoot) == null ? void 0 : i.querySelector("#paragraph");
     if (!a) return;
-    const e = a.querySelector("a");
-    e && (e.addEventListener("click", (t) => {
-      t.preventDefault();
-    }), this.requestUpdate());
+    const e = a.querySelectorAll("a");
+    e != null && e.length && e.forEach((t) => {
+      try {
+        t.addEventListener(
+          "click",
+          (r) => {
+            r.preventDefault();
+          },
+          { capture: !0 }
+          // Use capture to prevent the event from bubbling up
+        );
+      } catch (r) {
+        console.warn("Error adding event listeners to links:", r);
+      }
+    });
+  }
+  updated(a) {
+    super.updated(a), this.disableLinks();
   }
   render() {
-    var i;
+    var r;
     const a = this.getLayoutSettings();
-    var e = (i = this.content) == null ? void 0 : i.text, r = e == null ? void 0 : e.markup;
-    const t = `<div class="paragraph" ${a.inlineStyle}>${r}</div>`;
+    var e = (r = this.content) == null ? void 0 : r.text, i = e == null ? void 0 : e.markup;
+    const t = `<div id="paragraph" ${a.inlineStyle}>${i}</div>`;
     return l`${h(t)}`;
   }
 };
-s.styles = [
+n.styles = [
   g,
   w`
       :host {
@@ -66,6 +77,7 @@ s.styles = [
         line-height: var(--wysiwg-line-height-24, 24px);
         margin: var(--wysiwg-p-paragraph-margin, 0);
         padding: var(--wysiwg-p-paragraph-padding, 0);
+        color: var(--wysiwg-paragraph-color, inherit);
       }
 
       a{
@@ -78,12 +90,12 @@ s.styles = [
       }
     `
 ];
-s = y([
-  p(c)
-], s);
-const x = s;
+n = v([
+  p(y)
+], n);
+const x = n;
 export {
-  s as WysiwgBlockParagraphView,
+  n as WysiwgBlockParagraphView,
   x as default
 };
-//# sourceMappingURL=paragraph.view-Baz2iLtC.js.map
+//# sourceMappingURL=paragraph.view-CFifNPP1.js.map

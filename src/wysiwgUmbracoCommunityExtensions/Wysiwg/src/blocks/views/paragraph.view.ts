@@ -13,62 +13,33 @@ const customElementName = "wysiwg-block-paragraph-view";
 export class WysiwgBlockParagraphView
   extends WysiwgBaseBlockEditorCustomViewElement {
 
-  #paragraphElement: HTMLFormElement | null = null;
-
-  #links: NodeListOf<HTMLAnchorElement> | undefined = undefined;
-
-  protected override update(changedProperties: PropertyValues): void {
-    super.update(changedProperties);
-
-    if (changedProperties.has("content")) {
-      this.disableLinks();
-    }
-  }
-
-  override connectedCallback(): void {
-    super.connectedCallback();
-  }
-
-  override disconnectedCallback(): void {
-    this.enableLinks();
-
-    super.disconnectedCallback();
-  }
-
   private disableLinks() {
-    if (!this.#paragraphElement) {
-      this.#paragraphElement = this.shadowRoot?.querySelector('#paragraph') as HTMLFormElement;
-      if (!this.#paragraphElement) return;
-    }
+    const paragraphElement = this.shadowRoot?.querySelector('#paragraph') as HTMLFormElement;
+    if (!paragraphElement) return;
 
-    this.enableLinks();
-
-    this.#links = this.#paragraphElement.querySelectorAll('a');
-    if (this.#links?.length) {
-      this.#links.forEach((a) =>
-        a.addEventListener("click", (e) => {
-          e.preventDefault();
-        }));
+    const links = paragraphElement.querySelectorAll('a');
+    if (links?.length) {
+      links.forEach((a) => {
+        try {
+          a.addEventListener(
+            "click",
+            (e) => {
+              e.preventDefault();
+            },
+            { capture: true } // Use capture to prevent the event from bubbling up
+          );
+        } catch (error) {
+          console.warn("Error adding event listeners to links:", error);
+        }
+      });
     }
   }
 
-  private enableLinks() {
-    if (!this.#links) return;
+  protected override updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
 
-    if (this.#links.length) {
-      try {
-        this.#links.forEach((a) =>
-          a.removeEventListener("click", (e) => {
-            e.preventDefault();
-          }));
-      } catch (error) {
-        console.warn("Error removing event listeners from links:", error);
-      }
-    }
-
-    this.#links = undefined;
+    this.disableLinks();
   }
-
 
   render() {
     const settings = this.getLayoutSettings()
@@ -117,6 +88,7 @@ export class WysiwgBlockParagraphView
         line-height: var(--wysiwg-line-height-24, 24px);
         margin: var(--wysiwg-p-paragraph-margin, 0);
         padding: var(--wysiwg-p-paragraph-padding, 0);
+        color: var(--wysiwg-paragraph-color, inherit);
       }
 
       a{

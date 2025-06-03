@@ -2,7 +2,7 @@ import { html as s, styleMap as T, nothing as A, css as B, property as l, state 
 import { UmbLitElement as Q } from "@umbraco-cms/backoffice/lit-element";
 import { UmbTextStyles as D } from "@umbraco-cms/backoffice/style";
 import "./headline.view-DntOrAj0.js";
-import "./paragraph.view-Baz2iLtC.js";
+import "./paragraph.view-CFifNPP1.js";
 import "./picture-with-crop.view-yRN1eSVr.js";
 import "./cropped-picture.view-C48QUSf1.js";
 import "./wysiwg-image-crops.element-WzjeAO76.js";
@@ -746,4 +746,4 @@ export {
   m as a,
   Je as b
 };
-//# sourceMappingURL=wysiwg-cropped-image.element-ChvZCHKW.js.map
+//# sourceMappingURL=wysiwg-cropped-image.element-BqyvbhBc.js.map
