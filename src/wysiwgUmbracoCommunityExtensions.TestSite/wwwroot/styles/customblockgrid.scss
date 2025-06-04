@@ -49,4 +49,15 @@
   .umb-block-grid__area {
     grid-column-end: span min(var(--umb-block-grid--area-column-span, 1), var(--umb-block-grid--area-grid-columns));
   }
+
+  * {
+    --wysiwg-figure-transform: unset;
+    --wysiwg-figure-margin: 30px 40px 20px 0;
+  }
+}
+
+@media (max-width: 800px) {
+  * {
+    --wysiwg-figure-transform: normal;
+  }
 }
