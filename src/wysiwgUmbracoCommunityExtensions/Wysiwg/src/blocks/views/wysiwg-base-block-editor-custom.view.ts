@@ -20,6 +20,7 @@ import { CommonUtilities } from "../../util/common.utilities";
 import { Debugging, TransparentBackgroundColor } from "../../constants";
 import { UMB_DOCUMENT_WORKSPACE_CONTEXT, UmbDocumentWorkspaceContext } from "@umbraco-cms/backoffice/document";
 import { ColorType, LayoutSettings } from "./types";
+import { WYSIWG_BLOCKGRID_CONTEXT } from "../../context";
 
 const customElementName = "wysiwg-base.block-editor-custom-view";
 @customElement(customElementName)
@@ -58,6 +59,16 @@ export class WysiwgBaseBlockEditorCustomViewElement
   constructor() {
     super();
 
+    this.consumeContext(WYSIWG_BLOCKGRID_CONTEXT, (context) => {
+      if (context) {
+        this.observe(context.updateStatusCode, (status) => {
+          if (status) {
+            this.updateStatus = status;
+          }
+        }, "_observeWysiwgBlockGridUpdateStatus");
+      }
+    });
+
     this.consumeContext(UMB_NOTIFICATION_CONTEXT, (notificationContext) => {
       this._notificationContext = notificationContext;
       this._commonUtilities = new CommonUtilities(this.localize, this._notificationContext);//ToDo: should be singleton via context(?)
@@ -75,12 +86,6 @@ export class WysiwgBaseBlockEditorCustomViewElement
     this.consumeContext(UMB_PROPERTY_DATASET_CONTEXT, async (context) =>
       this.getSettings(context)
     );
-  }
-
-  protected async firstUpdated() {
-    // console.debug("firstUpdated start");
-    await this.setUpdateStatus();
-    // console.debug("firstUpdated end");
   }
 
   override connectedCallback(): void {
@@ -112,15 +117,21 @@ export class WysiwgBaseBlockEditorCustomViewElement
     // console.debug("update documentKey:", this.documentUnique);
   }
 
-  protected async setUpdateStatus() {
-    if (this.updateStatus) return;
+  // protected async firstUpdated() {
+  //   // console.debug("firstUpdated start");
+  //   await this.setUpdateStatus();
+  //   // console.debug("firstUpdated end");
+  // }
 
-    await this._commonUtilities?.getUpdateStatus(this._notificationContext).then((status) => {
-      if (status) {
-        this.updateStatus = status;
-      }
-    });
-  }
+  // protected async setUpdateStatus() {
+  //   if (this.updateStatus) return;
+
+  //   await this._commonUtilities?.getUpdateStatus(this._notificationContext).then((status) => {
+  //     if (status) {
+  //       this.updateStatus = status;
+  //     }
+  //   });
+  // }
 
   private getLayoutDataSettings(): UmbBlockDataValueModel<unknown>[] | undefined {
     if (!this.datasetSettings?.length) { return; }

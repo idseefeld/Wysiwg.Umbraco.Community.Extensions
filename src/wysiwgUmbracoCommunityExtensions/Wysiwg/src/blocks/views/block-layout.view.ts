@@ -236,7 +236,7 @@ export class WysiwgBlockLayoutView
 
     if (!this.isfirstElement) { return nameHtml; }
 
-    this.setUpdateStatus();
+    // this.setUpdateStatus();
     if (this.updateStatus !== UpdateStatus.Update) {
       return nameHtml;
     } else {

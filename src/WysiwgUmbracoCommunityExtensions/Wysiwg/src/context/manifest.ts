@@ -1,10 +1,16 @@
-import { ManifestGlobalContext } from "@umbraco-cms/backoffice/extension-registry";
+import { UMB_WORKSPACE_CONDITION_ALIAS } from '@umbraco-cms/backoffice/workspace';
 
-export const manifests: Array<ManifestGlobalContext> = [
+export const manifests: Array<UmbExtensionManifest> = [
   {
-    type: 'globalContext',
-    alias: 'Wysiwg.GlobalContext.BlockGrid',
+    type: 'workspaceContext',
+    alias: 'Wysiwg.WorkspaceContext.BlockGrid',
     name: 'Wysiwg BlockGrid Context',
-    api: () => import('./wysiwg.context.js')
+    api: () => import('./wysiwg.context.js'),
+		conditions: [
+			{
+				alias: UMB_WORKSPACE_CONDITION_ALIAS,
+				match: 'Umb.Workspace.Document',
+			},
+		],
   }
 ];
