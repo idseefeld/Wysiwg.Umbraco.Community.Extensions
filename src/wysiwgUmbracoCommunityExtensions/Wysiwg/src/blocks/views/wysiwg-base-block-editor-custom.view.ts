@@ -2,7 +2,6 @@ import {
   customElement,
   LitElement,
   property,
-  PropertyValues,
   state,
 } from "@umbraco-cms/backoffice/external/lit";
 import { UmbElementMixin } from "@umbraco-cms/backoffice/element-api";
@@ -14,13 +13,11 @@ import {
 } from "@umbraco-cms/backoffice/property";
 import { UmbBlockGridValueModel } from "@umbraco-cms/backoffice/block-grid";
 import { UmbBlockDataModel, UmbBlockDataType, UmbBlockDataValueModel } from "@umbraco-cms/backoffice/block";
-import { UpdateStatus } from "../../util/updateStatusEnum";
-import { UMB_NOTIFICATION_CONTEXT, UmbNotificationContext } from "@umbraco-cms/backoffice/notification";
-import { CommonUtilities } from "../../util/common.utilities";
 import { Debugging, TransparentBackgroundColor } from "../../constants";
 import { UMB_DOCUMENT_WORKSPACE_CONTEXT, UmbDocumentWorkspaceContext } from "@umbraco-cms/backoffice/document";
 import { ColorType, LayoutSettings } from "./types";
 import { WYSIWG_BLOCKGRID_CONTEXT } from "../../context";
+import { UpdateStatus } from "../../types";
 
 const customElementName = "wysiwg-base.block-editor-custom-view";
 @customElement(customElementName)
@@ -46,13 +43,9 @@ export class WysiwgBaseBlockEditorCustomViewElement
   @state()
   protected updateStatus: UpdateStatus | undefined = undefined;
 
-  protected _commonUtilities: CommonUtilities | undefined = undefined;
-
   protected _debug = Debugging;
 
   private _datasetContext?: UmbPropertyDatasetContext;
-
-  private _notificationContext: UmbNotificationContext | undefined = undefined;
 
   private _workspaceContext: UmbDocumentWorkspaceContext | undefined = undefined;
 
@@ -69,11 +62,6 @@ export class WysiwgBaseBlockEditorCustomViewElement
       }
     });
 
-    this.consumeContext(UMB_NOTIFICATION_CONTEXT, (notificationContext) => {
-      this._notificationContext = notificationContext;
-      this._commonUtilities = new CommonUtilities(this.localize, this._notificationContext);//ToDo: should be singleton via context(?)
-    });
-
     this.consumeContext(UMB_DOCUMENT_WORKSPACE_CONTEXT, (context) => {
       this._workspaceContext = context;
       this.observe(this._workspaceContext?.unique, (key) => {
@@ -88,50 +76,16 @@ export class WysiwgBaseBlockEditorCustomViewElement
     );
   }
 
-  override connectedCallback(): void {
-    super.connectedCallback();
-
-  }
-
   override disconnectedCallback(): void {
     try {
       super.disconnectedCallback();
 
-      // this._workspaceContext?.destroy();
-      // this._datasetContext?.destroy();
-      // this._commonUtilities?.destroy();
-
       this._workspaceContext = undefined;
       this._datasetContext = undefined;
-      this._notificationContext = undefined;
-      this._commonUtilities = undefined;
     } catch (e) {
       console.error("Error in disconnectedCallback:", e);
     }
   }
-
-  protected override update(changedProperties: PropertyValues): void {
-    super.update(changedProperties);
-
-    console.debug("update changedProperties:", changedProperties);
-    // console.debug("update documentKey:", this.documentUnique);
-  }
-
-  // protected async firstUpdated() {
-  //   // console.debug("firstUpdated start");
-  //   await this.setUpdateStatus();
-  //   // console.debug("firstUpdated end");
-  // }
-
-  // protected async setUpdateStatus() {
-  //   if (this.updateStatus) return;
-
-  //   await this._commonUtilities?.getUpdateStatus(this._notificationContext).then((status) => {
-  //     if (status) {
-  //       this.updateStatus = status;
-  //     }
-  //   });
-  // }
 
   private getLayoutDataSettings(): UmbBlockDataValueModel<unknown>[] | undefined {
     if (!this.datasetSettings?.length) { return; }

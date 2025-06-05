@@ -19,7 +19,7 @@ import { UmbBlockGridValueModel } from "@umbraco-cms/backoffice/block-grid";
 import { BlockGridLayoutModel, MediaPickerValueModel } from "../types";
 import { ImageUrlData, WysiwgUmbracoCommunityExtensionsService } from "../..";
 import WysiwgBaseBlockEditorCustomViewElement from "./wysiwg-base-block-editor-custom.view";
-import { UpdateStatus } from "../../util/updateStatusEnum";
+import { UpdateStatus } from "../../types";
 
 //this is based on a copy of
 // Umbraco-CMS\src\
@@ -241,7 +241,7 @@ export class WysiwgBlockLayoutView
       return nameHtml;
     } else {
       return html`
-        <uui-button id="tooltip-toggle" popovertarget="tooltip-popover" look="primary" type="button" color="danger" compact style="margin-right: 0.5rem;">
+        <uui-button id="tooltip-toggle" popovertarget="tooltip-popover" look="primary" type="button" color="danger" compact style="margin-right: 0.5rem;" label="Update Available">
           <uui-icon name="alert"></uui-icon>
         </uui-button>${nameHtml}
 

@@ -1,17 +1,4 @@
-// import { manifest as schemaManifest } from './Wysiwg.ImageAndCropPicker.js'
-
 export const manifests: Array<UmbExtensionManifest> = [
-  {
-    type: 'propertyEditorUi',
-    alias: 'Wysiwg.ImageCropsWithDefaultConfiguration',
-    name: 'Image Crops with Default Property Editor UI',
-    element: () => import('./wysiwg-image-crops.element.js'),
-    meta: {
-      label: 'Image Crops Configuration',
-      icon: 'icon-autofill',
-      group: 'common',
-    },
-  },
   {
     type: "propertyEditorUi",
     alias: "wysiwg.PropertyEditorUi.ImageAndCropPicker",

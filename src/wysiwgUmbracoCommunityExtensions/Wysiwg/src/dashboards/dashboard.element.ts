@@ -16,10 +16,10 @@ import {
   UmbCurrentUserModel,
 } from "@umbraco-cms/backoffice/current-user";
 import { FixUpgradeData, GetVariationsResponse, WysiwgUmbracoCommunityExtensionsService } from "../api";
-import { UpdateStatus } from "../util/updateStatusEnum";
+import { UpdateStatus } from "../types";
 import { umbConfirmModal, UmbConfirmModalData } from "@umbraco-cms/backoffice/modal";
 import { CommonUtilities } from "../util/common.utilities";
-import { SemVersion } from "../util/types";
+import { SemVersion } from "../types";
 import { Debugging } from "../constants";
 
 @customElement("wysiwg-dashboard")
@@ -35,13 +35,13 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
   private _variations: GetVariationsResponse | undefined = undefined;
 
   @state()
+  private _version: SemVersion = { major: 1, minor: 0, patch: 0 };
+
+  @state()
   private _uninstalling: boolean = false;
 
   private _varyByCulture: boolean = false;
   private _varyBySegment: boolean = false;
-
-  private _version: SemVersion = { major: 1, minor: 0, patch: 0 };
-
   private _debug = Debugging;
 
   private _commonUtilities: CommonUtilities | undefined = undefined;
@@ -53,7 +53,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
 
     this.consumeContext(UMB_NOTIFICATION_CONTEXT, (notificationContext) => {
       this._notificationContext = notificationContext;
-      this._commonUtilities = new CommonUtilities(this.localize, this._notificationContext);
+      this._commonUtilities = new CommonUtilities(this.localize, notificationContext);
     });
 
     this.consumeContext(UMB_CURRENT_USER_CONTEXT, (currentUserContext) => {
@@ -216,6 +216,8 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
   };
 
   private async getVariations() {
+    if (this._variations !== undefined) return;
+
     const { data, error } = await WysiwgUmbracoCommunityExtensionsService.getVariations();
 
     if (error) {
@@ -258,9 +260,9 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
   }
 
   private async setUpdateStatus() {
-    if (this._updateStatus) return;
+    if (this._updateStatus !== undefined) return;
 
-    await this._commonUtilities?.getUpdateStatus(this._notificationContext).then((status) => {
+    await this._commonUtilities?.getUpdateStatus().then((status) => {
       if (status) {
         this._updateStatus = status;
       }
@@ -268,7 +270,9 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
   }
 
   private async setSemVersion() {
-    await this._commonUtilities?.getUmbracoVersion(this._notificationContext).then((version) => {
+    if (this._version.major > 1) return;
+
+    await this._commonUtilities?.getUmbracoVersion().then((version) => {
       if (version) {
         this._version = version;
       }
@@ -289,6 +293,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
       debug: this._debug,
     })}>
         <uui-button
+          label=${buttonLabel}
           color="positive"
           look="primary"
           @click="${this._onClickInstall}"
@@ -325,11 +330,13 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
         </umb-localize>
         <p>
           <uui-checkbox
+            label="Vary by culture"
             @change="${this._onChangeCulture}"
             ?checked=${this._varyByCulture}>Vary by culture</uui-checkbox><br />
           ${this.renderSegmentCheckbox()}
         </p>
         <uui-button
+          label=${buttonLabel}
           color="positive"
           look="primary"
           @click="${this._onClickUpdateSettings}"
@@ -345,12 +352,14 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
       return html`
       <uui-checkbox
         disabled
+        label="Vary by segment is not supported in Umbraco versions above 15.4"
         ?checked=${this._varyBySegment}>Vary by segment</uui-checkbox>
       `;
     }
 
     return html`
     <uui-checkbox
+      label="Vary by segment"
       @change="${this._onChangeSegment}"
       ?checked=${this._varyBySegment}>Vary by segment</uui-checkbox>
     `;
@@ -373,6 +382,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
           </p>
         </umb-localize>
         <uui-button
+          label=${buttonLabel}
           color="danger"
           look="primary"
           @click="${this._onClickUninstall}"

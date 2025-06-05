@@ -5,12 +5,12 @@ export const manifests: Array<UmbExtensionManifest> = [
     type: 'workspaceContext',
     alias: 'Wysiwg.WorkspaceContext.BlockGrid',
     name: 'Wysiwg BlockGrid Context',
-    api: () => import('./wysiwg.context.js'),
-		conditions: [
-			{
-				alias: UMB_WORKSPACE_CONDITION_ALIAS,
-				match: 'Umb.Workspace.Document',
-			},
-		],
+    api: () => import('./wysiwg.workspace.context.js'),
+    conditions: [
+      {
+        alias: UMB_WORKSPACE_CONDITION_ALIAS,
+        match: 'Umb.Workspace.Document',
+      }
+    ],
   }
 ];
