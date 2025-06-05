@@ -5,7 +5,7 @@ import "./wysiwg-image-crops.element-WzjeAO76.js";
 import "./wysiwg-image-and-crop-picker.element-pFNAOPFJ.js";
 import { W as S } from "./services.gen-ya8kz8Ij.js";
 import { U as H } from "./dashboard.element-KXYT37Cl.js";
-import { W } from "./wysiwg-base-block-editor-custom.view--GL6EEZz.js";
+import { W } from "./wysiwg-base-block-editor-custom.view-Dh644ITH.js";
 var U = Object.defineProperty, z = Object.getOwnPropertyDescriptor, C = (t) => {
   throw TypeError(t);
 }, d = (t, o, e, n) => {
@@ -214,4 +214,4 @@ export {
   s as WysiwgBlockLayoutView,
   Y as default
 };
-//# sourceMappingURL=block-layout.view-DN-kNbJw.js.map
+//# sourceMappingURL=block-layout.view-D5PXNF56.js.map

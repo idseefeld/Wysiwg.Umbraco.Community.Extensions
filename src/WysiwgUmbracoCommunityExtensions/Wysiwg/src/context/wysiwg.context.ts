@@ -7,13 +7,14 @@ import { UMB_NOTIFICATION_CONTEXT, UmbNotificationContext } from '@umbraco-cms/b
 // import { UpdateStatus } from '../util/updateStatusEnum';
 // import { UmbLocalizationController } from '@umbraco-cms/backoffice/localization-api';
 import { UmbNumberState } from '@umbraco-cms/backoffice/observable-api';
+import { UmbLocalizationController } from '@umbraco-cms/backoffice/localization-api';
 
 export class WysiwgBlockGridContextApi extends UmbContextBase implements UmbApi {
+  #localize = new UmbLocalizationController(this);
   #updateStatusCode = new UmbNumberState(0);;
   readonly updateStatusCode = this.#updateStatusCode.asObservable();
 
   #notificationContext: UmbNotificationContext | undefined = undefined;
-  // #localize: UmbLocalizationController;
 
   constructor(host: UmbControllerHost) {
     super(host, WYSIWG_BLOCKGRID_CONTEXT);
@@ -25,34 +26,38 @@ export class WysiwgBlockGridContextApi extends UmbContextBase implements UmbApi 
     this.setUpdateStatus();
   }
 
-  // Define your context methods here
-  getContextData() {
-    return 'Hello from Wysiwg Context!';
-  }
-
+  /**
+   * Sets the update status code for the WYSIWYG block grid.
+   * This method retrieves the current update status from the service and updates the observable.
+   * If an error occurs during retrieval, it will notify the user through the notification context.
+   */
   public async setUpdateStatus() {
     // if (this.#updateStatusCode) return;
 
-    await this.getUpdateStatus(this.#notificationContext)
+    await this.getUpdateStatus()
       .then((status) => {
         if (status) {
           this.#updateStatusCode.setValue(status);
-          // this.#updateStatusCode = status;
         }
       });
   }
 
-  private async getUpdateStatus(notificationContext?: UmbNotificationContext): Promise<number | undefined> {
+  /**
+   * Retrieves the current update status code from the WYSIWYG service.
+   * If an error occurs, it logs the error and notifies the user through the notification context.
+   * @returns {Promise<number | undefined>} The update status code or undefined if an error occurs.
+   */
+  private async getUpdateStatus(): Promise<number | undefined> {
     const { data, error } =
       await WysiwgUmbracoCommunityExtensionsService.getUpdateStatusCode();
 
     if (error) {
       console.error(error);
-      if (notificationContext) {
-        notificationContext.stay("danger", {
+      if (this.#notificationContext) {
+        this.#notificationContext.stay("danger", {
           data: {
-            headline: "Error getting status",// this._localize.term("wysiwg_versionError"),
-            message: "Could not get the current wysiwyg status.",//`${this._localize.term("wysiwg_versionErrorDescription")} ${error}`,
+            headline: this.#localize.term("wysiwg_versionError"),
+            message: `${this.#localize.term("wysiwg_versionErrorDescription")} ${error}`,
           },
         });
       }

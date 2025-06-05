@@ -43,7 +43,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.Layouts",
     name: "Block Editor Custom View for Layouts",
-    element: () => import("./block-layout.view-DN-kNbJw.js"),
+    element: () => import("./block-layout.view-D5PXNF56.js"),
     forContentTypeAlias: n(),
     forBlockEditor: "block-grid"
   },
@@ -51,7 +51,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockHeadline",
     name: "Block Editor Custom View for Headline",
-    element: () => import("./headline.view-CEq1k3cL.js"),
+    element: () => import("./headline.view-sCxnHgyk.js"),
     forContentTypeAlias: i + "headline",
     forBlockEditor: "block-grid"
   },
@@ -59,7 +59,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockParagraph",
     name: "Block Editor Custom View for Paragraph",
-    element: () => import("./paragraph.view-1tWH6OmO.js"),
+    element: () => import("./paragraph.view-Bi7pN8Vq.js"),
     forContentTypeAlias: i + "paragraph",
     forBlockEditor: "block-grid"
   },
@@ -67,7 +67,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.pictureWithCrop",
     name: "Block Editor Custom View for Picture with Crop",
-    element: () => import("./picture-with-crop.view-Bh_uhyAA.js"),
+    element: () => import("./picture-with-crop.view-CTfLLY2D.js"),
     forContentTypeAlias: i + "pictureWithCrop",
     forBlockEditor: "block-grid"
   },
@@ -75,7 +75,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.croppedPicture",
     name: "Block Editor Custom View for Cropped Picture",
-    element: () => import("./cropped-picture.view-DaIMt7hG.js"),
+    element: () => import("./cropped-picture.view-B1Q0OXof.js"),
     forContentTypeAlias: i + "croppedPicture",
     forBlockEditor: "block-grid"
   }
@@ -201,7 +201,7 @@ const l = [
     type: "workspaceContext",
     alias: "Wysiwg.WorkspaceContext.BlockGrid",
     name: "Wysiwg BlockGrid Context",
-    api: () => import("./wysiwg.context-ll_B2PRz.js"),
+    api: () => import("./wysiwg.context-BinSMcUU.js"),
     conditions: [
       {
         alias: e,

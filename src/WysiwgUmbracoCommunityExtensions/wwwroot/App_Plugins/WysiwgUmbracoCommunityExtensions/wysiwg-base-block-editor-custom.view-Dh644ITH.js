@@ -4,7 +4,7 @@ import { UMB_PROPERTY_DATASET_CONTEXT as S } from "@umbraco-cms/backoffice/prope
 import { UMB_NOTIFICATION_CONTEXT as b } from "@umbraco-cms/backoffice/notification";
 import { D as y, C as x, T } from "./constants-D3ye2K2u.js";
 import { UMB_DOCUMENT_WORKSPACE_CONTEXT as O } from "@umbraco-cms/backoffice/document";
-import { WYSIWG_BLOCKGRID_CONTEXT as E } from "./wysiwg.context-ll_B2PRz.js";
+import { WYSIWG_BLOCKGRID_CONTEXT as E } from "./wysiwg.context-BinSMcUU.js";
 var w = Object.defineProperty, U = Object.getOwnPropertyDescriptor, u = (t, e, i, o) => {
   for (var s = o > 1 ? void 0 : o ? U(e, i) : e, n = t.length - 1, a; n >= 0; n--)
     (a = t[n]) && (s = (o ? a(e, i, s) : a(s)) || s);
@@ -138,4 +138,4 @@ l = u([
 export {
   l as W
 };
-//# sourceMappingURL=wysiwg-base-block-editor-custom.view--GL6EEZz.js.map
+//# sourceMappingURL=wysiwg-base-block-editor-custom.view-Dh644ITH.js.map
