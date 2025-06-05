@@ -1,8 +1,8 @@
 import { UmbLocalizationController } from "@umbraco-cms/backoffice/localization-api";
 import { GetServerInformationResponse, ServerService } from "../management-api";
-import { SemVersion } from "./types";
+import { SemVersion } from "../types";
 import { UmbNotificationContext } from "@umbraco-cms/backoffice/notification";
-import { UpdateStatus } from "./updateStatusEnum";
+import { UpdateStatus } from "../types";
 import { WysiwgUmbracoCommunityExtensionsService } from "../api";
 
 export class CommonUtilities {
@@ -16,8 +16,8 @@ export class CommonUtilities {
 
   public destroy(){}
 
-  public async getUmbracoVersion(notificationContext?: UmbNotificationContext): Promise<SemVersion | undefined> {
-    if (!notificationContext) { return; }
+  public async getUmbracoVersion(): Promise<SemVersion | undefined> {
+    if (!this._notificationContext) { return; }
 
     const { data, error } = await ServerService.getServerInformation();
 
@@ -47,14 +47,14 @@ export class CommonUtilities {
     }
   }
 
-  public async getUpdateStatus(notificationContext?: UmbNotificationContext): Promise<UpdateStatus | undefined> {
+  public async getUpdateStatus(): Promise<UpdateStatus | undefined> {
     const { data, error } =
       await WysiwgUmbracoCommunityExtensionsService.getUpdateStatusCode();
 
     if (error) {
       console.error(error);
-      if (notificationContext) {
-        notificationContext.stay("danger", {
+      if (this._notificationContext) {
+        this._notificationContext.stay("danger", {
           data: {
             headline: this._localize.term("wysiwg_versionError"),
             message: `${this._localize.term("wysiwg_versionErrorDescription")} ${error}`,

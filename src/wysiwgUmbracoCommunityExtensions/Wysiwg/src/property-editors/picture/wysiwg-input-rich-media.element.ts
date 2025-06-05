@@ -376,6 +376,7 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
     if (this.readonly && this._cards.length > 0) {
       return nothing;
     } else {
+      const chooseLabel = this.localize.term('general_choose', 'Choose');
       return html`
       <uui-button
         id="btn-add"
@@ -385,10 +386,10 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
           this.checkValidity();
         }}
         @click=${this.#openPicker}
-        label=${this.localize.term('general_choose')}
+        label=${chooseLabel}
         ?disabled=${this.readonly}>
         <uui-icon name="icon-add"></uui-icon>
-        ${this.localize.term('general_choose')}
+        ${chooseLabel}
       </uui-button>
     `;
     }

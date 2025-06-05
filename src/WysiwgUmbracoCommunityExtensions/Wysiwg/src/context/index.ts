@@ -1,1 +1,1 @@
-export * from './wysiwg.context.js'
+export * from './wysiwg.workspace.context.js'

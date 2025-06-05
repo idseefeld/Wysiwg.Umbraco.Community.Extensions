@@ -171,10 +171,9 @@ export class WysiwgImageAndCropPickerElement
     }
   }
 
-  override focus(options?: FocusOptions) {
-    console.log("focus(options) options = ", options);
-    return this.shadowRoot?.querySelector<WysiwgInputRichMediaElement>("wysiwg-input-rich-media")?.focus();
-  }
+  // override focus(options?: FocusOptions) {
+  //   return this.shadowRoot?.querySelector<WysiwgInputRichMediaElement>("wysiwg-input-rich-media")?.focus();
+  // }
 
   private async getMediaTypes() {
     await this.apiMediaTypes().then((data) => {
@@ -252,7 +251,6 @@ export class WysiwgImageAndCropPickerElement
 
   #onChangeImage(event: CustomEvent & { target: WysiwgInputRichMediaElement }) {
     if (this._imgSrc !== this._prevImgSrc) {
-      console.debug("imgSrc changed", this._imgSrc, this._prevImgSrc);
       this._prevImgSrc = this._imgSrc;
     }
 

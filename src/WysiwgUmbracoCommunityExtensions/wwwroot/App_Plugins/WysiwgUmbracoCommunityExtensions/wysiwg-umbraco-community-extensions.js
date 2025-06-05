@@ -1,16 +1,17 @@
-const e = [
+import { UMB_WORKSPACE_CONDITION_ALIAS as e } from "@umbraco-cms/backoffice/workspace";
+const a = [
   {
     name: "wysiwg Extensions Entrypoint",
     alias: "WysiwgExtensions.Entrypoint",
     type: "backofficeEntryPoint",
     js: () => import("./entrypoint-Cbcjt8C-.js")
   }
-], a = [
+], r = [
   {
     type: "sectionView",
     alias: "WysiwgDashboardElement.Section",
     name: "WYSIWYG Extensions Section",
-    element: () => import("./dashboard.element-KXYT37Cl.js").then((i) => i.d),
+    element: () => import("./dashboard.element-BVc55_PA.js"),
     meta: {
       label: "WYSIWYG",
       icon: "icon-settings",
@@ -23,26 +24,26 @@ const e = [
       }
     ]
   }
-], r = [
+], s = [
   {
     type: "bundle",
     name: "wysiwg block components",
     alias: "wysiwg.block.components",
-    js: () => import("./index-YepGAqDJ.js")
+    js: () => import("./index-CCOzidwV.js")
   }
-], o = "wysiwg65_";
+], i = "wysiwg65_";
 function n() {
-  const i = [];
-  for (let t = 1; t <= 50; t++)
-    i.push(`${o}layout${t}`);
-  return i;
+  const t = [];
+  for (let o = 1; o <= 50; o++)
+    t.push(`${i}layout${o}`);
+  return t;
 }
-const s = [
+const l = [
   {
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.Layouts",
     name: "Block Editor Custom View for Layouts",
-    element: () => import("./wysiwg-cropped-image.element-BqyvbhBc.js").then((i) => i.b),
+    element: () => import("./block-layout.view-B1D4_Uqs.js"),
     forContentTypeAlias: n(),
     forBlockEditor: "block-grid"
   },
@@ -50,54 +51,43 @@ const s = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockHeadline",
     name: "Block Editor Custom View for Headline",
-    element: () => import("./headline.view-DntOrAj0.js"),
-    forContentTypeAlias: o + "headline",
+    element: () => import("./headline.view-fUjnym5z.js"),
+    forContentTypeAlias: i + "headline",
     forBlockEditor: "block-grid"
   },
   {
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockParagraph",
     name: "Block Editor Custom View for Paragraph",
-    element: () => import("./paragraph.view-CFifNPP1.js"),
-    forContentTypeAlias: o + "paragraph",
+    element: () => import("./paragraph.view-BU6snSOs.js"),
+    forContentTypeAlias: i + "paragraph",
     forBlockEditor: "block-grid"
   },
   {
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.pictureWithCrop",
     name: "Block Editor Custom View for Picture with Crop",
-    element: () => import("./picture-with-crop.view-yRN1eSVr.js"),
-    forContentTypeAlias: o + "pictureWithCrop",
+    element: () => import("./picture-with-crop.view-_d0RRcLM.js"),
+    forContentTypeAlias: i + "pictureWithCrop",
     forBlockEditor: "block-grid"
   },
   {
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.croppedPicture",
     name: "Block Editor Custom View for Cropped Picture",
-    element: () => import("./cropped-picture.view-C48QUSf1.js"),
-    forContentTypeAlias: o + "croppedPicture",
+    element: () => import("./cropped-picture.view-xFJfG0yU.js"),
+    forContentTypeAlias: i + "croppedPicture",
     forBlockEditor: "block-grid"
   }
-], l = [
-  ...r,
-  ...s
-], p = [
-  {
-    type: "propertyEditorUi",
-    alias: "Wysiwg.ImageCropsWithDefaultConfiguration",
-    name: "Image Crops with Default Property Editor UI",
-    element: () => import("./wysiwg-image-crops.element-WzjeAO76.js"),
-    meta: {
-      label: "Image Crops Configuration",
-      icon: "icon-autofill",
-      group: "common"
-    }
-  },
+], c = [
+  ...s,
+  ...l
+], m = [
   {
     type: "propertyEditorUi",
     alias: "wysiwg.PropertyEditorUi.ImageAndCropPicker",
     name: "WYSIWG Picture and Crop Picker",
-    element: () => import("./wysiwg-image-and-crop-picker.element-pFNAOPFJ.js"),
+    element: () => import("./wysiwg-image-and-crop-picker.element-Dj5E3SPd.js"),
     meta: {
       label: "WYSIWG Picture and Crop Picker",
       propertyEditorSchemaAlias: "Wysiwg.ImageAndCropPicker",
@@ -147,9 +137,9 @@ const s = [
       }
     }
   }
-], c = [
-  ...p
-], m = [
+], p = [
+  ...m
+], y = [
   {
     type: "localization",
     alias: "WysiwgUmbracoCommunityExtensions.Localize.En",
@@ -195,22 +185,28 @@ const s = [
     },
     js: "/App_Plugins/WysiwgUmbracoCommunityExtensions/Localization/de.js"
   }
-], y = [
-  {
-    type: "globalContext",
-    alias: "Wysiwg.GlobalContext.BlockGrid",
-    name: "Wysiwg BlockGrid Context",
-    api: () => import("./wysiwg.context-DFPEezZn.js")
-  }
 ], d = [
-  ...e,
+  {
+    type: "workspaceContext",
+    alias: "Wysiwg.WorkspaceContext.BlockGrid",
+    name: "Wysiwg BlockGrid Context",
+    api: () => import("./wysiwg.workspace.context-B9sJZpkf.js"),
+    conditions: [
+      {
+        alias: e,
+        match: "Umb.Workspace.Document"
+      }
+    ]
+  }
+], u = [
   ...a,
-  ...y,
-  ...l,
+  ...r,
+  ...d,
   ...c,
-  ...m
+  ...p,
+  ...y
 ];
 export {
-  d as manifests
+  u as manifests
 };
 //# sourceMappingURL=wysiwg-umbraco-community-extensions.js.map
