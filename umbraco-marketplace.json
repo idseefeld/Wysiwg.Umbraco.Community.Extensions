@@ -1,4 +1,4 @@
-{
+﻿{
   "$schema": "https://marketplace.umbraco.com/umbraco-marketplace-schema.json",
   "AuthorDetails": {
     "Name": "Dirk Seefeld",
@@ -22,5 +22,5 @@
       "Caption": "Block Grid with custom view"
     }
   ],
-  "VideoUrl": "https://youtu.be/myfRycBckF8"
+  "VideoUrl": "https://www.youtube.com/embed/myfRycBckF8"
 }

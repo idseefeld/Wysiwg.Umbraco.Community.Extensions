@@ -22,8 +22,8 @@
     <PackageIcon>logo.png</PackageIcon>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <AssemblyVersion>16.0.1</AssemblyVersion>
-    <FileVersion>16.0.1</FileVersion>
+    <AssemblyVersion>16.0.2</AssemblyVersion>
+    <FileVersion>16.0.2</FileVersion>
   </PropertyGroup>
   
   <ItemGroup>
