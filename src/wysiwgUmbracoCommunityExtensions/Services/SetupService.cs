@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using StackExchange.Profiling.Internal;
 using Umbraco.Cms.Api.Management.ViewModels.DataType;
 using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Configuration;
 using Umbraco.Cms.Core.Extensions;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.Entities;
@@ -40,7 +41,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         IConfigurationEditorJsonSerializer jsonSerializer,
         IHttpContextAccessor httpContextAccessor,
         IBackOfficeSecurityAccessor backOfficeSecurityAccessor,
-        IHostEnvironment hostEnvironment
+        IHostEnvironment hostEnvironment,
+        IUmbracoVersion umbracoVersion
         ) : ISetupService
     {
         #region properties
@@ -245,7 +247,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             await CreateOrUpdateDataType(createDataTypeRequestModel);
         }
 
-        private async Task CreateDataTypeParagaphRTE(string name, uReferenceByIdModel parent)
+        private async Task CreateDataTypeParagaphRTEv17(string name, uReferenceByIdModel parent)
         {
             var createDataTypeRequestModel = new CreateDataTypeRequestModel
             {
@@ -258,13 +260,42 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     new DataTypePropertyPresentationModel {
                         Alias = "extensions",
                         Value = new List<string>() {
-                            "Umb.Tiptap.RichTextEssentials",
+                            "Umb.Tiptap.Blockquote",
+                            "Umb.Tiptap.Bold",
                             "Umb.Tiptap.Link",
+                            "Umb.Tiptap.Heading",
+                            "Umb.Tiptap.HorizontalRule",
+                            "Umb.Tiptap.Italic",
+                            "Umb.Tiptap.BulletList",
+                            "Umb.Tiptap.OrderedList",
                             "Umb.Tiptap.Subscript",
                             "Umb.Tiptap.Superscript",
                             "Umb.Tiptap.TextAlign",
                             "Umb.Tiptap.Underline"
                         }
+                    }
+                ]
+            };
+            await CreateOrUpdateDataType(createDataTypeRequestModel);
+        }
+
+        private async Task CreateDataTypeParagaphRTE(string name, uReferenceByIdModel parent)
+        {
+            bool isVersion17 = umbracoVersion.Version.Major >= 17;
+            string[] extensionsList = isVersion17
+                ? ["Umb.Tiptap.Blockquote", "Umb.Tiptap.Bold", "Umb.Tiptap.Link", "Umb.Tiptap.Heading", "Umb.Tiptap.HorizontalRule", "Umb.Tiptap.Italic", "Umb.Tiptap.BulletList", "Umb.Tiptap.OrderedList", "Umb.Tiptap.Subscript", "Umb.Tiptap.Superscript", "Umb.Tiptap.TextAlign", "Umb.Tiptap.Underline"]
+                : ["Umb.Tiptap.RichTextEssentials", "Umb.Tiptap.Link", "Umb.Tiptap.Subscript", "Umb.Tiptap.Superscript", "Umb.Tiptap.TextAlign", "Umb.Tiptap.Underline"];
+            var createDataTypeRequestModel = new CreateDataTypeRequestModel
+            {
+                Parent = parent,
+                Name = name,
+                EditorAlias = "Umbraco.RichText",
+                EditorUiAlias = "Umb.PropertyEditorUi.Tiptap",
+                Values =
+                [
+                    new DataTypePropertyPresentationModel {
+                        Alias = "extensions",
+                        Value = extensionsList
                     },
                     new DataTypePropertyPresentationModel {
                         Alias = "maxImageSize",
