@@ -1,14 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.IdentityModel.Tokens;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.IO;
 using Umbraco.Cms.Core.PropertyEditors;
-using Umbraco.Cms.Core.PropertyEditors.Validators;
 using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
 using Umbraco.Cms.Core.Serialization;
 using Umbraco.Cms.Core.Strings;
