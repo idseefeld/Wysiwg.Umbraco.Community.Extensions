@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -51,7 +52,9 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         private readonly string _errorMsgUpdateContentTypeStart = $"{ErrorMsgPrefix} Could not update content type";
         private readonly string _contentElementsRootContainer = $"{Constants.Prefix.ToFirstUpper()}Content Elements";
 
-        private readonly ContentVariation _defaultContentVariation = ContentVariation.Nothing;
+        private readonly ContentVariation _contentVariationDefault = ContentVariation.Nothing;
+        private const bool EnableVaryByCultureDefault = false;
+        private const bool EnableVaryBySegmentDefault = false; //default = false, because from v15.4.0 Umbraco does not support segment variation on element types
 
         private readonly string[] _requiredContentTypes = [
             $"{Constants.Prefix}headline",
@@ -126,7 +129,6 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
                 var parent = uReferenceByIdModel.ReferenceOrNull(_dataTypeContainer?.Key)
                     ?? throw new Exception($"{ErrorMsgPrefix} could not get ReferenceByIdModel for {_dataTypeContainer?.Name}!");
-
 
                 var pictureWithCropElement = contentTypeService.Get($"{Constants.Prefix}pictureWithCrop");
                 if (!string.IsNullOrEmpty(pictureWithCropElement?.Alias))
@@ -249,13 +251,45 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             await CreateOrUpdateDataType(createDataTypeRequestModel);
         }
 
-        private async Task CreateDataTypeParagaphRTE(string name, uReferenceByIdModel parent)
+        private async Task<bool> IsRteUpdateRequired()
         {
-            bool isVersion1640 = umbracoVersion.Version.Major == 16 && umbracoVersion.Version.Minor >= 4;
-            bool isVersion1700 = umbracoVersion.Version.Major >= 17;
-            string[] extensionsList = isVersion1640 || isVersion1700
+            bool required = true;
+            var rteDataType = _existingDataTypes?.FirstOrDefault(d => d.Name != null && d.Name.Equals($"{Constants.Prefix}ParagaphRTE"));
+            if (rteDataType != null)
+            {
+                string[] extensionsList = GetxtensionsList();
+                foreach (var extension in extensionsList)
+                {
+                    var config = rteDataType.ConfigurationData;
+                    var extensions = config.FirstOrDefault(v => v.Key == "extensions").Value.ToJson();
+                    var currentExtensionsList = JsonSerializer.Deserialize<IEnumerable<string>>(extensions) ?? [];
+                    if (!currentExtensionsList.Contains(extension))
+                    {
+                        return required;
+                    }
+                }
+                required = false;
+            }
+            return required;
+        }
+
+        private string[] GetxtensionsList()
+        {
+            bool isVersion16 = umbracoVersion.Version.Major == 16;
+            bool isVersion164 = umbracoVersion.Version.Major == 16 && umbracoVersion.Version.Minor >= 4;
+            bool isVersion17 = umbracoVersion.Version.Major >= 17;
+
+#if DEBUG
+            //isVersion17 = false; // Temporarily disable specific configuration for Umbraco 17 until further testing is done.
+#endif
+            return isVersion164 || isVersion17
                 ? ["Umb.Tiptap.Blockquote", "Umb.Tiptap.Bold", "Umb.Tiptap.Link", "Umb.Tiptap.Heading", "Umb.Tiptap.HorizontalRule", "Umb.Tiptap.Italic", "Umb.Tiptap.BulletList", "Umb.Tiptap.OrderedList", "Umb.Tiptap.Subscript", "Umb.Tiptap.Superscript", "Umb.Tiptap.TextAlign", "Umb.Tiptap.Underline"]
                 : ["Umb.Tiptap.RichTextEssentials", "Umb.Tiptap.Link", "Umb.Tiptap.Subscript", "Umb.Tiptap.Superscript", "Umb.Tiptap.TextAlign", "Umb.Tiptap.Underline"];
+        }
+
+        private async Task CreateDataTypeParagaphRTE(string name, uReferenceByIdModel parent)
+        {
+            string[] extensionsList = GetxtensionsList();
             var createDataTypeRequestModel = new CreateDataTypeRequestModel
             {
                 Parent = parent,
@@ -1242,7 +1276,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 Icon = "icon-document-html",
                 IsElement = true,
                 AllowedAsRoot = false,
-                Variations = _defaultContentVariation,
+                Variations = _contentVariationDefault,
             };
             var type = contentTypeService.Get(alias);
             if (type != null)
@@ -1259,6 +1293,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         {
             if (elementTypeAlias != alias)
             { return; }
+
             var newType = new ContentType(shortStringHelper, elementContainer.Id)
             {
                 Alias = alias,
@@ -1266,7 +1301,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 Icon = "icon-document-image",
                 IsElement = true,
                 AllowedAsRoot = false,
-                Variations = _defaultContentVariation,
+                Variations = _contentVariationDefault,
             };
             var type = contentTypeService.Get(alias);
             if (type != null)
@@ -1308,7 +1343,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 Icon = "icon-document-image",
                 IsElement = true,
                 AllowedAsRoot = false,
-                Variations = _defaultContentVariation,
+                Variations = _contentVariationDefault,
             };
 
             var type = contentTypeService.Get(alias);
@@ -1359,7 +1394,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 Icon = "icon-heading-1",
                 IsElement = true,
                 AllowedAsRoot = false,
-                Variations = _defaultContentVariation,
+                Variations = _contentVariationDefault,
             };
             var type = contentTypeService.Get(alias);
             if (type != null)
@@ -1379,8 +1414,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         private static void UpdateCultureAndSegment(bool? culture, bool? segment, IContentType type)
         {
             type.Variations = ContentVariation.Nothing;
-            var enableVaryByCulture = culture ?? true;
-            var enableVaryBySegment = segment ?? false;//default = false, because from v15.4.0 Umbraco does not support segment variation on element types
+            var enableVaryByCulture = culture ?? EnableVaryByCultureDefault;
+            var enableVaryBySegment = segment ?? EnableVaryBySegmentDefault;
             if (enableVaryByCulture && enableVaryBySegment)
             {
                 type.Variations = ContentVariation.CultureAndSegment;
@@ -1446,73 +1481,6 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 }
             }
             await AddOrUpdateProperties(type, propItems, "Content");
-        }
-
-        private async Task UpdateContentElementProperties(IContentType type, IEnumerable<PropertyDefinition> propertyUpdateDefinitions)
-        {
-            if (type == null)
-            { return; }
-
-            var typeProperties = type.PropertyTypes;
-            var removedPropertyAlias = typeProperties
-                .Where(p => !propertyUpdateDefinitions.Any(d => d.Name.InvariantEquals(p.Name)))
-                .Select(p => p.Alias);
-            var addedProperties = propertyUpdateDefinitions
-                .Where(d => !typeProperties.Any(p => d.Name.InvariantEquals(p.Name)));
-            var updateProperties = propertyUpdateDefinitions
-                .Where(d => typeProperties.Any(p => d.Name.InvariantEquals(p.Name)));
-
-            #region add
-            if (addedProperties.Any())
-            {
-                var propItems = new List<PropertyType>();
-                IDataType dt;
-                foreach (var definition in addedProperties)
-                {
-                    dt = await dataTypeService.GetAsync(definition.DataTypeName)
-                        ?? throw new Exception($"{_errorMsgDataTypeNotFoundStart} {definition.DataTypeName}");
-                    propItems.Add(
-                        new(shortStringHelper, dt)
-                        {
-                            Alias = definition.Name.ToFirstLower().Replace(" ", string.Empty),
-                            Name = definition.Name,
-                            Description = definition.Description,
-                            Mandatory = false,
-                            SortOrder = definition.SortOrder,
-                            DataTypeId = dt.Id,
-                            Variations = definition.Variations
-                        });
-                }
-                if (propItems.Count != 0)
-                { await AddOrUpdateProperties(type, propItems, "Content", updateType: false); }
-            }
-            #endregion
-
-            #region remove
-            foreach (var alias in removedPropertyAlias)
-            {
-                type.RemovePropertyType(alias);
-            }
-            #endregion
-
-            #region update
-            foreach (var definition in updateProperties)
-            {
-                var prop = typeProperties.FirstOrDefault(p => p.Name.InvariantEquals(definition.Name));
-                if (prop != null)
-                {
-                    prop.Name = definition.Name;
-                    prop.Description = definition.Description;
-                    prop.SortOrder = definition.SortOrder;
-                }
-            }
-            #endregion
-
-            var attempt = await contentTypeService.UpdateAsync(type, CurrentUserKey);
-            if (!attempt.Success)
-            {
-                throw new Exception($"{_errorMsgUpdateContentTypeStart} {type.Name}.");
-            }
         }
 
         private async Task AddOrUpdateProperties(IContentType type, IEnumerable<IPropertyType> propItems, string groupName, int groupSortOrder = 1, bool updateType = true)
@@ -1696,6 +1664,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             if (notAllRequiredInstalled)
             { return VersionStatus.Update; }
 
+            var updateRteRequired = await IsRteUpdateRequired();
+            if (updateRteRequired)
+            { return VersionStatus.Update; }
+
             if (!DataTypeExists("Rotation"))
             { return VersionStatus.Update; }
 
@@ -1721,6 +1693,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
             return VersionStatus.UpToDate;
         }
+
         private bool DataTypeExists(string name)
         {
             var rotationDataType = _existingDataTypes.FirstOrDefault(d => d.Name != null && d.Name.Equals($"{Constants.Prefix}{name}"));
@@ -1753,7 +1726,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 .Where(d => d.Name != null && d.Name.StartsWith(Constants.Prefix))
                 .ToArray();
 
-            return rVal;
+            return rVal ?? [];
         }
 
         private static string GetErrorMessage(string name, bool isDataType = false)
