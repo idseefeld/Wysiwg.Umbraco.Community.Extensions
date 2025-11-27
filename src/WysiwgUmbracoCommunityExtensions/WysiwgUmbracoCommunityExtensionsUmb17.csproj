@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+    <VersionPrefix>17.0.0</VersionPrefix>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
@@ -23,8 +24,8 @@
     <PackageIcon>logo.png</PackageIcon>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <AssemblyVersion>17.0.0</AssemblyVersion>
-    <FileVersion>17.0.0</FileVersion>
+    <AssemblyVersion>$(VersionPrefix)</AssemblyVersion>
+    <FileVersion>$(VersionPrefix)</FileVersion>
   </PropertyGroup>
   
   <ItemGroup>
@@ -37,12 +38,6 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
-
-  <!--<ItemGroup>
-    <PackageReference Include="System.Net.Http" />
-    <PackageReference Include="System.Text.Encodings.Web" />
-    <PackageReference Include="System.Text.RegularExpressions" />
-  </ItemGroup>-->
   
   <ItemGroup>
     <!-- Dont include the client folder as part of packaging nuget build -->
@@ -79,9 +74,16 @@
   </ItemGroup>
   
   <ItemGroup>
+    <PackageReference Include="Umbraco.Cms.Api.Common" Version="17.0.0" />
+    <PackageReference Include="Umbraco.Cms.Api.Management" Version="17.0.0" />
+    <PackageReference Include="Umbraco.Cms.Web.Common" Version="17.0.0" />
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="17.0.0" />
+  </ItemGroup>
+  
+  <!--<ItemGroup>
     <ProjectReference Include="..\..\..\..\issues\issue-20453\src\Umbraco.Cms.Api.Common\Umbraco.Cms.Api.Common.csproj" />
     <ProjectReference Include="..\..\..\..\issues\issue-20453\src\Umbraco.Cms.Api.Management\Umbraco.Cms.Api.Management.csproj" />
     <ProjectReference Include="..\..\..\..\issues\issue-20453\src\Umbraco.Web.Common\Umbraco.Web.Common.csproj" />
     <ProjectReference Include="..\..\..\..\issues\issue-20453\src\Umbraco.Web.Website\Umbraco.Web.Website.csproj" />
-  </ItemGroup>
+  </ItemGroup>-->
 </Project>
