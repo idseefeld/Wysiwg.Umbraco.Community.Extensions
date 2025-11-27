@@ -51,6 +51,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         private readonly string _errorMsgUpdateContentTypeStart = $"{ErrorMsgPrefix} Could not update content type";
         private readonly string _contentElementsRootContainer = $"{Constants.Prefix.ToFirstUpper()}Content Elements";
 
+        private readonly ContentVariation _defaultContentVariation = ContentVariation.Nothing;
+
         private readonly string[] _requiredContentTypes = [
             $"{Constants.Prefix}headline",
             $"{Constants.Prefix}paragraph",
@@ -247,42 +249,11 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             await CreateOrUpdateDataType(createDataTypeRequestModel);
         }
 
-        private async Task CreateDataTypeParagaphRTEv17(string name, uReferenceByIdModel parent)
-        {
-            var createDataTypeRequestModel = new CreateDataTypeRequestModel
-            {
-                Parent = parent,
-                Name = name,
-                EditorAlias = "Umbraco.RichText",
-                EditorUiAlias = "Umb.PropertyEditorUi.Tiptap",
-                Values =
-                [
-                    new DataTypePropertyPresentationModel {
-                        Alias = "extensions",
-                        Value = new List<string>() {
-                            "Umb.Tiptap.Blockquote",
-                            "Umb.Tiptap.Bold",
-                            "Umb.Tiptap.Link",
-                            "Umb.Tiptap.Heading",
-                            "Umb.Tiptap.HorizontalRule",
-                            "Umb.Tiptap.Italic",
-                            "Umb.Tiptap.BulletList",
-                            "Umb.Tiptap.OrderedList",
-                            "Umb.Tiptap.Subscript",
-                            "Umb.Tiptap.Superscript",
-                            "Umb.Tiptap.TextAlign",
-                            "Umb.Tiptap.Underline"
-                        }
-                    }
-                ]
-            };
-            await CreateOrUpdateDataType(createDataTypeRequestModel);
-        }
-
         private async Task CreateDataTypeParagaphRTE(string name, uReferenceByIdModel parent)
         {
-            bool isVersion17 = umbracoVersion.Version.Major >= 17;
-            string[] extensionsList = isVersion17
+            bool isVersion1640 = umbracoVersion.Version.Major == 16 && umbracoVersion.Version.Minor >= 4;
+            bool isVersion1700 = umbracoVersion.Version.Major >= 17;
+            string[] extensionsList = isVersion1640 || isVersion1700
                 ? ["Umb.Tiptap.Blockquote", "Umb.Tiptap.Bold", "Umb.Tiptap.Link", "Umb.Tiptap.Heading", "Umb.Tiptap.HorizontalRule", "Umb.Tiptap.Italic", "Umb.Tiptap.BulletList", "Umb.Tiptap.OrderedList", "Umb.Tiptap.Subscript", "Umb.Tiptap.Superscript", "Umb.Tiptap.TextAlign", "Umb.Tiptap.Underline"]
                 : ["Umb.Tiptap.RichTextEssentials", "Umb.Tiptap.Link", "Umb.Tiptap.Subscript", "Umb.Tiptap.Superscript", "Umb.Tiptap.TextAlign", "Umb.Tiptap.Underline"];
             var createDataTypeRequestModel = new CreateDataTypeRequestModel
@@ -1271,7 +1242,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 Icon = "icon-document-html",
                 IsElement = true,
                 AllowedAsRoot = false,
-                Variations = ContentVariation.Culture,
+                Variations = _defaultContentVariation,
             };
             var type = contentTypeService.Get(alias);
             if (type != null)
@@ -1295,7 +1266,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 Icon = "icon-document-image",
                 IsElement = true,
                 AllowedAsRoot = false,
-                Variations = ContentVariation.Culture,
+                Variations = _defaultContentVariation,
             };
             var type = contentTypeService.Get(alias);
             if (type != null)
@@ -1337,7 +1308,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 Icon = "icon-document-image",
                 IsElement = true,
                 AllowedAsRoot = false,
-                Variations = ContentVariation.Culture,
+                Variations = _defaultContentVariation,
             };
 
             var type = contentTypeService.Get(alias);
@@ -1388,7 +1359,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 Icon = "icon-heading-1",
                 IsElement = true,
                 AllowedAsRoot = false,
-                Variations = ContentVariation.Culture,
+                Variations = _defaultContentVariation,
             };
             var type = contentTypeService.Get(alias);
             if (type != null)

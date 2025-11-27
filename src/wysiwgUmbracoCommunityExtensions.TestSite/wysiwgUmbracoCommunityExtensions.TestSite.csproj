@@ -25,21 +25,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <PackageReference Include="System.Text.Encodings.Web" Version="10.0.0" />
-    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
-    <PackageReference Include="Umbraco.Cms" Version="17.0.0-rc3" />
+    <PackageReference Include="Umbraco.Cms" Version="17.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- Opt-in to app-local ICU to ensure consistent globalization APIs across different platforms -->
     <PackageReference Include="Microsoft.ICU.ICU4C.Runtime" Version="72.1.0.3" />
-    <PackageReference Include="uSync" Version="17.0.0-rc3" />
+    <PackageReference Include="uSync" Version="17.0.0" />
     <RuntimeHostConfigurationOption Include="System.Globalization.AppLocalIcu" Value="72.1.0.3" Condition="$(RuntimeIdentifier.StartsWith('linux')) or $(RuntimeIdentifier.StartsWith('win')) or ('$(RuntimeIdentifier)' == '' and !$([MSBuild]::IsOSPlatform('osx')))" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\wysiwgUmbracoCommunityExtensions\WysiwgUmbracoCommunityExtensions.csproj" />
+    <ProjectReference Include="..\wysiwgUmbracoCommunityExtensions\WysiwgUmbracoCommunityExtensionsUmb17.csproj" />
   </ItemGroup>
 
   <ItemGroup>
