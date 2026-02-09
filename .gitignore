@@ -362,3 +362,4 @@ src/.idea
 /src/u16
 *.7z
 /src/Umb16.4.0
+/src/Umbraco17/Views/Partials/blockgrid/backup-items.cshtml
