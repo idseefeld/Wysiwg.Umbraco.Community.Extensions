@@ -363,3 +363,4 @@ src/.idea
 *.7z
 /src/Umb16.4.0
 /src/Umbraco17/Views/Partials/blockgrid/backup-items.cshtml
+/src/Umbraco17/wwwroot/styles/wysiwyg-blockgrid.min.css

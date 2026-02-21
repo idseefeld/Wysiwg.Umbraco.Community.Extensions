@@ -1,6 +1,5 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -10,7 +9,6 @@ using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Configuration;
 using Umbraco.Cms.Core.Extensions;
 using Umbraco.Cms.Core.Models;
-using Umbraco.Cms.Core.Models.Entities;
 using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Cms.Core.Security;
 using Umbraco.Cms.Core.Serialization;
@@ -1518,7 +1516,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             var contentRootPath = hostEnvironment.ContentRootPath;
             var webRootPath = hostEnvironment.MapPathContentRoot("~/");
 
-            var source = Path.Combine(webRootPath, "wysiwyg", "wysiwyg-default-blockgrid.min.css");
+            // var source = Path.Combine(webRootPath, "wysiwyg", "wysiwyg-default-blockgrid.min.css");
             var dest = GetBlockGridCssPath();
 
             try
@@ -1531,10 +1529,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 }
 
                 string? sourceContent = null;
-                if (System.IO.File.Exists(source))
-                {
-                    System.IO.File.ReadAllText(source);
-                }
+                //if (System.IO.File.Exists(source))
+                //{
+                //    System.IO.File.ReadAllText(source);
+                //}
                 if (string.IsNullOrEmpty(sourceContent))
                 {
                     sourceContent = CssSource.SOURCE;
@@ -1569,8 +1567,13 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         private string GetBlockGridCssPath()
         {
             var webRootPath = hostEnvironment.MapPathContentRoot("~/");
-            var cssPath = Path.Combine(webRootPath, "wwwroot", "styles", "wysiwyg-blockgrid.min.css");
-            return cssPath;
+            var cssPath = Path.Combine(webRootPath, "wwwroot", "styles");
+            if (!Directory.Exists(cssPath))
+            {
+                _ = Directory.CreateDirectory(cssPath);
+            }
+            var cssFilePath = Path.Combine(cssPath, "wysiwyg-blockgrid.min.css");
+            return cssFilePath;
         }
 
         private async Task SwitchPartialViews(bool restoreOriginal = false)
