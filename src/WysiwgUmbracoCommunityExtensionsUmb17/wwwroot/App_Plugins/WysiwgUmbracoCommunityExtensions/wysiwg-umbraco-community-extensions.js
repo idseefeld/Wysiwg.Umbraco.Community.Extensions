@@ -59,7 +59,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockParagraph",
     name: "Block Editor Custom View for Paragraph",
-    element: () => import("./paragraph.view-BU6snSOs.js"),
+    element: () => import("./paragraph.view-na_DlPLn.js"),
     forContentTypeAlias: i + "paragraph",
     forBlockEditor: "block-grid"
   },

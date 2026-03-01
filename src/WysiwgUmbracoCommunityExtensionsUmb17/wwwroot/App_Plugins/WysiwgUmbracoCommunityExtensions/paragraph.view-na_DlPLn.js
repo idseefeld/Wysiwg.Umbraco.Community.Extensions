@@ -50,7 +50,7 @@ n.styles = [
         padding: 0;
         font-family: var(--wysiwg-font-family, initial);
       }
-      .paragraph {
+      #paragraph {
         font-size: var(--wysiwg-font-size-16);
         line-height: var(--wysiwg-line-height-24);
         text-shadow: var(--wysiwg-paragraph-text-shadow, none);
@@ -98,4 +98,4 @@ export {
   n as WysiwgBlockParagraphView,
   x as default
 };
-//# sourceMappingURL=paragraph.view-BU6snSOs.js.map
+//# sourceMappingURL=paragraph.view-na_DlPLn.js.map

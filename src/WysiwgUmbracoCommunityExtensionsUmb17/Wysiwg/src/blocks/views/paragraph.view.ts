@@ -61,7 +61,7 @@ export class WysiwgBlockParagraphView
         padding: 0;
         font-family: var(--wysiwg-font-family, initial);
       }
-      .paragraph {
+      #paragraph {
         font-size: var(--wysiwg-font-size-16);
         line-height: var(--wysiwg-line-height-24);
         text-shadow: var(--wysiwg-paragraph-text-shadow, none);
