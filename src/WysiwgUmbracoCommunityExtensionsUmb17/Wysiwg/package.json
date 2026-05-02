@@ -2,7 +2,7 @@
   "name": "wysiwg-umbraco-community-extensions",
   "private": true,
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "17.0.6",
   "type": "module",
   "engines": {
     "node": ">=22.0.0 < 23",
@@ -16,8 +16,8 @@
   },
   "devDependencies": {
     "@hey-api/client-fetch": "^0.4.2",
-    "@hey-api/openapi-ts": "^0.53.11",
-    "@umbraco-cms/backoffice": "^16.0.0-rc4",
+    "@hey-api/openapi-ts": "^0.97.0",
+    "@umbraco-cms/backoffice": "^17.3.5",
     "chalk": "^5.4.1",
     "cross-env": "^7.0.3",
     "node-fetch": "^3.3.2",

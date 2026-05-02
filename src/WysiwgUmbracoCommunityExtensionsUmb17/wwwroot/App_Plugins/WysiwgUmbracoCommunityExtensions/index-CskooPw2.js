@@ -1,7 +1,7 @@
 import { html as h, css as z, property as s, state as w, customElement as E } from "@umbraco-cms/backoffice/external/lit";
 import { UmbLitElement as L } from "@umbraco-cms/backoffice/lit-element";
 import { UmbTextStyles as W } from "@umbraco-cms/backoffice/style";
-import "./wysiwg-image-and-crop-picker.element-Dj5E3SPd.js";
+import "./wysiwg-image-and-crop-picker.element-BRcRF30-.js";
 import "./wysiwg-card-image.element-SMTzqmtn.js";
 import { W as A } from "./services.gen-ya8kz8Ij.js";
 import { UmbChangeEvent as T } from "@umbraco-cms/backoffice/event";
@@ -296,4 +296,4 @@ export {
   o as WysiwgBlocksImageCropElement,
   l as WysiwgCroppedImageElement
 };
-//# sourceMappingURL=index-CCOzidwV.js.map
+//# sourceMappingURL=index-CskooPw2.js.map

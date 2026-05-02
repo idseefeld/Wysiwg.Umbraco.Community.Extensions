@@ -256,7 +256,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
 
     this.getVariations()
 
-    return html`${this.renderSetupBox()} ${this.renderUpdateBox()}`;
+    return html`${this.renderSetupBox()} ${this.renderUpdateBox()} ${this.renderVersionInfo()}`;
   }
 
   private async setUpdateStatus() {
@@ -277,6 +277,14 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
         this._version = version;
       }
     });
+  }
+
+  private renderVersionInfo() {
+    return html`
+      <div class="full-width footer-line">
+        <p>Package version: 17.0.6</p>
+      </div>
+    `;
   }
 
   private renderSetupBox() {
@@ -412,6 +420,16 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
 
       .wide {
         grid-column: span 3;
+      }
+
+      .full-width {
+        grid-column: 1 / -1;
+      }
+
+      .footer-line p{
+        opacity: 0.6;
+        margin: 0;
+        padding: 0;
       }
     `,
   ];

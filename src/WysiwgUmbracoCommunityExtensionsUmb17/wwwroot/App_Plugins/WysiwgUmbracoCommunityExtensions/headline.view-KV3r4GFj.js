@@ -6,7 +6,7 @@ var y = Object.getOwnPropertyDescriptor, c = (e, n, a, i) => {
     (r = e[l]) && (t = r(t) || t);
   return t;
 };
-const v = "wysiwg-block-headline-view";
+const f = "wysiwg-block-headline-view";
 let s = class extends d {
   render() {
     var i;
@@ -50,11 +50,11 @@ s.styles = [
     `
 ];
 s = c([
-  m(v)
+  m(f)
 ], s);
 const u = s;
 export {
   s as WysiwgBlockHeadlineView,
   u as default
 };
-//# sourceMappingURL=headline.view-fUjnym5z.js.map
+//# sourceMappingURL=headline.view-KV3r4GFj.js.map

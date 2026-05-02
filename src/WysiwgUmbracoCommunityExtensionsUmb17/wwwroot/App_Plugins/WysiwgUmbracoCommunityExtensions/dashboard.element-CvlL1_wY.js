@@ -1,7 +1,7 @@
-import { LitElement as g, html as a, css as m, state as c, customElement as _ } from "@umbraco-cms/backoffice/external/lit";
+import { LitElement as g, html as n, css as m, state as c, customElement as _ } from "@umbraco-cms/backoffice/external/lit";
 import { UmbElementMixin as p } from "@umbraco-cms/backoffice/element-api";
-import { UMB_NOTIFICATION_CONTEXT as b } from "@umbraco-cms/backoffice/notification";
-import { UMB_CURRENT_USER_CONTEXT as y } from "@umbraco-cms/backoffice/current-user";
+import { UMB_NOTIFICATION_CONTEXT as y } from "@umbraco-cms/backoffice/notification";
+import { UMB_CURRENT_USER_CONTEXT as b } from "@umbraco-cms/backoffice/current-user";
 import { W as u } from "./services.gen-ya8kz8Ij.js";
 import { U as l } from "./types-eEpi63XY.js";
 import { umbConfirmModal as f } from "@umbraco-cms/backoffice/modal";
@@ -46,12 +46,12 @@ class C {
       return t;
   }
 }
-var x = Object.defineProperty, S = Object.getOwnPropertyDescriptor, r = (e, t, s, o) => {
+var x = Object.defineProperty, S = Object.getOwnPropertyDescriptor, a = (e, t, s, o) => {
   for (var i = o > 1 ? void 0 : o ? S(t, s) : t, h = e.length - 1, d; h >= 0; h--)
     (d = e[h]) && (i = (o ? d(t, s, i) : d(i)) || i);
   return o && i && x(t, s, i), i;
 };
-let n = class extends p(g) {
+let r = class extends p(g) {
   constructor() {
     super(), this._contextCurrentUser = void 0, this._updateStatus = void 0, this._variations = void 0, this._version = { major: 1, minor: 0, patch: 0 }, this._uninstalling = !1, this._varyByCulture = !1, this._varyBySegment = !1, this._debug = v, this._commonUtilities = void 0, this._notificationContext = void 0, this._onChangeCulture = (e) => {
       const t = e.target;
@@ -106,7 +106,7 @@ let n = class extends p(g) {
       const s = {
         color: "danger",
         headline: this.localize.term("wysiwg_unistallConfirmHeadline", { debug: this._debug }),
-        content: a`${this.localize.term("wysiwg_uninstallConfirmDescription", { debug: this._debug })}`,
+        content: n`${this.localize.term("wysiwg_uninstallConfirmDescription", { debug: this._debug })}`,
         confirmLabel: this.localize.term("wysiwg_okConfirmButtonLabel", { debug: this._debug }),
         cancelLabel: this.localize.term("wysiwg_cancelConfirmButtonLabel", { debug: this._debug })
       };
@@ -125,9 +125,9 @@ let n = class extends p(g) {
           message: this.localize.term("wysiwg_uninstallSuccessDescription")
         }
       }), t.state = "success") : t.state = "failed", this._updateStatus = void 0);
-    }, this.consumeContext(b, (e) => {
+    }, this.consumeContext(y, (e) => {
       this._notificationContext = e, this._commonUtilities = new C(this.localize, e);
-    }), this.consumeContext(y, (e) => {
+    }), this.consumeContext(b, (e) => {
       if (!e) {
         this._contextCurrentUser = void 0;
         return;
@@ -154,7 +154,7 @@ let n = class extends p(g) {
   }
   render() {
     var e;
-    return (e = this._contextCurrentUser) != null && e.isAdmin ? (this.setUpdateStatus(), this.setSemVersion(), this.getVariations(), a`${this.renderSetupBox()} ${this.renderUpdateBox()}`) : a`<umb-localize key="wysiwg_" .debug=${this._debug}>
+    return (e = this._contextCurrentUser) != null && e.isAdmin ? (this.setUpdateStatus(), this.setSemVersion(), this.getVariations(), n`${this.renderSetupBox()} ${this.renderUpdateBox()} ${this.renderVersionInfo()}`) : n`<umb-localize key="wysiwg_" .debug=${this._debug}>
       <p>Only admins can see this dashboard</p>
       </umb-localize>`;
   }
@@ -170,13 +170,20 @@ let n = class extends p(g) {
       t && (this._version = t);
     }));
   }
+  renderVersionInfo() {
+    return n`
+      <div class="full-width footer-line">
+        <p>Package version: 17.0.6</p>
+      </div>
+    `;
+  }
   renderSetupBox() {
     if (this._updateStatus === void 0)
       return this.renderUninstallBox();
     if (this._updateStatus === l.UpToDate)
       return this.renderUninstallBox();
     const e = this._updateStatus === l.Install ? this.localize.term("wysiwg_setupButtonLabel", { debug: this._debug }) : this.localize.term("wysiwg_updateButtonLabel", { debug: this._debug });
-    return a`
+    return n`
       <uui-box headline=${this.localize.term("wysiwg_setupTitle", {
       debug: this._debug
     })}>
@@ -202,7 +209,7 @@ let n = class extends p(g) {
     if (this._uninstalling || this._updateStatus === void 0 || this._updateStatus !== l.UpToDate)
       return;
     const e = this.localize.term("wysiwg_cultureSegmentButtonLabel", { debug: this._debug });
-    return a`
+    return n`
       <uui-box headline=${this.localize.term("wysiwg_cultureSegmentTitle", {
       debug: this._debug
     })}>
@@ -231,12 +238,12 @@ let n = class extends p(g) {
     `;
   }
   renderSegmentCheckbox() {
-    return this._version.major > 15 || this._version.major >= 15 && this._version.minor >= 4 && this._version.patch >= 0 ? a`
+    return this._version.major > 15 || this._version.major >= 15 && this._version.minor >= 4 && this._version.patch >= 0 ? n`
       <uui-checkbox
         disabled
         label="Vary by segment is not supported in Umbraco versions above 15.4"
         ?checked=${this._varyBySegment}>Vary by segment</uui-checkbox>
-      ` : a`
+      ` : n`
     <uui-checkbox
       label="Vary by segment"
       @change="${this._onChangeSegment}"
@@ -247,7 +254,7 @@ let n = class extends p(g) {
     if (this._updateStatus === void 0 || this._updateStatus === l.Install)
       return;
     const e = this.localize.term("wysiwg_uninstallButtonLabel", { debug: this._debug });
-    return a`
+    return n`
       <uui-box headline=${this.localize.term("wysiwg_uninstallTitle", {
       debug: this._debug
     })}>
@@ -270,7 +277,7 @@ let n = class extends p(g) {
     `;
   }
 };
-n.styles = [
+r.styles = [
   m`
       :host {
         display: grid;
@@ -290,29 +297,39 @@ n.styles = [
       .wide {
         grid-column: span 3;
       }
+
+      .full-width {
+        grid-column: 1 / -1;
+      }
+
+      .footer-line p{
+        opacity: 0.6;
+        margin: 0;
+        padding: 0;
+      }
     `
 ];
-r([
+a([
   c()
-], n.prototype, "_contextCurrentUser", 2);
-r([
+], r.prototype, "_contextCurrentUser", 2);
+a([
   c()
-], n.prototype, "_updateStatus", 2);
-r([
+], r.prototype, "_updateStatus", 2);
+a([
   c()
-], n.prototype, "_variations", 2);
-r([
+], r.prototype, "_variations", 2);
+a([
   c()
-], n.prototype, "_version", 2);
-r([
+], r.prototype, "_version", 2);
+a([
   c()
-], n.prototype, "_uninstalling", 2);
-n = r([
+], r.prototype, "_uninstalling", 2);
+r = a([
   _("wysiwg-dashboard")
-], n);
-const T = n;
+], r);
+const T = r;
 export {
-  n as WysiwgDashboardElement,
+  r as WysiwgDashboardElement,
   T as default
 };
-//# sourceMappingURL=dashboard.element-BVc55_PA.js.map
+//# sourceMappingURL=dashboard.element-CvlL1_wY.js.map

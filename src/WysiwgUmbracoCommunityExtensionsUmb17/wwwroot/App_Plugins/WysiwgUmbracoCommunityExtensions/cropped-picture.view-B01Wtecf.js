@@ -1,11 +1,11 @@
 import { html as g, unsafeHTML as u, css as b, property as h, customElement as _ } from "@umbraco-cms/backoffice/external/lit";
-import { W as $ } from "./wysiwg-base-block-editor-custom.view-vKxVjFVc.js";
-var x = Object.defineProperty, z = Object.getOwnPropertyDescriptor, d = (i, t, e, r) => {
-  for (var o = r > 1 ? void 0 : r ? z(t, e) : t, a = i.length - 1, n; a >= 0; a--)
+import { W as x } from "./wysiwg-base-block-editor-custom.view-vKxVjFVc.js";
+var z = Object.defineProperty, $ = Object.getOwnPropertyDescriptor, d = (i, t, e, r) => {
+  for (var o = r > 1 ? void 0 : r ? $(t, e) : t, a = i.length - 1, n; a >= 0; a--)
     (n = i[a]) && (o = (r ? n(t, e, o) : n(o)) || o);
-  return r && o && x(t, e, o), o;
+  return r && o && z(t, e, o), o;
 };
-let s = class extends $ {
+let s = class extends x {
   constructor() {
     super(...arguments), this._debugLocalize = !1, this._defaultColor = { label: "Black", value: "#000" };
   }
@@ -92,4 +92,4 @@ export {
   s as CroppedPictureCustomView,
   k as default
 };
-//# sourceMappingURL=cropped-picture.view-xFJfG0yU.js.map
+//# sourceMappingURL=cropped-picture.view-B01Wtecf.js.map

@@ -20,7 +20,6 @@ export class WysiwgDataSource extends UmbItemServerDataSourceBase<DocumentItemRe
     const itemRequestManager = new UmbItemDataApiGetRequestController(this, {
       api: (args) => DocumentService.getItemDocument({
         query: { id: args.uniques },
-        url: '/umbraco/management/api/v1/item/document'
       }),
       uniques,
     });
@@ -32,6 +31,7 @@ export class WysiwgDataSource extends UmbItemServerDataSourceBase<DocumentItemRe
 }
 
 const mapper = (item: DocumentItemResponseModel): WysiwgItemModel => {
+
   return {
     documentType: {
       collection: item.documentType.collection ? { unique: item.documentType.collection.id } : null,
@@ -42,7 +42,7 @@ const mapper = (item: DocumentItemResponseModel): WysiwgItemModel => {
     hasChildren: item.hasChildren,
     isProtected: item.isProtected,
     isTrashed: item.isTrashed,
-    name: item.variants[0]?.name, // TODO: this is not correct. We need to get it from the variants. This is a temp solution.
+    flags: item.flags || [],
     parent: item.parent ? { unique: item.parent.id } : null,
     unique: item.id,
     variants: item.variants.map((variant) => {
@@ -50,6 +50,7 @@ const mapper = (item: DocumentItemResponseModel): WysiwgItemModel => {
         culture: variant.culture || null,
         name: variant.name,
         state: variant.state,
+        flags: variant.flags || [],
       };
     }),
   };

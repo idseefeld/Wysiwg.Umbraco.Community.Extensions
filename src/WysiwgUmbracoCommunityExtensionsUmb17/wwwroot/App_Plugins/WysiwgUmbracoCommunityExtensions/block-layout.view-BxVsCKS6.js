@@ -1,6 +1,6 @@
 import { UmbTextStyles as E } from "@umbraco-cms/backoffice/style";
-import { html as y, styleMap as v, nothing as $, css as M, property as f, state as m, customElement as P } from "@umbraco-cms/backoffice/external/lit";
-import "./wysiwg-image-and-crop-picker.element-Dj5E3SPd.js";
+import { html as y, nothing as M, styleMap as v, css as $, property as f, state as m, customElement as P } from "@umbraco-cms/backoffice/external/lit";
+import "./wysiwg-image-and-crop-picker.element-BRcRF30-.js";
 import "./wysiwg-card-image.element-SMTzqmtn.js";
 import { W as S } from "./services.gen-ya8kz8Ij.js";
 import { W as H } from "./wysiwg-base-block-editor-custom.view-vKxVjFVc.js";
@@ -133,7 +133,7 @@ let s = class extends H {
             look="secondary"
             title=${this.localize.term("wysiwg_notExposedDescription")}
             ><umb-localize key="wysiwg_notExposedLabel"></umb-localize
-          ></uui-tag>` : $}
+          ></uui-tag>` : M}
 
       <umb-block-grid-areas-container
         slot="areas"
@@ -171,7 +171,7 @@ B = async function(t) {
 };
 s.styles = [
   E,
-  M`
+  $`
       :host {
         display: flex;
         height: 100%;
@@ -213,4 +213,4 @@ export {
   s as WysiwgBlockLayoutView,
   N as default
 };
-//# sourceMappingURL=block-layout.view-B1D4_Uqs.js.map
+//# sourceMappingURL=block-layout.view-BxVsCKS6.js.map
