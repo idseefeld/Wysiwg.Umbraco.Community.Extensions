@@ -28,7 +28,7 @@
     <FileVersion>$(VersionPrefix)</FileVersion>
     <Version>$(VersionPrefix)</Version>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <None Include="..\..\docs\logo.png">
       <Pack>True</Pack>
@@ -39,7 +39,7 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <!-- Dont include the client folder as part of packaging nuget build -->
     <Compile Remove="BlockGridStyles\**" />
@@ -65,7 +65,7 @@
 
     <!-- However make the Umbraco-package.json included for dotnet pack or nuget package and visible to the solution -->
   </ItemGroup>
-
+  
   <ItemGroup>
     <None Include="..\..\docs\README_nuget.md">
       <Pack>True</Pack>
@@ -73,11 +73,18 @@
     </None>
     <None Include="BlockGridStyles\wysiwyg-default-blockgrid.scss" />
   </ItemGroup>
-
+  
   <ItemGroup>
-    <PackageReference Include="Umbraco.Cms.Api.Common" Version="17.4.0" />
-    <PackageReference Include="Umbraco.Cms.Api.Management" Version="17.4.0" />
-    <PackageReference Include="Umbraco.Cms.Web.Common" Version="17.4.0" />
-    <PackageReference Include="Umbraco.Cms.Web.Website" Version="17.4.0" />
+    <PackageReference Include="Umbraco.Cms.Api.Common" Version="17.3.5" />
+    <PackageReference Include="Umbraco.Cms.Api.Management" Version="17.3.5" />
+    <PackageReference Include="Umbraco.Cms.Web.Common" Version="17.3.5" />
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="17.3.5" />
   </ItemGroup>
+  
+  <!--<ItemGroup>
+    <ProjectReference Include="..\..\..\..\issues\issue-20453\src\Umbraco.Cms.Api.Common\Umbraco.Cms.Api.Common.csproj" />
+    <ProjectReference Include="..\..\..\..\issues\issue-20453\src\Umbraco.Cms.Api.Management\Umbraco.Cms.Api.Management.csproj" />
+    <ProjectReference Include="..\..\..\..\issues\issue-20453\src\Umbraco.Web.Common\Umbraco.Web.Common.csproj" />
+    <ProjectReference Include="..\..\..\..\issues\issue-20453\src\Umbraco.Web.Website\Umbraco.Web.Website.csproj" />
+  </ItemGroup>-->
 </Project>
