@@ -55,6 +55,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         private const bool EnableVaryBySegmentDefault = false; //default = false, because from v15.4.0 Umbraco does not support segment variation on element types
 
         private readonly string[] _requiredContentTypes = [
+            $"{Constants.Prefix}callToAction",
             $"{Constants.Prefix}headline",
             $"{Constants.Prefix}paragraph",
             $"{Constants.Prefix}croppedPicture",
@@ -62,12 +63,14 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             $"{Constants.Prefix}layout2",
             $"{Constants.Prefix}layout3",
             $"{Constants.Prefix}layout4",
+            $"{Constants.Prefix}callToActionSettings",
             $"{Constants.Prefix}headlineSettings",
             $"{Constants.Prefix}paragraphSettings",
             $"{Constants.Prefix}rowSettings"
         ];
         private readonly string[] _layoutKeyCollection = ["layout1", "layout2", "layout3", "layout4"];
         private readonly string[] _needUpdateContentTypes = [
+            $"{Constants.Prefix}callToActionSettings",
             $"{Constants.Prefix}headline",
             $"{Constants.Prefix}paragraph",
             $"{Constants.Prefix}croppedPicture",
@@ -77,6 +80,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         private string[] _deprecatedContentTypes = [$"{Constants.Prefix}pictureWithCrop"];
         private readonly string _dtContainerName = $"{Constants.Prefix.ToFirstUpper()}DataTypes";
         private readonly string[] _requiredDataTypes = [
+            $"{Constants.Prefix}CallToActionLabel",
+            $"{Constants.Prefix}CallToActionOnClick",
             $"{Constants.Prefix}HeadlineSizes",
             $"{Constants.Prefix}LimitedHeadline",
             $"{Constants.Prefix}ParagaphRTE",
@@ -168,6 +173,12 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             {
                 switch (name)
                 {
+                    case $"{Constants.Prefix}CallToActionLabel":
+                        await CreateDataTypeCallToActionLabel(name, parent);
+                        break;
+                    case $"{Constants.Prefix}CallToActionOnClick":
+                        await CreateDataTypeCallToActionOnClick(name, parent);
+                        break;
                     case $"{Constants.Prefix}HeadlineSizes":
                         await CreateDataTypeHeadlineSizes(name, parent);
                         break;
@@ -349,6 +360,66 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                         }
                     }
                 ]
+            };
+            await CreateOrUpdateDataType(createDataTypeRequestModel);
+        }
+
+        private async Task CreateDataTypeCallToActionLabel(string name, uReferenceByIdModel parent)
+        {
+            var createDataTypeRequestModel = new CreateDataTypeRequestModel
+            {
+                Parent = parent,
+                Name = name,
+                EditorAlias = "Umbraco.TextBox",
+                EditorUiAlias = "Umb.PropertyEditorUi.TextBox",
+                Values = [
+                    new DataTypePropertyPresentationModel {
+                        Alias = "inputType",
+                        Value = "text"
+                    },
+                    new DataTypePropertyPresentationModel {
+                        Alias = "maxChars",
+                        Value = 80
+                    }
+                    ]
+            };
+            await CreateOrUpdateDataType(createDataTypeRequestModel);
+        }
+
+        private async Task CreateDataTypeCallToActionOnClick(string name, uReferenceByIdModel parent)
+        {
+            var createDataTypeRequestModel = new CreateDataTypeRequestModel
+            {
+                Parent = parent,
+                Name = name,
+                EditorAlias = "Umbraco.MultiUrlPicker",
+                EditorUiAlias = "Umb.PropertyEditorUi.MultiUrlPicker",
+                Values = [
+                    new DataTypePropertyPresentationModel {
+                        Alias = "minNumber",
+                        Value = 0
+                    },
+                    new DataTypePropertyPresentationModel {
+                        Alias = "maxNumber",
+                        Value = 1
+                    },
+                    new DataTypePropertyPresentationModel {
+                        Alias = "ignoreUserStartNodes",
+                        Value = false
+                    },
+                    new DataTypePropertyPresentationModel {
+                        Alias = "overlaySize",
+                        Value = ""
+                    },
+                    new DataTypePropertyPresentationModel {
+                        Alias = "hideAnchor",
+                        Value = false
+                    },
+                    new DataTypePropertyPresentationModel {
+                        Alias = "allowCultureSpecificDocumentLinks",
+                        Value = false
+                    }
+                    ]
             };
             await CreateOrUpdateDataType(createDataTypeRequestModel);
         }
@@ -598,6 +669,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 var imageAndCropPickerKey = GetElementKeyByName("croppedPicture");
                 var headlineKey = GetElementKeyByName("headline");
                 var headlineSettingsKey = GetElementKeyByName("headlineSettings");
+                var ctaKey = GetElementKeyByName("callToAction");
+                var ctaSettingsKey = GetElementKeyByName("callToActionSettings");
 
                 var layoutKeys = _layoutKeyCollection
                     .Where(l => !string.IsNullOrEmpty(GetElementKeyByName(l)))
@@ -621,6 +694,12 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                         ""contentElementTypeKey"":""{imageAndCropPickerKey}"",
                         ""allowAtRoot"":false,
                         ""allowInAreas"":true
+                    }},
+                    {{
+                        ""contentElementTypeKey"":""{ctaKey}"",
+                        ""allowAtRoot"": false,
+                        ""allowInAreas"": true,
+                        ""settingsElementTypeKey"":""{ctaSettingsKey}""
                     }},
                     {{
                         ""contentElementTypeKey"":""{layoutKeys[0]}"",
@@ -664,6 +743,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                                     {{
                                     ""minAllowed"":0,
                                     ""elementTypeKey"":""{imageAndCropPickerKey}""
+                                    }},
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{ctaKey}""
                                     }}
                                 ]
                             }},
@@ -682,6 +765,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                                     {{
                                     ""minAllowed"":0,
                                     ""elementTypeKey"":""{imageAndCropPickerKey}""
+                                    }},
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{ctaKey}""
                                     }}
                                 ]
                             }}
@@ -710,6 +797,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                                     {{
                                     ""minAllowed"":0,
                                     ""elementTypeKey"":""{imageAndCropPickerKey}""
+                                    }},
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{ctaKey}""
                                     }}
                                 ]
                             }},
@@ -728,6 +819,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                                     {{
                                     ""minAllowed"":0,
                                     ""elementTypeKey"":""{imageAndCropPickerKey}""
+                                    }},
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{ctaKey}""
                                     }}
                                 ]
                             }}
@@ -756,6 +851,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                                     {{
                                     ""minAllowed"":0,
                                     ""elementTypeKey"":""{imageAndCropPickerKey}""
+                                    }},
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{ctaKey}""
                                     }}
                                 ]
                             }},
@@ -774,6 +873,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                                     {{
                                     ""minAllowed"":0,
                                     ""elementTypeKey"":""{imageAndCropPickerKey}""
+                                    }},
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{ctaKey}""
                                     }}
                                 ]
                             }}
@@ -1020,8 +1123,14 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         {
             var elementContainer = _blockContainers[BlockElementsName];
 
-            var alias = $"{Constants.Prefix}headline";
+            var alias = $"{Constants.Prefix}callToAction";
             var compareAlias = string.IsNullOrEmpty(elementTypeAlias)
+                ? alias
+                : elementTypeAlias;
+            await CreateOrUpdateCallToActionElementType(compareAlias, alias, elementContainer, culture, segment);
+
+            alias = $"{Constants.Prefix}headline";
+            compareAlias = string.IsNullOrEmpty(elementTypeAlias)
                 ? alias
                 : elementTypeAlias;
             await CreateOrUpdateHeadlineElementType(compareAlias, alias, elementContainer, culture, segment);
@@ -1078,6 +1187,12 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 ? alias
                 : elementTypeAlias;
             await CreateOrUpdateRowSettingsElementType(compareAlias, alias, elementContainer);
+
+            alias = $"{Constants.Prefix}callToActionSettings";
+            compareAlias = string.IsNullOrEmpty(elementTypeAlias)
+                ? alias
+                : elementTypeAlias;
+            await CreateOrUpdateCallToActionSettingsElementType(compareAlias, alias, elementContainer);
         }
 
         private void CreateOrUpdateContentElementContainers()
@@ -1190,6 +1305,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
             await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);
         }
+
         private async Task CreateOrUpdateHeadlineSettingsElementType(string elementTypeAlias, string alias, EntityContainer elementContainer)
         {
             if (elementTypeAlias != alias)
@@ -1211,6 +1327,31 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 new ("Color", $"{Constants.Prefix}CustomerColors", 1),
                 new ("Margin", "Textstring", 2),
                 new ("Size", $"{Constants.Prefix}HeadlineSizes", 3)
+            };
+
+            await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);
+        }
+
+        private async Task CreateOrUpdateCallToActionSettingsElementType(string elementTypeAlias, string alias, EntityContainer elementContainer)
+        {
+            if (elementTypeAlias != alias)
+            { return; }
+
+            var type = contentTypeService.Get(alias);
+            var newType = new ContentType(shortStringHelper, elementContainer.Id)
+            {
+                Alias = alias,
+                Name = "Call to Action Settings",
+                Icon = "icon-reception color-red",
+                IsElement = true,
+                AllowedAsRoot = false,
+                Variations = ContentVariation.Nothing,
+            };
+
+            var propertyDefinitions = new List<PropertyDefinition>()
+            {
+                new ("Color", $"{Constants.Prefix}CustomerColors", 1),
+                new ("Background Color", $"{Constants.Prefix}CustomerColors", 2),
             };
 
             await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);
@@ -1262,6 +1403,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 }
             }
         }
+
         private async Task CreateOrUpdateParagraphElementType(string elementTypeAlias, string alias, EntityContainer elementContainer, bool? culture, bool? segment)
         {
             if (elementTypeAlias != alias)
@@ -1287,6 +1429,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             };
             await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);
         }
+
         private async Task CreateOrUpdateCroppedPictureElementType(string elementTypeAlias, string alias, EntityContainer elementContainer, bool? culture, bool? segment)
         {
             if (elementTypeAlias != alias)
@@ -1320,15 +1463,6 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
         }
 
-        /// <summary>
-        /// Use only for updates otherwise use CreateOrUpdateCroppedPictureElementType instead
-        /// </summary>
-        /// <param name="elementTypeAlias"></param>
-        /// <param name="alias"></param>
-        /// <param name="elementContainer"></param>
-        /// <param name="culture"></param>
-        /// <param name="segment"></param>
-        /// <returns></returns>
         private async Task UpdatePictureWithCropElementType(string elementTypeAlias, string alias, EntityContainer elementContainer, bool? culture = null, bool? segment = null, bool updateOnly = true)
         {
             if (elementTypeAlias != alias)
@@ -1409,6 +1543,36 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);
         }
 
+        private async Task CreateOrUpdateCallToActionElementType(string elementTypeAlias, string alias, EntityContainer elementContainer, bool? culture, bool? segment)
+        {
+            if (elementTypeAlias != alias)
+            { return; }
+
+            var newType = new ContentType(shortStringHelper, elementContainer.Id)
+            {
+                Alias = alias,
+                Name = "Call to Action",
+                Icon = "icon-reception",
+                IsElement = true,
+                AllowedAsRoot = false,
+                Variations = _contentVariationDefault,
+            };
+            var type = contentTypeService.Get(alias);
+            if (type != null)
+            {
+                type.ParentId = elementContainer.Id;
+                UpdateCultureAndSegment(culture, segment, type);
+            }
+
+            var propertyDefinitions = new List<PropertyDefinition>()
+            {
+                new ("Label", $"{Constants.Prefix}CallToActionLabel", 1, "The button label", ContentVariation.Culture, true),
+                new ("Action", $"{Constants.Prefix}CallToActionOnClick", 1, "The onClick javascript method or url", ContentVariation.Culture)
+            };
+
+            await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);
+        }
+
         private static void UpdateCultureAndSegment(bool? culture, bool? segment, IContentType type)
         {
             type.Variations = ContentVariation.Nothing;
@@ -1427,6 +1591,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 type.Variations = ContentVariation.Segment;
             }
         }
+
         private async Task<IPropertyType> GetPropertyType(PropertyDefinition definition)
         {
             var dt = await dataTypeService.GetAsync(definition.DataTypeName)
@@ -1436,13 +1601,14 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 Alias = definition.Name.ToFirstLower().Replace(" ", string.Empty),
                 Name = definition.Name,
                 Description = definition.Description,
-                Mandatory = false,
+                Mandatory = definition.IsMandatory,
                 SortOrder = definition.SortOrder,
                 DataTypeId = dt.Id,
                 Variations = definition.Variations
             };
             return propertyType;
         }
+
         private async Task CreateOrUpdateContentElementProperties(IContentType? type, IEnumerable<PropertyDefinition>? propertyDefinitions, IContentType? newType)
         {
             if (type == null && newType == null)

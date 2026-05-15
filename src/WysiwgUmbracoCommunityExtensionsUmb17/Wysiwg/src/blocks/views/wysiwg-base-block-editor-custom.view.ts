@@ -120,6 +120,15 @@ export class WysiwgBaseBlockEditorCustomViewElement
       }
     }
 
+    const backgroundColor = { label: "", value: "" };
+    const backgroundColorSetting =
+      (settings.filter((v) => v.alias === "backgroundColor")[0]?.value as ColorType) ?? backgroundColor;
+    if (backgroundColorSetting?.value) {
+      if (backgroundColorSetting.value && !this.isTransparentColor(backgroundColorSetting.value)) {
+        rVal.inlineStyle += `background-color: ${backgroundColorSetting.value};`;
+      }
+    }
+
     const margin =
       (settings.filter((v) => v.alias === "margin")[0]?.value as string) ??
       "";

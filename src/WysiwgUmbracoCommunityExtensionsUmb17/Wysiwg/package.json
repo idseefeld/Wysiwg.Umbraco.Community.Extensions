@@ -2,15 +2,15 @@
   "name": "wysiwg-umbraco-community-extensions",
   "private": true,
   "license": "MIT",
-  "version": "17.0.6",
+  "version": "17.0.5",
   "type": "module",
   "engines": {
     "node": ">=22.0.0 < 23",
     "npm": ">=10.9.2 < 11"
   },
   "scripts": {
-    "watch": "tsc && vite build --watch",
-    "build": "tsc && vite build",
+    "watch": "node scripts/sync-version.js && tsc && vite build --watch",
+    "build": "node scripts/sync-version.js && tsc && vite build",
     "generate-client": "node scripts/generate-openapi.js https://localhost:44335/umbraco/swagger/wysiwgumbracocommunityextensions/swagger.json",
     "generate-management-client": "node scripts/generate-management-openapi.js https://localhost:44335/umbraco/swagger/management/swagger.json"
   },

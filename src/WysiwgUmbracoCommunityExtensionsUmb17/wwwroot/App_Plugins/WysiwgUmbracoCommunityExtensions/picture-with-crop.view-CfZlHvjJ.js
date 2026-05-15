@@ -1,5 +1,5 @@
 import { html as l, unsafeHTML as u, css as p, property as v, customElement as w } from "@umbraco-cms/backoffice/external/lit";
-import { W as y } from "./wysiwg-base-block-editor-custom.view-vKxVjFVc.js";
+import { W as y } from "./wysiwg-base-block-editor-custom.view-BXBLmnky.js";
 var b = Object.defineProperty, _ = Object.getOwnPropertyDescriptor, d = (e, o, r, s) => {
   for (var t = s > 1 ? void 0 : s ? _(o, r) : o, a = e.length - 1, i; a >= 0; a--)
     (i = e[a]) && (t = (s ? i(o, r, t) : i(t)) || t);
@@ -59,4 +59,4 @@ export {
   n as PictureWithCropCustomView,
   x as default
 };
-//# sourceMappingURL=picture-with-crop.view-Jth3arR2.js.map
+//# sourceMappingURL=picture-with-crop.view-CfZlHvjJ.js.map

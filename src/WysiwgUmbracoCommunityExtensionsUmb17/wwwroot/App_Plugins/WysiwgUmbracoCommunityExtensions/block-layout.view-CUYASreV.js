@@ -3,7 +3,7 @@ import { html as y, nothing as M, styleMap as v, css as $, property as f, state 
 import "./wysiwg-image-and-crop-picker.element-BRcRF30-.js";
 import "./wysiwg-card-image.element-SMTzqmtn.js";
 import { W as S } from "./services.gen-ya8kz8Ij.js";
-import { W as H } from "./wysiwg-base-block-editor-custom.view-vKxVjFVc.js";
+import { W as H } from "./wysiwg-base-block-editor-custom.view-BXBLmnky.js";
 import { U } from "./types-eEpi63XY.js";
 var W = Object.defineProperty, z = Object.getOwnPropertyDescriptor, C = (t) => {
   throw TypeError(t);
@@ -213,4 +213,4 @@ export {
   s as WysiwgBlockLayoutView,
   N as default
 };
-//# sourceMappingURL=block-layout.view-BxVsCKS6.js.map
+//# sourceMappingURL=block-layout.view-CUYASreV.js.map

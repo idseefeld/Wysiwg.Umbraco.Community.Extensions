@@ -9,7 +9,7 @@ import type { UmbBlockDataType } from "@umbraco-cms/backoffice/block";
 import { ColorType, CroppedPictureCustomViewProps } from "./types";
 import WysiwgBaseBlockEditorCustomViewElement from "./wysiwg-base-block-editor-custom.view";
 
-@customElement("wysiwg-croppedicture-view")
+@customElement("wysiwg-cropped-picture-view")
 export class CroppedPictureCustomView
   extends WysiwgBaseBlockEditorCustomViewElement {
 

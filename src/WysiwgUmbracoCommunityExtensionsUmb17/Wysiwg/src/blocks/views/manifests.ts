@@ -48,4 +48,12 @@ export const manifests: Array<UmbExtensionManifest> = [
     forContentTypeAlias: prefix + "croppedPicture",
     forBlockEditor: "block-grid",
   },
+  {
+    type: "blockEditorCustomView",
+    alias: "wysiwg.PorpertyEditorUi.callToAction",
+    name: "Block Editor Custom View for Call to Action",
+    element: () => import("./call-to-action.view.js"),
+    forContentTypeAlias: prefix + "callToAction",
+    forBlockEditor: "block-grid",
+  }
 ];

@@ -13,7 +13,7 @@ export class WysiwgBlockHeadlineView
   extends WysiwgBaseBlockEditorCustomViewElement {
 
   override render() {
-    const settings = this.getLayoutSettings()
+    const settings = this.getLayoutSettings();
 
     const headline = this.content?.text ?? "Headline";
     const innerHtml = `<${settings.size} class="headline" ${settings.inlineStyle}>${headline}</${settings.size}>`;

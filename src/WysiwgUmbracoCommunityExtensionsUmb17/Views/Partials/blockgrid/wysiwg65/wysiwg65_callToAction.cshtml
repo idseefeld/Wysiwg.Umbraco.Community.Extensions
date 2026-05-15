@@ -1,0 +1,22 @@
+@using Microsoft.AspNetCore.Html
+@using Umbraco.Cms.Core.Models.Blocks
+@using WysiwgUmbracoCommunityExtensions.Extensions
+@using WysiwgUmbracoCommunityExtensions.Services
+@using WysiwgUmbracoCommunityExtensions.ViewModels
+@model WysiwygBlockGridItem
+@{
+    var content = new Wysiwg65_callToAction(Model.Content);
+    if (content == null) return;
+
+    var settings = new Wysiwg65_callToActionSettings(Model.Settings);
+    var color = WysiwygPublishedContentService.GetColor(settings?.Color);
+    var backgroundColor = WysiwygPublishedContentService.GetColor(settings?.BackgroundColor);
+
+    string inlineStyles = $"background-color: {backgroundColor}; color: {color};";
+
+    string onClickAction = content.Javascript != null
+        ? content.Javascript : content.External ? "window.open('" + content.Url + "', '_blank')" : "window.location.href='" + content.Url + "'";
+
+    var html = new HtmlString($"<div class=\"call-to-action\" onclick=\"{onClickAction}\"><button style=\"{inlineStyles}\">{content.Label}</button></div>");
+}
+@html

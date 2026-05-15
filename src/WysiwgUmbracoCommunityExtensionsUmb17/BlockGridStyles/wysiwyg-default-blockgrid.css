@@ -61,6 +61,16 @@
   --wysiwg-cropped-image-border-color: #eeee00;
   --wysiwg-cropped-image-box-shadow: rgba(0,0,0,0.3) 5px 10px 10px;
   --wysiwg-cropped-image-background-color: transparent;
+  /*call-to-action element*/
+  --wysiwg-call-to-action-background-color: #ccc;
+  --wysiwg-call-to-action-color: #000;
+  --wysiwg-call-to-action-border: none;
+  --wysiwg-call-to-action-padding: 0.5em 1em;
+  --wysiwg-call-to-action-font-size: 1em;
+  --wysiwg-call-to-action-border-radius: 0.5em;
+  --wysiwg-call-to-action-box-shadow: rgba(0,0,0,0.3) 5px 10px 10px;
+  --wysiwg-call-to-action-active-margin-left: 10px;
+  --wysiwg-call-to-action-active-margin-top: 10px;
   /*end element*/
   /*umbraco*/
   --umb-block-grid--areas-column-gap: 10px;

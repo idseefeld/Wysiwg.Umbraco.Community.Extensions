@@ -11,17 +11,19 @@ namespace WysiwgUmbracoCommunityExtensions.Models
     {
         public PropertyDefinitionBase() { }
 
-        public PropertyDefinitionBase(string name, string dataTypeName, string? description = null, ContentVariation variations = ContentVariation.Nothing)
+        public PropertyDefinitionBase(string name, string dataTypeName, string? description = null, ContentVariation variations = ContentVariation.Nothing, bool isMandatory = false)
         {
             Name = name;
             DataTypeName = dataTypeName;
             Description = description ?? string.Empty;
             Variations = variations;
+            IsMandatory = isMandatory;
         }
 
         public string Name { get; set; } = string.Empty;
         public string DataTypeName { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public bool IsMandatory { get; set; } = false;
 
         public ContentVariation Variations { get; set; } = ContentVariation.Nothing;
     }

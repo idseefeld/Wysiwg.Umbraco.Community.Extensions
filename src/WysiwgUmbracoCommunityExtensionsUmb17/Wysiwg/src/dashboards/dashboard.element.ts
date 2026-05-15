@@ -22,6 +22,8 @@ import { CommonUtilities } from "../util/common.utilities";
 import { SemVersion } from "../types";
 import { Debugging } from "../constants";
 
+import packageJson from '../../package.json' with { type: 'json' };
+
 @customElement("wysiwg-dashboard")
 export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
 
@@ -280,9 +282,11 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
   }
 
   private renderVersionInfo() {
+    const version = packageJson.version;
+
     return html`
       <div class="full-width footer-line">
-        <p>Package version: 17.0.6</p>
+        <p>Package version: ${version}</p>
       </div>
     `;
   }

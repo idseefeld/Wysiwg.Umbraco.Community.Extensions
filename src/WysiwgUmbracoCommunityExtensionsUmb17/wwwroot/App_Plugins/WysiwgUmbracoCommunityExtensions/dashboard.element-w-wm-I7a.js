@@ -46,10 +46,13 @@ class C {
       return t;
   }
 }
-var x = Object.defineProperty, S = Object.getOwnPropertyDescriptor, a = (e, t, s, o) => {
-  for (var i = o > 1 ? void 0 : o ? S(t, s) : t, h = e.length - 1, d; h >= 0; h--)
+const x = "17.0.9", S = {
+  version: x
+};
+var z = Object.defineProperty, U = Object.getOwnPropertyDescriptor, a = (e, t, s, o) => {
+  for (var i = o > 1 ? void 0 : o ? U(t, s) : t, h = e.length - 1, d; h >= 0; h--)
     (d = e[h]) && (i = (o ? d(t, s, i) : d(i)) || i);
-  return o && i && x(t, s, i), i;
+  return o && i && z(t, s, i), i;
 };
 let r = class extends p(g) {
   constructor() {
@@ -171,9 +174,10 @@ let r = class extends p(g) {
     }));
   }
   renderVersionInfo() {
+    const e = S.version;
     return n`
       <div class="full-width footer-line">
-        <p>Package version: 17.0.6</p>
+        <p>Package version: ${e}</p>
       </div>
     `;
   }
@@ -327,9 +331,9 @@ a([
 r = a([
   _("wysiwg-dashboard")
 ], r);
-const T = r;
+const O = r;
 export {
   r as WysiwgDashboardElement,
-  T as default
+  O as default
 };
-//# sourceMappingURL=dashboard.element-CvlL1_wY.js.map
+//# sourceMappingURL=dashboard.element-w-wm-I7a.js.map

@@ -11,7 +11,7 @@ const a = [
     type: "sectionView",
     alias: "WysiwgDashboardElement.Section",
     name: "WYSIWYG Extensions Section",
-    element: () => import("./dashboard.element-CvlL1_wY.js"),
+    element: () => import("./dashboard.element-w-wm-I7a.js"),
     meta: {
       label: "WYSIWYG",
       icon: "icon-settings",
@@ -43,7 +43,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.Layouts",
     name: "Block Editor Custom View for Layouts",
-    element: () => import("./block-layout.view-BxVsCKS6.js"),
+    element: () => import("./block-layout.view-CUYASreV.js"),
     forContentTypeAlias: n(),
     forBlockEditor: "block-grid"
   },
@@ -51,7 +51,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockHeadline",
     name: "Block Editor Custom View for Headline",
-    element: () => import("./headline.view-KV3r4GFj.js"),
+    element: () => import("./headline.view-sx2JJfzq.js"),
     forContentTypeAlias: i + "headline",
     forBlockEditor: "block-grid"
   },
@@ -59,7 +59,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockParagraph",
     name: "Block Editor Custom View for Paragraph",
-    element: () => import("./paragraph.view-YJ5i0mqz.js"),
+    element: () => import("./paragraph.view-BURaA7ql.js"),
     forContentTypeAlias: i + "paragraph",
     forBlockEditor: "block-grid"
   },
@@ -67,7 +67,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.pictureWithCrop",
     name: "Block Editor Custom View for Picture with Crop",
-    element: () => import("./picture-with-crop.view-Jth3arR2.js"),
+    element: () => import("./picture-with-crop.view-CfZlHvjJ.js"),
     forContentTypeAlias: i + "pictureWithCrop",
     forBlockEditor: "block-grid"
   },
@@ -75,8 +75,16 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.croppedPicture",
     name: "Block Editor Custom View for Cropped Picture",
-    element: () => import("./cropped-picture.view-B01Wtecf.js"),
+    element: () => import("./cropped-picture.view-CVP3hSKM.js"),
     forContentTypeAlias: i + "croppedPicture",
+    forBlockEditor: "block-grid"
+  },
+  {
+    type: "blockEditorCustomView",
+    alias: "wysiwg.PorpertyEditorUi.callToAction",
+    name: "Block Editor Custom View for Call to Action",
+    element: () => import("./call-to-action.view-DKNbFlYj.js"),
+    forContentTypeAlias: i + "callToAction",
     forBlockEditor: "block-grid"
   }
 ], c = [
