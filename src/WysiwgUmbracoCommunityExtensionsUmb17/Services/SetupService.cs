@@ -1567,7 +1567,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             var propertyDefinitions = new List<PropertyDefinition>()
             {
                 new ("Label", $"{Constants.Prefix}CallToActionLabel", 1, "The button label", ContentVariation.Culture, true),
-                new ("Action", $"{Constants.Prefix}CallToActionOnClick", 1, "The onClick javascript method or url", ContentVariation.Culture)
+                new ("Action", $"{Constants.Prefix}CallToActionOnClick", 1, "The onClick javascript method or url", ContentVariation.Culture, alias: "actionOrUrl")
             };
 
             await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);
@@ -1598,7 +1598,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                        ?? throw new Exception($"{_errorMsgDataTypeNotFoundStart} {definition.DataTypeName}");
             var propertyType = new PropertyType(shortStringHelper, dt)
             {
-                Alias = definition.Name.ToFirstLower().Replace(" ", string.Empty),
+                Alias = definition.Alias ?? definition.Name.ToFirstLower().Replace(" ", string.Empty),
                 Name = definition.Name,
                 Description = definition.Description,
                 Mandatory = definition.IsMandatory,

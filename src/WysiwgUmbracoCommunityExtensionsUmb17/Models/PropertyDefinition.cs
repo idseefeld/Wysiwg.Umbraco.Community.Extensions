@@ -11,8 +11,8 @@ namespace WysiwgUmbracoCommunityExtensions.Models
     {
         public PropertyDefinition() { }
 
-        public PropertyDefinition(string name, string dataTypeName, int sortOrder, string? description = null, ContentVariation variations = ContentVariation.Nothing, bool isMandatory = false)
-            : base(name, dataTypeName, description, variations, isMandatory)
+        public PropertyDefinition(string name, string dataTypeName, int sortOrder, string? description = null, ContentVariation variations = ContentVariation.Nothing, bool isMandatory = false, string? alias = null)
+            : base(name, dataTypeName, description, variations, isMandatory, alias)
         {
             SortOrder = sortOrder;
         }
