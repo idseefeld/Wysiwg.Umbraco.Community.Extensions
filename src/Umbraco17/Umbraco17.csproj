@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Remove="Views\Page.cshtml" />
+    <AdditionalFiles Remove="Views\Partials\blockgrid\items.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
