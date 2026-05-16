@@ -679,29 +679,33 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             var layoutGroupName = "Layouts";
             JsonArray blocksValue;
             JsonArray blockGroupsValue;
+            Guid blockLayoutGroupKey;
+            List<BGBlockGroupModel>? blockGroupsModels;
 
             if (current == null)
             {
-                var blockGroupKey = Guid.NewGuid();
-
-                var blockModels = new List<BGBlockGroupModel> { new() { Name = layoutGroupName, Key = blockGroupKey } };
-
-                blocksValue = CreateBlocksValue(blockGroupKey).GetJsonArrayFromString();
-
-                blockGroupsValue = JsonSerializer.Serialize(blockModels).GetJsonArrayFromString();
+                blockLayoutGroupKey = Guid.NewGuid();
+                blocksValue = CreateBlocksValue(blockLayoutGroupKey).GetJsonArrayFromString();
+                blockGroupsModels = new List<BGBlockGroupModel> { new() { Name = layoutGroupName, Key = blockLayoutGroupKey } };
             }
             else if (config != null)
             {
-                var blockModels = GetBlockValue(config);
-
-                blocksValue = JsonSerializer.Serialize(blockModels).GetJsonArrayFromString();
-
-                blockGroupsValue = UpdateBlockGroups(config, blockModels, layoutGroupName);
+                blockGroupsModels = JsonSerializer.Deserialize<List<BGBlockGroupModel>>(config.FirstOrDefault(v => v.Key == "blockGroups").Value?.ToString() ?? "[]");
+                var existingblockLayoutGroupKey = blockGroupsModels?.FirstOrDefault(g => g.Name != null && g.Name.Equals(layoutGroupName))?.Key;
+                blockLayoutGroupKey = existingblockLayoutGroupKey ?? Guid.NewGuid();
+                var addNewGroup = existingblockLayoutGroupKey == null;
+                if (addNewGroup)
+                {
+                    blockGroupsModels = new List<BGBlockGroupModel> { new() { Name = layoutGroupName, Key = blockLayoutGroupKey } };
+                }
+                blocksValue = UpdateBlockModels(config, layoutGroupName, blockLayoutGroupKey, addNewGroup, blockGroupsModels).GetJsonArrayFromString();
             }
             else
             {
                 throw new Exception($"{ErrorMsgPrefix} Could not find existing Block Grid data type, nor create a new one.");
             }
+
+            blockGroupsValue = JsonSerializer.Serialize(blockGroupsModels).GetJsonArrayFromString();
 
             var updateDataTypeRequestModel = GetUpdateDataTypeRequestModel(blocksValue, blockGroupsValue, layoutStylesheet);
             await CreateOrUpdateDataType(updateDataTypeRequestModel, current, parent);
@@ -755,12 +759,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             return blockModels;
         }
 
-        string ISetupService.CreateBlocksValue(Guid blockGroupKey)
-        {
-            return CreateBlocksValue(blockGroupKey);
-        }
-
-        private string CreateBlocksValue(Guid blockGroupKey)
+        internal string CreateBlocksValue(Guid layoutGroupKey)
         {
             var rowSettingsKey = GetElementKeyByName("rowSettings");
             var paragraphKey = GetElementKeyByName("paragraph");
@@ -804,7 +803,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                         ""contentElementTypeKey"":""{layoutKeys[0]}"",
                         ""allowAtRoot"":true,
                         ""allowInAreas"":false,
-                        ""groupKey"":""{blockGroupKey}"",
+                        ""groupKey"":""{layoutGroupKey}"",
                         ""settingsElementTypeKey"":""{rowSettingsKey}"",
                         ""areas"":
                         [
@@ -822,7 +821,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                         ""contentElementTypeKey"":""{layoutKeys[1]}"",
                         ""allowAtRoot"":true,
                         ""allowInAreas"":false,
-                        ""groupKey"":""{blockGroupKey}"",
+                        ""groupKey"":""{layoutGroupKey}"",
                         ""settingsElementTypeKey"":""{rowSettingsKey}"",
                         ""areas"":
                         [
@@ -877,7 +876,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                         ""contentElementTypeKey"":""{layoutKeys[2]}"",
                         ""allowAtRoot"":true,
                         ""allowInAreas"":false,
-                        ""groupKey"":""{blockGroupKey}"",
+                        ""groupKey"":""{layoutGroupKey}"",
                         ""settingsElementTypeKey"":""{rowSettingsKey}"",
                         ""areas"":
                         [
@@ -931,7 +930,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                         ""contentElementTypeKey"":""{layoutKeys[3]}"",
                         ""allowAtRoot"":true,
                         ""allowInAreas"":false,
-                        ""groupKey"":""{blockGroupKey}"",
+                        ""groupKey"":""{layoutGroupKey}"",
                         ""settingsElementTypeKey"":""{rowSettingsKey}"",
                         ""areas"":
                         [
@@ -985,24 +984,44 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             return blocksValueJson;
         }
 
-        private JsonArray UpdateBlockGroups(IDictionary<string, object> config, List<BGBlockModel> blockModels, string layoutGroupName)
+        private string UpdateBlockModels(IDictionary<string, object> config, string layoutGroupName, Guid blockLayoutGroupKey, bool addNewGroupKey, List<BGBlockGroupModel>? blockGroups)
         {
-            // ToDo: Here we need to add the new call-to-action block to the existing layout group if it doesn't exist, and also make sure to add the cropped picture element to the allowed elements of the layout blocks and remove picture with crop from there if exists, as well as move picture with crop to deprecated group. This is needed to make sure that after the update, the new blocks are available in the existing layouts, and the deprecated picture with crop block is not used in new content but still available for old content.
-            var blockGroupsJson = config.FirstOrDefault(v => v.Key == "blockGroups")
-                   .Value.ToJson();
-            List<BGBlockGroupModel> blockGroups = JsonSerializer.Deserialize<IEnumerable<BGBlockGroupModel>>(blockGroupsJson)?.ToList() ?? [];
+            List<BGBlockModel> blockModels = GetBlockValue(config);
 
-            var currentblockLayoutGroupKey = blockGroups
-                .FirstOrDefault(g => g.Name.Equals(layoutGroupName))?.Key;
-            if (currentblockLayoutGroupKey == null)
+            #region for backward compatibility
+            blockGroups ??= [];
+
+            #region backward compatibility for pictureWithCrop element
+            var pictureWithCropElement = GetElementByName("pictureWithCrop", throwIfNotExist: false);
+            if (pictureWithCropElement != null)
             {
-                currentblockLayoutGroupKey = Guid.NewGuid();
-                blockGroups.Add(new()
+                pictureWithCropElement.Variations = pictureWithCropElement.Variations == ContentVariation.CultureAndSegment || pictureWithCropElement.Variations == ContentVariation.Culture
+                    ? ContentVariation.Culture
+                    : ContentVariation.Nothing;
+
+                var pictureWithCropBlock = blockModels
+                    .FirstOrDefault(b => b.ContentElementTypeKey != null
+                        && b.ContentElementTypeKey.Equals(pictureWithCropElement.Key));
+                if (pictureWithCropBlock != null)
                 {
-                    Name = layoutGroupName,
-                    Key = currentblockLayoutGroupKey
-                });
+                    var deprecatedGroupName = "Deprecated";
+                    var newDeprecatedGroupKey = blockGroups
+                        .FirstOrDefault(g => g.Name.Equals(deprecatedGroupName))?.Key;
+                    if (newDeprecatedGroupKey == null)
+                    {
+                        newDeprecatedGroupKey = Guid.NewGuid();
+
+                        blockGroups.Add(new()
+                        {
+                            Name = deprecatedGroupName,
+                            Key = newDeprecatedGroupKey
+                        });
+                    }
+                    pictureWithCropBlock.GroupKey = newDeprecatedGroupKey;
+                }
             }
+            #endregion
+            #endregion
 
             var callToActionElement = GetElementByName("callToAction", throwIfNotExist: false);
             var callToActionSettingsElement = GetElementByName("callToActionSettings", throwIfNotExist: false);
@@ -1035,35 +1054,6 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     SettingsElementTypeKey = null
                 };
                 blockModels.Add(croppedPictureBlock);
-            }
-
-            var pictureWithCropElement = GetElementByName("pictureWithCrop", throwIfNotExist: false);
-            if (pictureWithCropElement != null)
-            {
-                pictureWithCropElement.Variations = pictureWithCropElement.Variations == ContentVariation.CultureAndSegment || pictureWithCropElement.Variations == ContentVariation.Culture
-                    ? ContentVariation.Culture
-                    : ContentVariation.Nothing;
-
-                var pictureWithCropBlock = blockModels
-                    .FirstOrDefault(b => b.ContentElementTypeKey != null
-                        && b.ContentElementTypeKey.Equals(pictureWithCropElement.Key));
-                if (pictureWithCropBlock != null)
-                {
-                    var deprecatedGroupName = "Deprecated";
-                    var newDeprecatedGroupKey = blockGroups
-                        .FirstOrDefault(g => g.Name.Equals(deprecatedGroupName))?.Key;
-                    if (newDeprecatedGroupKey == null)
-                    {
-                        newDeprecatedGroupKey = Guid.NewGuid();
-
-                        blockGroups.Add(new()
-                        {
-                            Name = deprecatedGroupName,
-                            Key = newDeprecatedGroupKey
-                        });
-                    }
-                    pictureWithCropBlock.GroupKey = newDeprecatedGroupKey;
-                }
             }
 
             foreach (var block in blockModels)
@@ -1103,12 +1093,12 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
                             area.SpecifiedAllowance = specifiedAllowance;
                         }
-                        block.GroupKey = currentblockLayoutGroupKey;
+                        block.GroupKey = blockLayoutGroupKey;
                     }
                 }
             }
 
-            return JsonSerializer.Serialize(blockGroups).GetJsonArrayFromString();
+            return JsonSerializer.Serialize(blockModels);
         }
 
         #endregion

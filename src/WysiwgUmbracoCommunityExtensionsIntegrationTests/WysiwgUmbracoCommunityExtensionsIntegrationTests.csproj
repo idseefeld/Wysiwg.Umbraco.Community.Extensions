@@ -9,6 +9,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Z:\source\.nuget\packages\umbraco.cms.tests.integration\17.4.0\contentFiles\any\net10.0\Umbraco.Infrastructure\Services\Importing\CheckboxList-Content-Package.xml" />
+    <Content Remove="Z:\source\.nuget\packages\umbraco.cms.tests.integration\17.4.0\contentFiles\any\net10.0\Umbraco.Infrastructure\Services\Importing\CompositionsTestPackage-Random.xml" />
+    <Content Remove="Z:\source\.nuget\packages\umbraco.cms.tests.integration\17.4.0\contentFiles\any\net10.0\Umbraco.Infrastructure\Services\Importing\CompositionsTestPackage.xml" />
+    <Content Remove="Z:\source\.nuget\packages\umbraco.cms.tests.integration\17.4.0\contentFiles\any\net10.0\Umbraco.Infrastructure\Services\Importing\Dictionary-Package.xml" />
+    <Content Remove="Z:\source\.nuget\packages\umbraco.cms.tests.integration\17.4.0\contentFiles\any\net10.0\Umbraco.Infrastructure\Services\Importing\Fanoe-Package.xml" />
+    <Content Remove="Z:\source\.nuget\packages\umbraco.cms.tests.integration\17.4.0\contentFiles\any\net10.0\Umbraco.Infrastructure\Services\Importing\InheritedDocTypes-Package.xml" />
+    <Content Remove="Z:\source\.nuget\packages\umbraco.cms.tests.integration\17.4.0\contentFiles\any\net10.0\Umbraco.Infrastructure\Services\Importing\MediaTypesAndMedia-Package.xml" />
+    <Content Remove="Z:\source\.nuget\packages\umbraco.cms.tests.integration\17.4.0\contentFiles\any\net10.0\Umbraco.Infrastructure\Services\Importing\SingleDocType-WithCleanupPolicy.xml" />
+    <Content Remove="Z:\source\.nuget\packages\umbraco.cms.tests.integration\17.4.0\contentFiles\any\net10.0\Umbraco.Infrastructure\Services\Importing\SingleDocType.xml" />
+    <Content Remove="Z:\source\.nuget\packages\umbraco.cms.tests.integration\17.4.0\contentFiles\any\net10.0\Umbraco.Infrastructure\Services\Importing\StandardMvc-Package.xml" />
+    <Content Remove="Z:\source\.nuget\packages\umbraco.cms.tests.integration\17.4.0\contentFiles\any\net10.0\Umbraco.Infrastructure\Services\Importing\TemplateOnly-Package.xml" />
+    <Content Remove="Z:\source\.nuget\packages\umbraco.cms.tests.integration\17.4.0\contentFiles\any\net10.0\Umbraco.Infrastructure\Services\Importing\TemplateOnly-Updated-Package.xml" />
+    <Content Remove="Z:\source\.nuget\packages\umbraco.cms.tests.integration\17.4.0\contentFiles\any\net10.0\Umbraco.Infrastructure\Services\Importing\uBlogsy-Package.xml" />
+    <Content Remove="Z:\source\.nuget\packages\umbraco.cms.tests.integration\17.4.0\contentFiles\any\net10.0\Umbraco.Infrastructure\Services\Importing\XsltSearch-Package.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.6" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />

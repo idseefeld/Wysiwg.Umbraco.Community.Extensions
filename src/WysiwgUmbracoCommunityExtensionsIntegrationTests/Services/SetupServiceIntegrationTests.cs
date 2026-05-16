@@ -1,6 +1,8 @@
+using System.Text.Json;
 using NUnit.Framework;
 using Umbraco.Cms.Tests.Common.Testing;
 using WysiwgUmbracoCommunityExtensions;
+using WysiwgUmbracoCommunityExtensions.Extensions;
 using WysiwgUmbracoCommunityExtensions.Services;
 using WysiwgUmbracoCommunityExtensionsIntegrationTests.Testing;
 
@@ -93,6 +95,11 @@ public class SetupServiceIntegrationTests : WysiwgIntegrationTestBase
         await SetupService.Install();
 
         var blockGrid = await DataTypeService.GetAsync(BlockGridName);
+
+        //var blockValues = ((SetupService)SetupService).CreateBlocksValue(Guid.NewGuid()).GetJsonArrayFromString();
+        //var blockGridBlocks = JsonSerializer.Serialize(blockGrid?.ConfigurationData["blocks"]);
+        //var blockValuesJson = JsonSerializer.Serialize(blockValues);
+        //var isEqual = blockGridBlocks == blockValuesJson;
 
         Assert.That(blockGrid, Is.Not.Null, $"Expected Block Grid data type '{BlockGridName}' to exist after Install().");
     }
