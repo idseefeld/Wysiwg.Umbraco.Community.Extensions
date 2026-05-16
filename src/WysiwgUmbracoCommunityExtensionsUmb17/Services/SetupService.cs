@@ -653,7 +653,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         #region Block Grid Data Type
         private async Task CreateOrUpdateDataTypeBlockGrid(uReferenceByIdModel parent)
         {
-            CopyBlockGridCss();
+            CopyBlockGridStyleSheet();
 
             UpdateContentTypes();
 
@@ -1677,14 +1677,11 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         #endregion
 
         #region miscellaneous
-        private void CopyBlockGridCss()
+        private void CopyBlockGridStyleSheet()
         {
             var contentRootPath = hostEnvironment.ContentRootPath;
             var webRootPath = hostEnvironment.MapPathContentRoot("~/");
-
-            // var source = Path.Combine(webRootPath, "wysiwyg", "wysiwyg-default-blockgrid.min.css");
             var dest = GetBlockGridCssPath();
-
             try
             {
                 var destExists = System.IO.File.Exists(dest);
@@ -1695,10 +1692,6 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 }
 
                 string? sourceContent = null;
-                //if (System.IO.File.Exists(source))
-                //{
-                //    System.IO.File.ReadAllText(source);
-                //}
                 if (string.IsNullOrEmpty(sourceContent))
                 {
                     sourceContent = CssSource.SOURCE;
@@ -1707,7 +1700,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 if (!destExists && !string.IsNullOrEmpty(sourceContent))
                 {
                     System.IO.File.WriteAllText(dest, sourceContent);
-                    _blockGridCssPath = "/wwwroot/styles/wysiwyg-blockgrid.min.css";
+                    _blockGridCssPath = Constants.BlockGridCssPath;
                 }
             }
             catch (Exception ex)
@@ -1715,7 +1708,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 logger.LogError(ex, "Could not copy BlockGrid CSS file {message}", ex.Message);
             }
         }
-        private void DeleteBlockGridCss()
+
+        private void DeleteBlockGridStyleSheet()
         {
             var dest = GetBlockGridCssPath();
             try
@@ -1973,7 +1967,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
                 await RecoverPartialViews();
 
-                DeleteBlockGridCss();
+                DeleteBlockGridStyleSheet();
             }
             catch
             {
