@@ -1,7 +1,7 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
-@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Page>
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
 @{
     Layout = null;
+    var hasGrid = Model.HasProperty("grid") && Model.GetProperty("grid") != null;
 }
 <!DOCTYPE html>
 
@@ -13,7 +13,6 @@
     <title>@Model.Name</title>
     <link rel="stylesheet" href="~/css/site.css" />
     <link href="~/styles/wysiwyg-blockgrid.min.css" rel="stylesheet" />
-    @* <link href="~/css/custom/wysiwg-bgrid.css" rel="stylesheet" /> *@
     <link href="~/css/site.css" rel="stylesheet" />
 </head>
 
@@ -21,7 +20,14 @@
     <header>
     </header>
     <main>
-        @await Html.GetBlockGridHtmlAsync(Model.Grid)
+        @if (hasGrid)
+        {
+            @await Html.GetBlockGridHtmlAsync(Model, "grid")
+        }
+        else
+        {
+           <strong>No Grid!</strong>
+        }
     </main>
     <footer>
         <p>&copy; @DateTime.Now.Year - <a href="/umbraco">My Umbraco Site</a></p>
