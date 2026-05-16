@@ -145,7 +145,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
                 await CreateOrUpdateDataTypeBlockGrid(parent);
 
-                await RemoveDataTypes();
+                await RemoveObsoleteDataTypes();
 
                 await SwitchPartialViews();
 
@@ -381,7 +381,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                         Alias = "maxChars",
                         Value = 80
                     }
-                    ]
+                ]
             };
             await CreateOrUpdateDataType(createDataTypeRequestModel);
         }
@@ -547,7 +547,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             await CreateOrUpdateDataType(createDataTypeRequestModel);
         }
 
-        private async Task CreateOrUpdateDataType(DataTypeModelBase dataTypeRequestModel, IDataType? dataType = null)
+        private async Task CreateOrUpdateDataType(DataTypeModelBase dataTypeRequestModel, IDataType? dataType = null, uReferenceByIdModel? parent = null)
         {
             if (dataTypeRequestModel == null)
             { return; }
@@ -559,20 +559,32 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
             if (dataType == null)
             {
-                var configuration = dataTypeRequestModel
+                if (dataTypeRequestModel is not CreateDataTypeRequestModel requestModel)
+                {
+                    requestModel = new CreateDataTypeRequestModel
+                    {
+                        Parent = parent ?? throw new Exception($"{msg} Parent reference is missing for creation of data type."),
+                        Name = dataTypeRequestModel.Name,
+                        EditorAlias = dataTypeRequestModel.EditorAlias,
+                        EditorUiAlias = dataTypeRequestModel.EditorUiAlias,
+                        Values = dataTypeRequestModel.Values
+                    };
+                }
+
+                var configuration = requestModel
                     .Values.ToDictionary(v => v.Alias, v => v.Value ?? new object())
                     ?? [];
 
                 IDataEditor? editor = new DataEditor(dataValueEditorFactory)
                 {
-                    Alias = dataTypeRequestModel.EditorAlias,
+                    Alias = requestModel.EditorAlias,
                     DefaultConfiguration = configuration
                 };
 
                 dataType = new DataType(editor, jsonSerializer, _dataTypeContainer?.Id ?? -1)
                 {
-                    Name = dataTypeRequestModel.Name,
-                    EditorUiAlias = dataTypeRequestModel.EditorUiAlias,
+                    Name = requestModel.Name,
+                    EditorUiAlias = requestModel.EditorUiAlias,
                     Key = Guid.NewGuid()
                 };
 
@@ -632,7 +644,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             return container;
         }
 
-        private async Task RemoveDataTypes()
+        private async Task RemoveObsoleteDataTypes()
         {
             foreach (var name in _removedDataTypes)
             {
@@ -659,24 +671,106 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
             _existingDataTypes = [.. await dataTypeService.GetAllAsync()];
             var current = _existingDataTypes?.FirstOrDefault(d => d.Name != null && d.Name.Equals(_requiredBlockGridName));
+
+            IDictionary<string, object>? config = current?.ConfigurationData;
+            string layoutStylesheet = config?.FirstOrDefault(v => v.Key == "layoutStylesheet").Value?.ToString()
+                ?? _blockGridCssPath
+                ?? string.Empty;
             var layoutGroupName = "Layouts";
+            JsonArray blocksValue;
+            JsonArray blockGroupsValue;
+
             if (current == null)
             {
                 var blockGroupKey = Guid.NewGuid();
-                var rowSettingsKey = GetElementKeyByName("rowSettings");
-                var paragraphKey = GetElementKeyByName("paragraph");
-                var paragraphSettingsKey = GetElementKeyByName("paragraphSettings");
-                var imageAndCropPickerKey = GetElementKeyByName("croppedPicture");
-                var headlineKey = GetElementKeyByName("headline");
-                var headlineSettingsKey = GetElementKeyByName("headlineSettings");
-                var ctaKey = GetElementKeyByName("callToAction");
-                var ctaSettingsKey = GetElementKeyByName("callToActionSettings");
 
-                var layoutKeys = _layoutKeyCollection
-                    .Where(l => !string.IsNullOrEmpty(GetElementKeyByName(l)))
-                    .Select(l => GetElementKeyByName(l))
-                    .ToArray();
-                var blocksValueJson = @$"
+                var blockModels = new List<BGBlockGroupModel> { new() { Name = layoutGroupName, Key = blockGroupKey } };
+
+                blocksValue = CreateBlocksValue(blockGroupKey).GetJsonArrayFromString();
+
+                blockGroupsValue = JsonSerializer.Serialize(blockModels).GetJsonArrayFromString();
+            }
+            else if (config != null)
+            {
+                var blockModels = GetBlockValue(config);
+
+                blocksValue = JsonSerializer.Serialize(blockModels).GetJsonArrayFromString();
+
+                blockGroupsValue = UpdateBlockGroups(config, blockModels, layoutGroupName);
+            }
+            else
+            {
+                throw new Exception($"{ErrorMsgPrefix} Could not find existing Block Grid data type, nor create a new one.");
+            }
+
+            var updateDataTypeRequestModel = GetUpdateDataTypeRequestModel(blocksValue, blockGroupsValue, layoutStylesheet);
+            await CreateOrUpdateDataType(updateDataTypeRequestModel, current, parent);
+
+            if (config != null)
+            {
+                _existingDataTypes = [.. await dataTypeService.GetAllAsync()];
+                var updated = _existingDataTypes?.FirstOrDefault(d => d.Name != null && d.Name.Equals(_requiredBlockGridName));
+            }
+        }
+
+        private UpdateDataTypeRequestModel GetUpdateDataTypeRequestModel(JsonArray blocksValue, JsonArray blockGroupsValue, string layoutStylesheet)
+        {
+            return new UpdateDataTypeRequestModel
+            {
+                Name = _requiredBlockGridName,
+                EditorAlias = "Umbraco.BlockGrid",
+                EditorUiAlias = "Umb.PropertyEditorUi.BlockGrid",
+                Values = [
+                    new DataTypePropertyPresentationModel {
+                        Alias = "gridColumns",
+                        Value = 12
+                    },
+                    new DataTypePropertyPresentationModel {
+                        Alias = "blocks",
+                        Value = JsonSerializer.Serialize(blocksValue).GetJsonArrayFromString()
+                    },
+                    new DataTypePropertyPresentationModel {
+                        Alias = "blockGroups",
+                        Value = JsonSerializer.Serialize(blockGroupsValue).GetJsonArrayFromString()
+                    },
+                    new DataTypePropertyPresentationModel {
+                        Alias = "maxPropertyWidth",
+                        Value = "1204px"
+                    },
+                    new DataTypePropertyPresentationModel {
+                        Alias = "layoutStylesheet",
+                        Value = layoutStylesheet
+                    }
+                ]
+            };
+        }
+
+        private List<BGBlockModel> GetBlockValue(IDictionary<string, object> config)
+        {
+            var blockModels = new List<BGBlockModel>();
+            var blocksJson = config.FirstOrDefault(v => v.Key == "blocks").Value.ToJson();
+            var existingBlocks = JsonSerializer.Deserialize<IEnumerable<BGBlockModel>>(blocksJson) ?? [];
+            blockModels.AddRange(existingBlocks);
+
+            return blockModels;
+        }
+
+        private string CreateBlocksValue(Guid blockGroupKey)
+        {
+            var rowSettingsKey = GetElementKeyByName("rowSettings");
+            var paragraphKey = GetElementKeyByName("paragraph");
+            var paragraphSettingsKey = GetElementKeyByName("paragraphSettings");
+            var imageAndCropPickerKey = GetElementKeyByName("croppedPicture");
+            var headlineKey = GetElementKeyByName("headline");
+            var headlineSettingsKey = GetElementKeyByName("headlineSettings");
+            var ctaKey = GetElementKeyByName("callToAction");
+            var ctaSettingsKey = GetElementKeyByName("callToActionSettings");
+
+            var layoutKeys = _layoutKeyCollection
+                .Where(l => !string.IsNullOrEmpty(GetElementKeyByName(l)))
+                .Select(l => GetElementKeyByName(l))
+                .ToArray();
+            var blocksValueJson = @$"
                 [
                     {{
                         ""contentElementTypeKey"":""{headlineKey}"",
@@ -883,101 +977,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                         ]
                     }}
                 ]";
-                var blocksValue = blocksValueJson.GetJsonArrayFromString();
-
-                var blockGroups = new List<BGBlockGroupModel>
-                {
-                    new()
-                    {
-                        Name = layoutGroupName,
-                        Key = blockGroupKey
-                    }
-                };
-                var blockGroupsValue = JsonSerializer.Serialize(blockGroups).GetJsonArrayFromString();
-
-                var createDataTypeRequestModel = new CreateDataTypeRequestModel
-                {
-                    Parent = parent,
-                    Name = _requiredBlockGridName,
-                    EditorAlias = "Umbraco.BlockGrid",
-                    EditorUiAlias = "Umb.PropertyEditorUi.BlockGrid",
-
-                    Values =
-                    [
-                        new DataTypePropertyPresentationModel {
-                        Alias = "gridColumns",
-                        Value = 12
-                    },
-                    new DataTypePropertyPresentationModel {
-                        Alias = "blocks",
-                        Value = blocksValue
-                    },
-                    new DataTypePropertyPresentationModel {
-                        Alias = "blockGroups",
-                        Value = blockGroupsValue
-                    },
-                    new DataTypePropertyPresentationModel {
-                        Alias = "maxPropertyWidth",
-                        Value = "1204px"
-                    },
-                    new DataTypePropertyPresentationModel {
-                        Alias = "layoutStylesheet",
-                        Value = _blockGridCssPath
-
-    }
-                    ]
-                };
-                await CreateOrUpdateDataType(createDataTypeRequestModel);
-            }
-            else
-            {
-                var config = current.ConfigurationData;
-                var layoutStylesheet = config.FirstOrDefault(v => v.Key == "layoutStylesheet").Value;
-
-                var blockModels = new List<BGBlockModel>();
-                var blocksJson = config.FirstOrDefault(v => v.Key == "blocks")
-                    .Value.ToJson();
-                var existingBlocks = JsonSerializer.Deserialize<IEnumerable<BGBlockModel>>(blocksJson) ?? [];
-                blockModels.AddRange(existingBlocks);
-
-                JsonArray blockGroupsValue = UpdateBlockGroups(config, blockModels, layoutGroupName);
-
-                var blocksValue = JsonSerializer.Serialize(blockModels).GetJsonArrayFromString();
-
-                var updateDataTypeRequestModel = new UpdateDataTypeRequestModel
-                {
-                    Name = _requiredBlockGridName,
-                    EditorAlias = "Umbraco.BlockGrid",
-                    EditorUiAlias = "Umb.PropertyEditorUi.BlockGrid",
-                    Values =
-                    [
-                        new DataTypePropertyPresentationModel {
-                            Alias = "gridColumns",
-                            Value = 12
-                        },
-                        new DataTypePropertyPresentationModel {
-                            Alias = "blocks",
-                            Value = blocksValue
-                        },
-                        new DataTypePropertyPresentationModel {
-                            Alias = "blockGroups",
-                            Value = blockGroupsValue
-                        },
-                        new DataTypePropertyPresentationModel {
-                            Alias = "maxPropertyWidth",
-                            Value = "1204px"
-                        },
-                        new DataTypePropertyPresentationModel {
-                            Alias = "layoutStylesheet",
-                            Value = layoutStylesheet
-                        }
-                    ]
-                };
-                await CreateOrUpdateDataType(updateDataTypeRequestModel, current);
-
-                _existingDataTypes = [.. await dataTypeService.GetAllAsync()];
-                var updated = _existingDataTypes?.FirstOrDefault(d => d.Name != null && d.Name.Equals(_requiredBlockGridName));
-            }
+            return blocksValueJson;
         }
 
         private JsonArray UpdateBlockGroups(IDictionary<string, object> config, List<BGBlockModel> blockModels, string layoutGroupName)
