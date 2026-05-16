@@ -10,5 +10,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         public Task<VersionStatus> GetVersionStatus();
         public string GetVariations();
         public Task<int> GetVersionStatusCode();
+
+        internal string CreateBlocksValue(Guid blockGroupKey);
     }
 }

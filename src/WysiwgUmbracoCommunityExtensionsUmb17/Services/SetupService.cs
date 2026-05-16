@@ -755,6 +755,11 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             return blockModels;
         }
 
+        string ISetupService.CreateBlocksValue(Guid blockGroupKey)
+        {
+            return CreateBlocksValue(blockGroupKey);
+        }
+
         private string CreateBlocksValue(Guid blockGroupKey)
         {
             var rowSettingsKey = GetElementKeyByName("rowSettings");
@@ -982,6 +987,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
         private JsonArray UpdateBlockGroups(IDictionary<string, object> config, List<BGBlockModel> blockModels, string layoutGroupName)
         {
+            // ToDo: Here we need to add the new call-to-action block to the existing layout group if it doesn't exist, and also make sure to add the cropped picture element to the allowed elements of the layout blocks and remove picture with crop from there if exists, as well as move picture with crop to deprecated group. This is needed to make sure that after the update, the new blocks are available in the existing layouts, and the deprecated picture with crop block is not used in new content but still available for old content.
             var blockGroupsJson = config.FirstOrDefault(v => v.Key == "blockGroups")
                    .Value.ToJson();
             List<BGBlockGroupModel> blockGroups = JsonSerializer.Deserialize<IEnumerable<BGBlockGroupModel>>(blockGroupsJson)?.ToList() ?? [];
@@ -996,6 +1002,23 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     Name = layoutGroupName,
                     Key = currentblockLayoutGroupKey
                 });
+            }
+
+            var callToActionElement = GetElementByName("callToAction", throwIfNotExist: false);
+            var callToActionSettingsElement = GetElementByName("callToActionSettings", throwIfNotExist: false);
+            var callToActionBlock = blockModels
+                        .FirstOrDefault(b => b.ContentElementTypeKey != null
+                            && b.ContentElementTypeKey.Equals(callToActionElement?.Key));
+            if (callToActionElement != null && callToActionBlock == null)
+            {
+                callToActionBlock = new()
+                {
+                    ContentElementTypeKey = callToActionElement.Key,
+                    AllowAtRoot = false,
+                    AllowInAreas = true,
+                    SettingsElementTypeKey = callToActionSettingsElement?.Key
+                };
+                blockModels.Add(callToActionBlock);
             }
 
             var croppedPictureElement = GetElementByName("croppedPicture", throwIfNotExist: false);
@@ -1057,6 +1080,16 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                         {
                             var specifiedAllowance = new List<BGSpecfiedAllowanceModel>();
                             specifiedAllowance.AddRange(areaSpecifiedAllowance);
+
+                            if (areaSpecifiedAllowance.FirstOrDefault(a => a.ElementTypeKey == callToActionElement?.Key) == null)
+                            {
+                                BGSpecfiedAllowanceModel callToActionElementAllowance = new()
+                                {
+                                    ElementTypeKey = callToActionElement?.Key,
+                                    MinAllowed = 0
+                                };
+                                specifiedAllowance.Add(callToActionElementAllowance);
+                            }
 
                             if (areaSpecifiedAllowance.FirstOrDefault(a => a.ElementTypeKey == croppedPictureElement?.Key) == null)
                             {
@@ -1681,7 +1714,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         {
             var contentRootPath = hostEnvironment.ContentRootPath;
             var webRootPath = hostEnvironment.MapPathContentRoot("~/");
-            var dest = GetBlockGridCssPath();
+            var dest = GetBlockGridStyleSheetPath();
             try
             {
                 var destExists = System.IO.File.Exists(dest);
@@ -1711,7 +1744,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
         private void DeleteBlockGridStyleSheet()
         {
-            var dest = GetBlockGridCssPath();
+            var dest = GetBlockGridStyleSheetPath();
             try
             {
                 if (System.IO.File.Exists(dest))
@@ -1724,7 +1757,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 logger.LogError(ex, "Could not delete BlockGrid CSS file {message}", ex.Message);
             }
         }
-        private string GetBlockGridCssPath()
+        private string GetBlockGridStyleSheetPath()
         {
             var webRootPath = hostEnvironment.MapPathContentRoot("~/");
             var cssPath = Path.Combine(webRootPath, "wwwroot", "styles");
@@ -2074,7 +2107,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
         #endregion
 
-        #region fix after Umbraco upgrade
+        #region fix after Umbraco or package upgrade
+
         public async Task FixUpgrade(bool? culture, bool? segment)
         {
             if (_isInstalling || _isUninstalling)
@@ -2137,6 +2171,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
             return variations;
         }
+
         #endregion
     }
 }
