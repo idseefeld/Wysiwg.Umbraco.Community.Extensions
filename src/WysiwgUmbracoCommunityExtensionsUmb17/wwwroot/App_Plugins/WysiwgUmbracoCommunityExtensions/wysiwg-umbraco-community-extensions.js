@@ -11,7 +11,7 @@ const a = [
     type: "sectionView",
     alias: "WysiwgDashboardElement.Section",
     name: "WYSIWYG Extensions Section",
-    element: () => import("./dashboard.element-KEfqMBul.js"),
+    element: () => import("./dashboard.element-B4t0hETL.js"),
     meta: {
       label: "WYSIWYG",
       icon: "icon-settings",

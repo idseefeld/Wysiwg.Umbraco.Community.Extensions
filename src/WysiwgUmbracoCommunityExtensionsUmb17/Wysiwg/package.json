@@ -2,7 +2,7 @@
   "name": "wysiwg-umbraco-community-extensions",
   "private": true,
   "license": "MIT",
-  "version": "17.0.5",
+  "version": "17.0.6",
   "type": "module",
   "engines": {
     "node": ">=22.0.0 < 23",

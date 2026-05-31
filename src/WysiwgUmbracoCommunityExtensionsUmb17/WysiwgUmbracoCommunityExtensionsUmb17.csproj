@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <VersionPrefix>17.0.5</VersionPrefix>
+    <VersionPrefix>17.0.6</VersionPrefix>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
@@ -36,6 +36,14 @@
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
+  
+  <!-- SourceLink -->
+  <PropertyGroup>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageOutputPath>Z:\nuget.local</PackageOutputPath>
+  </PropertyGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
