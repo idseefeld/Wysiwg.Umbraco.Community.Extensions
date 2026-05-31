@@ -14,15 +14,16 @@ namespace WysiwgUmbracoCommunityExtensions.ViewModels
             var label = element?.Value<string>("label") ?? "Call To Action";
             Label = label != null ? new HtmlEncodedString(label) : null;
 
-            string action = element?.Value<Link>("actionOrUrl")?.Url ?? "#";
-            if (action.InvariantStartsWith("javascript:"))
+            Link? action = element?.Value<Link>("actionOrUrl");
+            string actionUrl = action?.Url ?? "#";
+            if (actionUrl.InvariantStartsWith("javascript:"))
             {
-                Javascript = action["javascript:".Length..];
+                Javascript = actionUrl["javascript:".Length..];
             }
             else
             {
-                Url = action;
-                External = bool.Parse(element?.Value<string>("target") ?? "false");
+                Url = actionUrl;
+                Target = action?.Target;
             }
         }
 
@@ -30,7 +31,7 @@ namespace WysiwgUmbracoCommunityExtensions.ViewModels
 
         public string? Url { get; set; } = null;
 
-        public bool External { get; set; } = false;
+        public string? Target { get; set; } = null;
 
         public string? Javascript { get; set; } = null;
     }

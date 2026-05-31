@@ -15,7 +15,7 @@
     string inlineStyles = $"background-color: {backgroundColor}; color: {color};";
 
     string onClickAction = content.Javascript != null
-        ? content.Javascript : content.External ? "window.open('" + content.Url + "', '_blank')" : "window.location.href='" + content.Url + "'";
+        ? content.Javascript : content.Target != null ? "window.open('" + content.Url + "', '" + content.Target + "')" : "window.location.href='" + content.Url + "'";
 
     var html = new HtmlString($"<div class=\"call-to-action\" onclick=\"{onClickAction}\"><button style=\"{inlineStyles}\">{content.Label}</button></div>");
 }
