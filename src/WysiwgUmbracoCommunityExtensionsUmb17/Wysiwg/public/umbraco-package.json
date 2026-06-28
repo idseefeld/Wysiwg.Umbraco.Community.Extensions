@@ -1,7 +1,7 @@
 {
   "id": "WysiwgUmbracoCommunityExtensions",
   "name": "Wysiwg.Umbraco.Community.Extensions",
-  "version": "18.0.0-rc",
+  "version": "18.0.0",
   "allowPackageTelemetry": true,
   "extensions": [
     {

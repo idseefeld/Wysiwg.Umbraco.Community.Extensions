@@ -7,10 +7,10 @@ import {
 } from "@umbraco-cms/backoffice/external/lit";
 import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
 import { UmbTextStyles } from "@umbraco-cms/backoffice/style";
-import { V2CropUrlData, WysiwgUmbracoCommunityExtensionsService } from "../..";
 import { WysiwgMediaPickerPropertyValueEntry } from "../../property-editors/picture/types";
 import { UmbPropertyEditorUiElement } from "@umbraco-cms/backoffice/property-editor";
 import { UmbChangeEvent } from "@umbraco-cms/backoffice/event";
+import { getV2Cropurl, GetV2CropurlData } from "../../api/index.js";
 
 const elementName = "wysiwg-cropped-image";
 @customElement(elementName)
@@ -132,7 +132,8 @@ export class WysiwgCroppedImageElement extends UmbLitElement implements UmbPrope
     const selectedFocalPoint = !this.mediaItem.focalPoint
       ? ""
       : JSON.stringify(this.mediaItem.focalPoint);
-    const options: V2CropUrlData = {
+    const options: GetV2CropurlData = {
+      url: "/umbraco/wysiwgumbracocommunityextensions/api/v1/v2-cropurl",
       query: {
         mediaItemId: this.mediaItem.mediaKey,
         cropAlias: cropAlias,
@@ -143,7 +144,7 @@ export class WysiwgCroppedImageElement extends UmbLitElement implements UmbPrope
     };
 
     const { data, error } =
-      await WysiwgUmbracoCommunityExtensionsService.v2CropUrl(options);
+      await getV2Cropurl(options);
 
     this._isLoading = false;
 

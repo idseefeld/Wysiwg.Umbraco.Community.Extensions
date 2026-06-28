@@ -15,7 +15,7 @@ import {
   UMB_CURRENT_USER_CONTEXT,
   UmbCurrentUserModel,
 } from "@umbraco-cms/backoffice/current-user";
-import { FixUpgradeData, GetVariationsResponse, WysiwgUmbracoCommunityExtensionsService } from "../api";
+import { getFixupgrade, GetFixupgradeData, getInstall, getUninstall, getVariations, GetVariationsResponse } from "../api";
 import { UpdateStatus } from "../types";
 import { umbConfirmModal, UmbConfirmModalData } from "@umbraco-cms/backoffice/modal";
 import { CommonUtilities } from "../util/common.utilities";
@@ -90,13 +90,14 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     if (this._version.major > 15 || (this._version.major >= 15 && this._version.minor >= 4 && this._version.patch >= 0)) {
       this._varyBySegment = false;
     }
-    const options: FixUpgradeData = {
+    const options: GetFixupgradeData = {
+      url: "/umbraco/wysiwgumbracocommunityextensions/api/v1/fixupgrade",
       query: {
         culture: this._varyByCulture,
         segment: this._varyBySegment,
       }
     };
-    const { data, error } = await WysiwgUmbracoCommunityExtensionsService.fixUpgrade(options);
+    const { data, error } = await getFixupgrade(options);
 
     if (error) {
       if (this._notificationContext) {
@@ -130,7 +131,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     if (!buttonElement || buttonElement.state === "waiting") return;
     buttonElement.state = "waiting";
 
-    const { data, error } = await WysiwgUmbracoCommunityExtensionsService.install();
+    const { data, error } = await getInstall();
 
     if (error) {
       if (this._notificationContext) {
@@ -181,7 +182,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     buttonElement.state = "waiting";
     this._uninstalling = true;
 
-    const { data, error } = await WysiwgUmbracoCommunityExtensionsService.unInstall();
+    const { data, error } = await getUninstall();
 
     this._uninstalling = false;
 
@@ -220,7 +221,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
   private async getVariations() {
     if (this._variations !== undefined) return;
 
-    const { data, error } = await WysiwgUmbracoCommunityExtensionsService.getVariations();
+    const { data, error } = await getVariations();
 
     if (error) {
       if (this._notificationContext) {

@@ -1,9 +1,9 @@
 import { UmbLocalizationController } from "@umbraco-cms/backoffice/localization-api";
-import { GetServerInformationResponse, ServerService } from "../management-api";
+import { getServerInformation, GetServerInformationResponse } from "../management-api";
 import { SemVersion } from "../types";
 import { UmbNotificationContext } from "@umbraco-cms/backoffice/notification";
 import { UpdateStatus } from "../types";
-import { WysiwgUmbracoCommunityExtensionsService } from "../api";
+import { getUpdateStatusCode } from "../api";
 
 export class CommonUtilities {
   private _localize: UmbLocalizationController;
@@ -19,7 +19,7 @@ export class CommonUtilities {
   public async getUmbracoVersion(): Promise<SemVersion | undefined> {
     if (!this._notificationContext) { return; }
 
-    const { data, error } = await ServerService.getServerInformation();
+    const { data, error } = await getServerInformation();
 
     if (error) {
       console.error(error);
@@ -49,7 +49,7 @@ export class CommonUtilities {
 
   public async getUpdateStatus(): Promise<UpdateStatus | undefined> {
     const { data, error } =
-      await WysiwgUmbracoCommunityExtensionsService.getUpdateStatusCode();
+      await getUpdateStatusCode();
 
     if (error) {
       console.error(error);
@@ -64,7 +64,7 @@ export class CommonUtilities {
     }
 
     if (data !== undefined) {
-      return data;
+      return data as UpdateStatus;
     }
   }
 }

@@ -31,7 +31,7 @@ import {
   WysiwgMediaPickerPropertyValueEntry,
   WysiwgMediaPickerPropertyValues,
 } from "./types";
-import { CropsData, CropsResponse, MediaTypeModel, MediaTypesResponse, WysiwgUmbracoCommunityExtensionsService } from "../../api";
+import { GetCropsData, GetCropsResponse, IMediaTypeModel, GetMediatypesResponse, getMediatypes, getCrops } from "../../api";
 import { UmbNumberRangeValueType } from "@umbraco-cms/backoffice/models";
 
 import type { WysiwgInputRichMediaElement } from "./wysiwg-input-rich-media.element.js";
@@ -142,7 +142,7 @@ export class WysiwgImageAndCropPickerElement
   private _options: Array<Option & { invalid?: boolean }> = [];
 
   @state()
-  private _mediaTypes?: Array<MediaTypeModel> = [];
+  private _mediaTypes?: Array<IMediaTypeModel> = [];
 
   @state()
   private _imgSrc: string = "";
@@ -184,7 +184,7 @@ export class WysiwgImageAndCropPickerElement
         this._mediaTypes = [];
         return;
       }
-      const mediaTypes = data as Array<MediaTypeModel>;
+      const mediaTypes = data as Array<IMediaTypeModel>;
 
       this._mediaTypes = mediaTypes;
       const imageType = this._mediaTypes?.find((type) => type.alias.toLowerCase() === "image");
@@ -192,8 +192,8 @@ export class WysiwgImageAndCropPickerElement
     });
   }
 
-  private async apiMediaTypes(): Promise<MediaTypesResponse | "error" | "no data"> {
-    const { data, error } = await WysiwgUmbracoCommunityExtensionsService.mediaTypes();
+  private async apiMediaTypes(): Promise<GetMediatypesResponse | "error" | "no data"> {
+    const { data, error } = await getMediatypes();
     if (error) {
       console.error(error);
     }
@@ -227,15 +227,16 @@ export class WysiwgImageAndCropPickerElement
     });
   }
 
-  private async crops(mediaKey?: string): Promise<CropsResponse | "error" | "no data"> {
-    const options: CropsData = {
+  private async crops(mediaKey?: string): Promise<GetCropsResponse | "error" | "no data"> {
+    const options: GetCropsData = {
+      url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/crops',
       query: {
         mediaItemId: mediaKey ?? "",
       },
     };
 
     const { data, error } =
-      await WysiwgUmbracoCommunityExtensionsService.crops(options);
+      await getCrops(options);
 
     if (error) {
       console.error(error);
