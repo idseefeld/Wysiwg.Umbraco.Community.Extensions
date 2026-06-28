@@ -46,7 +46,7 @@ class C {
       return t;
   }
 }
-const x = "17.0.6", S = {
+const x = "17.0.7", S = {
   version: x
 };
 var z = Object.defineProperty, U = Object.getOwnPropertyDescriptor, a = (e, t, s, o) => {
@@ -336,4 +336,4 @@ export {
   r as WysiwgDashboardElement,
   O as default
 };
-//# sourceMappingURL=dashboard.element-B4t0hETL.js.map
+//# sourceMappingURL=dashboard.element-DaA2k6pr.js.map
