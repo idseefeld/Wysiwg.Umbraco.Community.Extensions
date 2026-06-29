@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Cms.Api.Common.OpenApi;
+using Umbraco.Cms.Api.Management.OpenApi;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
 using WysiwgUmbracoCommunityExtensions.Services;
@@ -15,7 +16,11 @@ namespace WysiwgUmbracoCommunityExtensions.Composers
 
             builder.Services.AddSingleton<ISetupService, SetupService>();
 
-            builder.AddBackOfficeOpenApiDocument(Constants.ApiName);
+            builder.AddBackOfficeOpenApiDocument(
+                Constants.ApiDocumentName,
+                document => document
+                    .WithTitle(Constants.ApiDocumentTitle)
+                    .WithBackOfficeAuthentication());
         }
     }
 }
