@@ -146,10 +146,14 @@ export type GetCropsData = {
     query?: {
         mediaItemId?: string;
     };
-    url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/crops';
+    url: '/api/v1/wysiwg/crops';
 };
 
 export type GetCropsErrors = {
+    /**
+     * The resource is protected and requires an authentication token
+     */
+    401: unknown;
     /**
      * Not Found
      */
@@ -167,7 +171,7 @@ export type GetCropsResponses = {
 
 export type GetCropsResponse = GetCropsResponses[keyof GetCropsResponses];
 
-export type GetCropurlData = {
+export type GetCropUrlData = {
     body?: never;
     path?: never;
     query?: {
@@ -175,90 +179,197 @@ export type GetCropurlData = {
         cropAlias?: string;
         width?: number | string;
     };
-    url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/cropurl';
+    url: '/api/v1/wysiwg/cropurl';
 };
 
-export type GetCropurlErrors = {
+export type GetCropUrlErrors = {
+    /**
+     * The resource is protected and requires an authentication token
+     */
+    401: unknown;
     /**
      * Not Found
      */
     404: string;
 };
 
-export type GetCropurlError = GetCropurlErrors[keyof GetCropurlErrors];
+export type GetCropUrlError = GetCropUrlErrors[keyof GetCropUrlErrors];
 
-export type GetCropurlResponses = {
+export type GetCropUrlResponses = {
     /**
      * OK
      */
     200: string;
 };
 
-export type GetCropurlResponse = GetCropurlResponses[keyof GetCropurlResponses];
+export type GetCropUrlResponse = GetCropUrlResponses[keyof GetCropUrlResponses];
 
-export type GetFixupgradeData = {
+export type GetImageUrlData = {
+    body?: never;
+    path?: never;
+    query?: {
+        mediaItemId?: string;
+    };
+    url: '/api/v1/wysiwg/imageurl';
+};
+
+export type GetImageUrlErrors = {
+    /**
+     * The resource is protected and requires an authentication token
+     */
+    401: unknown;
+    /**
+     * Not Found
+     */
+    404: string;
+};
+
+export type GetImageUrlError = GetImageUrlErrors[keyof GetImageUrlErrors];
+
+export type GetImageUrlResponses = {
+    /**
+     * OK
+     */
+    200: string;
+};
+
+export type GetImageUrlResponse = GetImageUrlResponses[keyof GetImageUrlResponses];
+
+export type GetV2CropUrlData = {
+    body?: never;
+    path?: never;
+    query?: {
+        mediaItemId?: string;
+        cropAlias?: string;
+        selectedCrop?: string;
+        width?: number | string;
+        selectedFocalPoint?: string;
+    };
+    url: '/api/v1/wysiwg/v2-cropurl';
+};
+
+export type GetV2CropUrlErrors = {
+    /**
+     * The resource is protected and requires an authentication token
+     */
+    401: unknown;
+    /**
+     * Not Found
+     */
+    404: string;
+};
+
+export type GetV2CropUrlError = GetV2CropUrlErrors[keyof GetV2CropUrlErrors];
+
+export type GetV2CropUrlResponses = {
+    /**
+     * OK
+     */
+    200: string;
+};
+
+export type GetV2CropUrlResponse = GetV2CropUrlResponses[keyof GetV2CropUrlResponses];
+
+export type GetMediaTypesData = {
+    body?: never;
+    path?: never;
+    query?: {
+        name?: string;
+    };
+    url: '/api/v1/wysiwg/mediatypes';
+};
+
+export type GetMediaTypesErrors = {
+    /**
+     * The resource is protected and requires an authentication token
+     */
+    401: unknown;
+    /**
+     * Not Found
+     */
+    404: Array<IMediaTypeModel>;
+};
+
+export type GetMediaTypesError = GetMediaTypesErrors[keyof GetMediaTypesErrors];
+
+export type GetMediaTypesResponses = {
+    /**
+     * OK
+     */
+    200: Array<IMediaTypeModel>;
+};
+
+export type GetMediaTypesResponse = GetMediaTypesResponses[keyof GetMediaTypesResponses];
+
+export type GetSiteBackgroundColorData = {
+    body?: never;
+    path?: never;
+    query?: {
+        pageKey?: string;
+    };
+    url: '/api/v1/wysiwg/site-background-color';
+};
+
+export type GetSiteBackgroundColorErrors = {
+    /**
+     * The resource is protected and requires an authentication token
+     */
+    401: unknown;
+};
+
+export type GetSiteBackgroundColorResponses = {
+    /**
+     * OK
+     */
+    200: string;
+};
+
+export type GetSiteBackgroundColorResponse = GetSiteBackgroundColorResponses[keyof GetSiteBackgroundColorResponses];
+
+export type GetFixUpgradeData = {
     body?: never;
     path?: never;
     query?: {
         culture?: boolean;
         segment?: boolean;
     };
-    url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/fixupgrade';
+    url: '/api/v1/wysiwg/fixupgrade';
 };
 
-export type GetFixupgradeErrors = {
+export type GetFixUpgradeErrors = {
+    /**
+     * The resource is protected and requires an authentication token
+     */
+    401: unknown;
     /**
      * Internal Server Error
      */
     500: string;
 };
 
-export type GetFixupgradeError = GetFixupgradeErrors[keyof GetFixupgradeErrors];
+export type GetFixUpgradeError = GetFixUpgradeErrors[keyof GetFixUpgradeErrors];
 
-export type GetFixupgradeResponses = {
+export type GetFixUpgradeResponses = {
     /**
      * OK
      */
     200: string;
 };
 
-export type GetFixupgradeResponse = GetFixupgradeResponses[keyof GetFixupgradeResponses];
-
-export type GetImageurlData = {
-    body?: never;
-    path?: never;
-    query?: {
-        mediaItemId?: string;
-    };
-    url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/imageurl';
-};
-
-export type GetImageurlErrors = {
-    /**
-     * Not Found
-     */
-    404: string;
-};
-
-export type GetImageurlError = GetImageurlErrors[keyof GetImageurlErrors];
-
-export type GetImageurlResponses = {
-    /**
-     * OK
-     */
-    200: string;
-};
-
-export type GetImageurlResponse = GetImageurlResponses[keyof GetImageurlResponses];
+export type GetFixUpgradeResponse = GetFixUpgradeResponses[keyof GetFixUpgradeResponses];
 
 export type GetInstallData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/install';
+    url: '/api/v1/wysiwg/install';
 };
 
 export type GetInstallErrors = {
+    /**
+     * The resource is protected and requires an authentication token
+     */
+    401: unknown;
     /**
      * Internal Server Error
      */
@@ -276,131 +387,41 @@ export type GetInstallResponses = {
 
 export type GetInstallResponse = GetInstallResponses[keyof GetInstallResponses];
 
-export type GetMediatypesData = {
-    body?: never;
-    path?: never;
-    query?: {
-        name?: string;
-    };
-    url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/mediatypes';
-};
-
-export type GetMediatypesErrors = {
-    /**
-     * Not Found
-     */
-    404: Array<IMediaTypeModel>;
-};
-
-export type GetMediatypesError = GetMediatypesErrors[keyof GetMediatypesErrors];
-
-export type GetMediatypesResponses = {
-    /**
-     * OK
-     */
-    200: Array<IMediaTypeModel>;
-};
-
-export type GetMediatypesResponse = GetMediatypesResponses[keyof GetMediatypesResponses];
-
-export type GetSiteBackgroundColorData = {
-    body?: never;
-    path?: never;
-    query?: {
-        pageKey?: string;
-    };
-    url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/site-background-color';
-};
-
-export type GetSiteBackgroundColorResponses = {
-    /**
-     * OK
-     */
-    200: string;
-};
-
-export type GetSiteBackgroundColorResponse = GetSiteBackgroundColorResponses[keyof GetSiteBackgroundColorResponses];
-
-export type GetUninstallData = {
+export type GetUnInstallData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/uninstall';
+    url: '/api/v1/wysiwg/uninstall';
 };
 
-export type GetUninstallResponses = {
+export type GetUnInstallErrors = {
+    /**
+     * The resource is protected and requires an authentication token
+     */
+    401: unknown;
+};
+
+export type GetUnInstallResponses = {
     /**
      * OK
      */
     200: string;
 };
 
-export type GetUninstallResponse = GetUninstallResponses[keyof GetUninstallResponses];
-
-export type GetUpdateStatusCodeData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/updateStatusCode';
-};
-
-export type GetUpdateStatusCodeErrors = {
-    /**
-     * Internal Server Error
-     */
-    500: number | string;
-};
-
-export type GetUpdateStatusCodeError = GetUpdateStatusCodeErrors[keyof GetUpdateStatusCodeErrors];
-
-export type GetUpdateStatusCodeResponses = {
-    /**
-     * OK
-     */
-    200: number | string;
-};
-
-export type GetUpdateStatusCodeResponse = GetUpdateStatusCodeResponses[keyof GetUpdateStatusCodeResponses];
-
-export type GetV2CropurlData = {
-    body?: never;
-    path?: never;
-    query?: {
-        mediaItemId?: string;
-        cropAlias?: string;
-        selectedCrop?: string;
-        width?: number | string;
-        selectedFocalPoint?: string;
-    };
-    url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/v2-cropurl';
-};
-
-export type GetV2CropurlErrors = {
-    /**
-     * Not Found
-     */
-    404: string;
-};
-
-export type GetV2CropurlError = GetV2CropurlErrors[keyof GetV2CropurlErrors];
-
-export type GetV2CropurlResponses = {
-    /**
-     * OK
-     */
-    200: string;
-};
-
-export type GetV2CropurlResponse = GetV2CropurlResponses[keyof GetV2CropurlResponses];
+export type GetUnInstallResponse = GetUnInstallResponses[keyof GetUnInstallResponses];
 
 export type GetVariationsData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/variations';
+    url: '/api/v1/wysiwg/variations';
 };
 
 export type GetVariationsErrors = {
+    /**
+     * The resource is protected and requires an authentication token
+     */
+    401: unknown;
     /**
      * Internal Server Error
      */
@@ -417,3 +438,32 @@ export type GetVariationsResponses = {
 };
 
 export type GetVariationsResponse = GetVariationsResponses[keyof GetVariationsResponses];
+
+export type GetUpdateStatusCodeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/wysiwg/updateStatusCode';
+};
+
+export type GetUpdateStatusCodeErrors = {
+    /**
+     * The resource is protected and requires an authentication token
+     */
+    401: unknown;
+    /**
+     * Internal Server Error
+     */
+    500: number | string;
+};
+
+export type GetUpdateStatusCodeError = GetUpdateStatusCodeErrors[keyof GetUpdateStatusCodeErrors];
+
+export type GetUpdateStatusCodeResponses = {
+    /**
+     * OK
+     */
+    200: number | string;
+};
+
+export type GetUpdateStatusCodeResponse = GetUpdateStatusCodeResponses[keyof GetUpdateStatusCodeResponses];

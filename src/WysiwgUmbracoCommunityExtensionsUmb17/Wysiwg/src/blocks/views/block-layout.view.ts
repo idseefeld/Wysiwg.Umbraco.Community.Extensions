@@ -19,7 +19,7 @@ import { UmbBlockGridValueModel } from "@umbraco-cms/backoffice/block-grid";
 import { BlockGridLayoutModel, MediaPickerValueModel } from "../types";
 import WysiwgBaseBlockEditorCustomViewElement from "./wysiwg-base-block-editor-custom.view";
 import { UpdateStatus } from "../../types";
-import { getImageurl, GetImageurlData, getSiteBackgroundColor, GetSiteBackgroundColorData } from "../../api";
+import { getImageUrl, GetImageUrlData, getSiteBackgroundColor, GetSiteBackgroundColorData } from "../../api";
 
 //this is based on a copy of
 // Umbraco-CMS\src\
@@ -191,14 +191,14 @@ export class WysiwgBlockLayoutView
     if (!mediaItemId) {
       return;
     }
-    const options: GetImageurlData = {
-      url: "/umbraco/wysiwgumbracocommunityextensions/api/v1/imageurl",
+    const options: GetImageUrlData = {
+      url: "/api/v1/wysiwg/imageurl",
       query: {
         mediaItemId,
       },
     };
     const { data, error } =
-      await getImageurl(options);
+      await getImageUrl(options);
 
     if (error) {
       console.error(error);
@@ -215,7 +215,7 @@ export class WysiwgBlockLayoutView
       return;
     }
     const options: GetSiteBackgroundColorData = {
-      url: "/umbraco/wysiwgumbracocommunityextensions/api/v1/site-background-color",
+      url: "/api/v1/wysiwg/site-background-color",
       query: {
         pageKey,
       },

@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetCropsData, GetCropsErrors, GetCropsResponses, GetCropurlData, GetCropurlErrors, GetCropurlResponses, GetFixupgradeData, GetFixupgradeErrors, GetFixupgradeResponses, GetImageurlData, GetImageurlErrors, GetImageurlResponses, GetInstallData, GetInstallErrors, GetInstallResponses, GetMediatypesData, GetMediatypesErrors, GetMediatypesResponses, GetSiteBackgroundColorData, GetSiteBackgroundColorResponses, GetUninstallData, GetUninstallResponses, GetUpdateStatusCodeData, GetUpdateStatusCodeErrors, GetUpdateStatusCodeResponses, GetV2CropurlData, GetV2CropurlErrors, GetV2CropurlResponses, GetVariationsData, GetVariationsErrors, GetVariationsResponses } from './types.gen';
+import type { GetCropsData, GetCropsErrors, GetCropsResponses, GetCropUrlData, GetCropUrlErrors, GetCropUrlResponses, GetFixUpgradeData, GetFixUpgradeErrors, GetFixUpgradeResponses, GetImageUrlData, GetImageUrlErrors, GetImageUrlResponses, GetInstallData, GetInstallErrors, GetInstallResponses, GetMediaTypesData, GetMediaTypesErrors, GetMediaTypesResponses, GetSiteBackgroundColorData, GetSiteBackgroundColorErrors, GetSiteBackgroundColorResponses, GetUnInstallData, GetUnInstallErrors, GetUnInstallResponses, GetUpdateStatusCodeData, GetUpdateStatusCodeErrors, GetUpdateStatusCodeResponses, GetV2CropUrlData, GetV2CropUrlErrors, GetV2CropUrlResponses, GetVariationsData, GetVariationsErrors, GetVariationsResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -18,24 +18,68 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
     meta?: Record<string, unknown>;
 };
 
-export const getCrops = <ThrowOnError extends boolean = false>(options?: Options<GetCropsData, ThrowOnError>) => (options?.client ?? client).get<GetCropsResponses, GetCropsErrors, ThrowOnError>({ url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/crops', ...options });
+export const getCrops = <ThrowOnError extends boolean = false>(options?: Options<GetCropsData, ThrowOnError>) => (options?.client ?? client).get<GetCropsResponses, GetCropsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/wysiwg/crops',
+    ...options
+});
 
-export const getCropurl = <ThrowOnError extends boolean = false>(options?: Options<GetCropurlData, ThrowOnError>) => (options?.client ?? client).get<GetCropurlResponses, GetCropurlErrors, ThrowOnError>({ url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/cropurl', ...options });
+export const getCropUrl = <ThrowOnError extends boolean = false>(options?: Options<GetCropUrlData, ThrowOnError>) => (options?.client ?? client).get<GetCropUrlResponses, GetCropUrlErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/wysiwg/cropurl',
+    ...options
+});
 
-export const getFixupgrade = <ThrowOnError extends boolean = false>(options?: Options<GetFixupgradeData, ThrowOnError>) => (options?.client ?? client).get<GetFixupgradeResponses, GetFixupgradeErrors, ThrowOnError>({ url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/fixupgrade', ...options });
+export const getImageUrl = <ThrowOnError extends boolean = false>(options?: Options<GetImageUrlData, ThrowOnError>) => (options?.client ?? client).get<GetImageUrlResponses, GetImageUrlErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/wysiwg/imageurl',
+    ...options
+});
 
-export const getImageurl = <ThrowOnError extends boolean = false>(options?: Options<GetImageurlData, ThrowOnError>) => (options?.client ?? client).get<GetImageurlResponses, GetImageurlErrors, ThrowOnError>({ url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/imageurl', ...options });
+export const getV2CropUrl = <ThrowOnError extends boolean = false>(options?: Options<GetV2CropUrlData, ThrowOnError>) => (options?.client ?? client).get<GetV2CropUrlResponses, GetV2CropUrlErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/wysiwg/v2-cropurl',
+    ...options
+});
 
-export const getInstall = <ThrowOnError extends boolean = false>(options?: Options<GetInstallData, ThrowOnError>) => (options?.client ?? client).get<GetInstallResponses, GetInstallErrors, ThrowOnError>({ url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/install', ...options });
+export const getMediaTypes = <ThrowOnError extends boolean = false>(options?: Options<GetMediaTypesData, ThrowOnError>) => (options?.client ?? client).get<GetMediaTypesResponses, GetMediaTypesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/wysiwg/mediatypes',
+    ...options
+});
 
-export const getMediatypes = <ThrowOnError extends boolean = false>(options?: Options<GetMediatypesData, ThrowOnError>) => (options?.client ?? client).get<GetMediatypesResponses, GetMediatypesErrors, ThrowOnError>({ url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/mediatypes', ...options });
+export const getSiteBackgroundColor = <ThrowOnError extends boolean = false>(options?: Options<GetSiteBackgroundColorData, ThrowOnError>) => (options?.client ?? client).get<GetSiteBackgroundColorResponses, GetSiteBackgroundColorErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/wysiwg/site-background-color',
+    ...options
+});
 
-export const getSiteBackgroundColor = <ThrowOnError extends boolean = false>(options?: Options<GetSiteBackgroundColorData, ThrowOnError>) => (options?.client ?? client).get<GetSiteBackgroundColorResponses, unknown, ThrowOnError>({ url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/site-background-color', ...options });
+export const getFixUpgrade = <ThrowOnError extends boolean = false>(options?: Options<GetFixUpgradeData, ThrowOnError>) => (options?.client ?? client).get<GetFixUpgradeResponses, GetFixUpgradeErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/wysiwg/fixupgrade',
+    ...options
+});
 
-export const getUninstall = <ThrowOnError extends boolean = false>(options?: Options<GetUninstallData, ThrowOnError>) => (options?.client ?? client).get<GetUninstallResponses, unknown, ThrowOnError>({ url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/uninstall', ...options });
+export const getInstall = <ThrowOnError extends boolean = false>(options?: Options<GetInstallData, ThrowOnError>) => (options?.client ?? client).get<GetInstallResponses, GetInstallErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/wysiwg/install',
+    ...options
+});
 
-export const getUpdateStatusCode = <ThrowOnError extends boolean = false>(options?: Options<GetUpdateStatusCodeData, ThrowOnError>) => (options?.client ?? client).get<GetUpdateStatusCodeResponses, GetUpdateStatusCodeErrors, ThrowOnError>({ url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/updateStatusCode', ...options });
+export const getUnInstall = <ThrowOnError extends boolean = false>(options?: Options<GetUnInstallData, ThrowOnError>) => (options?.client ?? client).get<GetUnInstallResponses, GetUnInstallErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/wysiwg/uninstall',
+    ...options
+});
 
-export const getV2Cropurl = <ThrowOnError extends boolean = false>(options?: Options<GetV2CropurlData, ThrowOnError>) => (options?.client ?? client).get<GetV2CropurlResponses, GetV2CropurlErrors, ThrowOnError>({ url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/v2-cropurl', ...options });
+export const getVariations = <ThrowOnError extends boolean = false>(options?: Options<GetVariationsData, ThrowOnError>) => (options?.client ?? client).get<GetVariationsResponses, GetVariationsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/wysiwg/variations',
+    ...options
+});
 
-export const getVariations = <ThrowOnError extends boolean = false>(options?: Options<GetVariationsData, ThrowOnError>) => (options?.client ?? client).get<GetVariationsResponses, GetVariationsErrors, ThrowOnError>({ url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/variations', ...options });
+export const getUpdateStatusCode = <ThrowOnError extends boolean = false>(options?: Options<GetUpdateStatusCodeData, ThrowOnError>) => (options?.client ?? client).get<GetUpdateStatusCodeResponses, GetUpdateStatusCodeErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/wysiwg/updateStatusCode',
+    ...options
+});

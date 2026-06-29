@@ -1,5 +1,5 @@
 import { ifDefined } from '@umbraco-cms/backoffice/external/lit';
-import { demandCustomElement, UUICardElement } from '@umbraco-cms/backoffice/external/uui';
+import { UUICardElement } from '@umbraco-cms/backoffice/external/uui';
 import { html, css, nothing, customElement, property, state } from "@umbraco-cms/backoffice/external/lit";
 
 const elementName = 'wysiwg-card-image';
@@ -38,8 +38,8 @@ export class WysiwgCardImageElement extends UUICardElement {
   connectedCallback(): void {
     super.connectedCallback();
 
-    demandCustomElement(this, 'uui-symbol-folder');
-    demandCustomElement(this, 'uui-symbol-file');
+    // demandCustomElement(this, 'uui-symbol-folder');
+    // demandCustomElement(this, 'uui-symbol-file');
   }
 
   private queryPreviews(e: Event): void {

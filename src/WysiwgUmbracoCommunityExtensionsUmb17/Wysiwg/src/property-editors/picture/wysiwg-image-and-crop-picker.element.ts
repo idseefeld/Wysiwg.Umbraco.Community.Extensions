@@ -14,7 +14,6 @@ import { UMB_PROPERTY_CONTEXT } from "@umbraco-cms/backoffice/property";
 import {
   UmbPropertyEditorConfigCollection,
   UmbPropertyEditorUiElement,
-  UmbPropertyValueChangeEvent,
 } from "@umbraco-cms/backoffice/property-editor";
 import type { UmbTreeStartNode } from "@umbraco-cms/backoffice/tree";
 import {
@@ -31,11 +30,12 @@ import {
   WysiwgMediaPickerPropertyValueEntry,
   WysiwgMediaPickerPropertyValues,
 } from "./types";
-import { GetCropsData, GetCropsResponse, IMediaTypeModel, GetMediatypesResponse, getMediatypes, getCrops } from "../../api";
+import { GetCropsData, GetCropsResponse, IMediaTypeModel, GetMediaTypesResponse, getMediaTypes, getCrops } from "../../api";
 import { UmbNumberRangeValueType } from "@umbraco-cms/backoffice/models";
 
 import type { WysiwgInputRichMediaElement } from "./wysiwg-input-rich-media.element.js";
 import './wysiwg-input-rich-media.element.js';
+import { UmbChangeEvent } from "@umbraco-cms/backoffice/event";
 
 /**
  * based on @element umb-property-editor-ui-media-picker
@@ -68,7 +68,7 @@ export class WysiwgImageAndCropPickerElement
         name: item.label?.toString() ?? item.alias,
         value: item.alias,
         selected: item.alias === this._selectedCropAlias,
-      })) as Array<Option & { invalid?: boolean }>;
+      })); // as Array<Option & { invalid?: boolean }>;
       this._options = [
         { name: "", value: "", },
         ...options,
@@ -139,7 +139,7 @@ export class WysiwgImageAndCropPickerElement
   private _selectedCropAlias: string = "";
 
   @state()
-  private _options: Array<Option & { invalid?: boolean }> = [];
+  private _options: Array<any & { invalid?: boolean }> = [];
 
   @state()
   private _mediaTypes?: Array<IMediaTypeModel> = [];
@@ -192,8 +192,8 @@ export class WysiwgImageAndCropPickerElement
     });
   }
 
-  private async apiMediaTypes(): Promise<GetMediatypesResponse | "error" | "no data"> {
-    const { data, error } = await getMediatypes();
+  private async apiMediaTypes(): Promise<GetMediaTypesResponse | "error" | "no data"> {
+    const { data, error } = await getMediaTypes();
     if (error) {
       console.error(error);
     }
@@ -229,7 +229,7 @@ export class WysiwgImageAndCropPickerElement
 
   private async crops(mediaKey?: string): Promise<GetCropsResponse | "error" | "no data"> {
     const options: GetCropsData = {
-      url: '/umbraco/wysiwgumbracocommunityextensions/api/v1/crops',
+      url: '/api/v1/wysiwg/crops',
       query: {
         mediaItemId: mediaKey ?? "",
       },
@@ -305,7 +305,7 @@ export class WysiwgImageAndCropPickerElement
       }
     }
     this.value = newValue;
-    this.dispatchEvent(new UmbPropertyValueChangeEvent());
+    this.dispatchEvent(new UmbChangeEvent());
   }
 
   render() {

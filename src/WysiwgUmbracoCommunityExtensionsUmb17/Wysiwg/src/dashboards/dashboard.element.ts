@@ -15,7 +15,7 @@ import {
   UMB_CURRENT_USER_CONTEXT,
   UmbCurrentUserModel,
 } from "@umbraco-cms/backoffice/current-user";
-import { getFixupgrade, GetFixupgradeData, getInstall, getUninstall, getVariations, GetVariationsResponse } from "../api";
+import { getFixUpgrade, GetFixUpgradeData, getInstall, getUnInstall, getVariations, GetVariationsResponse } from "../api";
 import { UpdateStatus } from "../types";
 import { umbConfirmModal, UmbConfirmModalData } from "@umbraco-cms/backoffice/modal";
 import { CommonUtilities } from "../util/common.utilities";
@@ -90,14 +90,14 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     if (this._version.major > 15 || (this._version.major >= 15 && this._version.minor >= 4 && this._version.patch >= 0)) {
       this._varyBySegment = false;
     }
-    const options: GetFixupgradeData = {
-      url: "/umbraco/wysiwgumbracocommunityextensions/api/v1/fixupgrade",
+    const options: GetFixUpgradeData = {
+      url: "/api/v1/wysiwg/fixupgrade",
       query: {
         culture: this._varyByCulture,
         segment: this._varyBySegment,
       }
     };
-    const { data, error } = await getFixupgrade(options);
+    const { data, error } = await getFixUpgrade(options);
 
     if (error) {
       if (this._notificationContext) {
@@ -182,7 +182,7 @@ export class WysiwgDashboardElement extends UmbElementMixin(LitElement) {
     buttonElement.state = "waiting";
     this._uninstalling = true;
 
-    const { data, error } = await getUninstall();
+    const { data, error } = await getUnInstall();
 
     this._uninstalling = false;
 

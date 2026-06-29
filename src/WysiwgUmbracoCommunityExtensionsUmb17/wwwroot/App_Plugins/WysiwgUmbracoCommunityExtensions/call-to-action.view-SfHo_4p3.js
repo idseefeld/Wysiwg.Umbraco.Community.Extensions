@@ -1,22 +1,21 @@
-import { UmbTextStyles as w } from "@umbraco-cms/backoffice/style";
-import { unsafeHTML as m, html as b, css as d, customElement as y } from "@umbraco-cms/backoffice/external/lit";
-import { W as u } from "./wysiwg-base-block-editor-custom.view-Bj-ISVRt.js";
-var v = Object.getOwnPropertyDescriptor, p = (a, n, c, o) => {
-  for (var t = o > 1 ? void 0 : o ? v(n, c) : n, i = a.length - 1, l; i >= 0; i--)
+import { UmbTextStyles as e } from "@umbraco-cms/backoffice/style";
+import { unsafeHTML as s, html as g, css as w, customElement as m } from "@umbraco-cms/backoffice/external/lit";
+import { W as b } from "./wysiwg-base-block-editor-custom.view-Bo_aBM4F.js";
+var d = Object.getOwnPropertyDescriptor, y = (a, n, c, o) => {
+  for (var t = o > 1 ? void 0 : o ? d(n, c) : n, i = a.length - 1, l; i >= 0; i--)
     (l = a[i]) && (t = l(t) || t);
   return t;
 };
-const f = "wysiwg-block-call-to-action-view";
-let r = class extends u {
+const u = "wysiwg-block-call-to-action-view";
+let r = class extends b {
   render() {
-    var e, s, g;
-    const a = this.getLayoutSettings(), n = ((e = this.content) == null ? void 0 : e.label) ?? "Call to Action", o = ((g = (((s = this.content) == null ? void 0 : s.actionOrUrl) ?? [])[0]) == null ? void 0 : g.url) ?? "#", t = "javascript:", i = o.substring(0, t.length) === t ? o.substring(t.length) : `location.href='${o}'`, l = `<div class="call-to-action"><button ${a.inlineStyle} title="${i}">${n}</button></div>`;
-    return b`${m(l)}`;
+    const a = this.getLayoutSettings(), n = this.content?.label ?? "Call to Action", o = (this.content?.actionOrUrl ?? [])[0]?.url ?? "#", t = "javascript:", i = o.substring(0, t.length) === t ? o.substring(t.length) : `location.href='${o}'`, l = `<div class="call-to-action"><button ${a.inlineStyle} title="${i}">${n}</button></div>`;
+    return g`${s(l)}`;
   }
 };
 r.styles = [
-  w,
-  d`
+  e,
+  w`
       :host {
         display: block;
         height: 100%;
@@ -45,12 +44,12 @@ r.styles = [
       }
     `
 ];
-r = p([
-  y(f)
+r = y([
+  m(u)
 ], r);
-const O = r;
+const x = r;
 export {
   r as WysiwgBlockCallToActionView,
-  O as default
+  x as default
 };
-//# sourceMappingURL=call-to-action.view-XIonslTv.js.map
+//# sourceMappingURL=call-to-action.view-SfHo_4p3.js.map

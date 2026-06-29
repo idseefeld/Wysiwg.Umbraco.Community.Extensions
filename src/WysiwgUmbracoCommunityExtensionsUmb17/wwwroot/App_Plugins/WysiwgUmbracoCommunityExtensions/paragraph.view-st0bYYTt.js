@@ -1,47 +1,45 @@
 import { UmbTextStyles as g } from "@umbraco-cms/backoffice/style";
-import { unsafeHTML as h, html as l, css as w, customElement as p } from "@umbraco-cms/backoffice/external/lit";
-import { W as d } from "./wysiwg-base-block-editor-custom.view-Bj-ISVRt.js";
-var c = Object.getOwnPropertyDescriptor, v = (r, e, i, t) => {
-  for (var a = t > 1 ? void 0 : t ? c(e, i) : e, s = r.length - 1, o; s >= 0; s--)
-    (o = r[s]) && (a = o(a) || a);
-  return a;
+import { unsafeHTML as h, html as l, css as p, customElement as w } from "@umbraco-cms/backoffice/external/lit";
+import { W as d } from "./wysiwg-base-block-editor-custom.view-Bo_aBM4F.js";
+var c = Object.getOwnPropertyDescriptor, y = (e, a, i, r) => {
+  for (var t = r > 1 ? void 0 : r ? c(a, i) : a, s = e.length - 1, o; s >= 0; s--)
+    (o = e[s]) && (t = o(t) || t);
+  return t;
 };
-const y = "wysiwg-block-paragraph-view";
+const v = "wysiwg-block-paragraph-view";
 let n = class extends d {
   disableLinks() {
-    var i;
-    const r = (i = this.shadowRoot) == null ? void 0 : i.querySelector("#paragraph");
-    if (!r) return;
-    const e = r.querySelectorAll("a");
-    e != null && e.length && e.forEach((t) => {
+    const e = this.shadowRoot?.querySelector("#paragraph");
+    if (!e) return;
+    const a = e.querySelectorAll("a");
+    a?.length && a.forEach((i) => {
       try {
-        t.addEventListener(
+        i.addEventListener(
           "click",
-          (a) => {
-            a.preventDefault();
+          (r) => {
+            r.preventDefault();
           },
           { capture: !0 }
           // Use capture to prevent the event from bubbling up
         );
-      } catch (a) {
-        console.warn("Error adding event listeners to links:", a);
+      } catch (r) {
+        console.warn("Error adding event listeners to links:", r);
       }
     });
   }
-  updated(r) {
-    super.updated(r), this.disableLinks();
+  updated(e) {
+    super.updated(e), this.disableLinks();
   }
   render() {
-    var a;
-    const r = this.getLayoutSettings();
-    var e = (a = this.content) == null ? void 0 : a.text, i = e == null ? void 0 : e.markup;
-    const t = `<div id="paragraph" ${r.inlineStyle}>${i}</div>`;
-    return l`${h(t)}`;
+    const e = this.getLayoutSettings();
+    var a = this.content?.text, i = a?.markup;
+    const r = `<div id="paragraph" ${e.inlineStyle}>${i}</div>`;
+    return l`${h(r)}`;
   }
 };
 n.styles = [
   g,
-  w`
+  p`
       :host {
         display: block;
         height: 100%;
@@ -90,12 +88,12 @@ n.styles = [
       }
     `
 ];
-n = v([
-  p(y)
+n = y([
+  w(v)
 ], n);
 const x = n;
 export {
   n as WysiwgBlockParagraphView,
   x as default
 };
-//# sourceMappingURL=paragraph.view-B5ZJ6tZZ.js.map
+//# sourceMappingURL=paragraph.view-st0bYYTt.js.map

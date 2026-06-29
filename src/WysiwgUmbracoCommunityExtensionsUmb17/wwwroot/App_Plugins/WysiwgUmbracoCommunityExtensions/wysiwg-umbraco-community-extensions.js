@@ -4,14 +4,14 @@ const a = [
     name: "wysiwg Extensions Entrypoint",
     alias: "WysiwgExtensions.Entrypoint",
     type: "backofficeEntryPoint",
-    js: () => import("./entrypoint-C-p2nuGs.js")
+    js: () => import("./entrypoint-BpgyRrYo.js")
   }
 ], r = [
   {
     type: "sectionView",
     alias: "WysiwgDashboardElement.Section",
     name: "WYSIWYG Extensions Section",
-    element: () => import("./dashboard.element-BVvL33-m.js"),
+    element: () => import("./dashboard.element-CuNv1IIu.js"),
     meta: {
       label: "WYSIWYG",
       icon: "icon-settings",
@@ -29,7 +29,7 @@ const a = [
     type: "bundle",
     name: "wysiwg block components",
     alias: "wysiwg.block.components",
-    js: () => import("./index-DfFPuXRH.js")
+    js: () => import("./index-CjKUaHv3.js")
   }
 ], i = "wysiwg65_";
 function n() {
@@ -43,7 +43,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.Layouts",
     name: "Block Editor Custom View for Layouts",
-    element: () => import("./block-layout.view-yNHSM02x.js"),
+    element: () => import("./block-layout.view-BRpjdYW0.js"),
     forContentTypeAlias: n(),
     forBlockEditor: "block-grid"
   },
@@ -51,7 +51,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockHeadline",
     name: "Block Editor Custom View for Headline",
-    element: () => import("./headline.view-BczJFEVD.js"),
+    element: () => import("./headline.view-De87em-s.js"),
     forContentTypeAlias: i + "headline",
     forBlockEditor: "block-grid"
   },
@@ -59,7 +59,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockParagraph",
     name: "Block Editor Custom View for Paragraph",
-    element: () => import("./paragraph.view-B5ZJ6tZZ.js"),
+    element: () => import("./paragraph.view-st0bYYTt.js"),
     forContentTypeAlias: i + "paragraph",
     forBlockEditor: "block-grid"
   },
@@ -67,7 +67,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.pictureWithCrop",
     name: "Block Editor Custom View for Picture with Crop",
-    element: () => import("./picture-with-crop.view-tZFaq0k_.js"),
+    element: () => import("./picture-with-crop.view-DJjUEgcI.js"),
     forContentTypeAlias: i + "pictureWithCrop",
     forBlockEditor: "block-grid"
   },
@@ -75,7 +75,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.croppedPicture",
     name: "Block Editor Custom View for Cropped Picture",
-    element: () => import("./cropped-picture.view-BbolrKif.js"),
+    element: () => import("./cropped-picture.view-Dn1XoHt-.js"),
     forContentTypeAlias: i + "croppedPicture",
     forBlockEditor: "block-grid"
   },
@@ -83,7 +83,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.callToAction",
     name: "Block Editor Custom View for Call to Action",
-    element: () => import("./call-to-action.view-XIonslTv.js"),
+    element: () => import("./call-to-action.view-SfHo_4p3.js"),
     forContentTypeAlias: i + "callToAction",
     forBlockEditor: "block-grid"
   }
@@ -95,7 +95,7 @@ const l = [
     type: "propertyEditorUi",
     alias: "wysiwg.PropertyEditorUi.ImageAndCropPicker",
     name: "WYSIWG Picture and Crop Picker",
-    element: () => import("./wysiwg-image-and-crop-picker.element-CwohnbP1.js"),
+    element: () => import("./wysiwg-image-and-crop-picker.element-DDKkKiBf.js"),
     meta: {
       label: "WYSIWG Picture and Crop Picker",
       propertyEditorSchemaAlias: "Wysiwg.ImageAndCropPicker",
@@ -198,7 +198,7 @@ const l = [
     type: "workspaceContext",
     alias: "Wysiwg.WorkspaceContext.BlockGrid",
     name: "Wysiwg BlockGrid Context",
-    api: () => import("./wysiwg.workspace.context-BPJKpgtt.js"),
+    api: () => import("./wysiwg.workspace.context-DBiEiJzf.js"),
     conditions: [
       {
         alias: e,
