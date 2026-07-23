@@ -16,6 +16,8 @@ namespace WysiwgUmbracoCommunityExtensions.Composers
 
             builder.Services.AddSingleton<ISetupService, SetupService>();
 
+            builder.Services.AddSingleton<IComponentService, ComponentService>();
+
             builder.AddBackOfficeOpenApiDocument(
                 Constants.ApiDocumentName,
                 document => document

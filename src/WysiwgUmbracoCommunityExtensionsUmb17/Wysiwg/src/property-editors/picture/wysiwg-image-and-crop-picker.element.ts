@@ -394,7 +394,7 @@ export class WysiwgImageAndCropPickerElement
   ];
 }
 
-export { WysiwgImageAndCropPickerElement as element };
+export default WysiwgImageAndCropPickerElement;
 
 declare global {
   interface HTMLElementTagNameMap {

@@ -1,14 +1,14 @@
 {
   "id": "WysiwgUmbracoCommunityExtensions",
   "name": "Wysiwg.Umbraco.Community.Extensions",
-  "version": "18.0.0",
+  "version": "18.1.0",
   "allowPackageTelemetry": true,
   "extensions": [
     {
       "name": "wysiwgUmbraco Community Extensions Bundle",
       "alias": "WysiwgUmbracoCommunityExtensions.Bundle",
       "type": "bundle",
-      "js": "/App_Plugins/WysiwgUmbracoCommunityExtensions/wysiwg-umbraco-community-extensions.js?v=18.0.0-rc"
+      "js": "/App_Plugins/WysiwgUmbracoCommunityExtensions/wysiwg-umbraco-community-extensions.js?v=18.1.0-5kmua3"
     }
   ]
 }

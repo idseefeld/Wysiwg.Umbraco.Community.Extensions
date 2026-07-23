@@ -140,6 +140,29 @@ export type PropertyGroupTypeModel = number;
 
 export type ValueStorageTypeModel = number;
 
+export type GetAllComponentsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/wysiwg/all-components';
+};
+
+export type GetAllComponentsErrors = {
+    /**
+     * The resource is protected and requires an authentication token
+     */
+    401: unknown;
+};
+
+export type GetAllComponentsResponses = {
+    /**
+     * OK
+     */
+    200: string;
+};
+
+export type GetAllComponentsResponse = GetAllComponentsResponses[keyof GetAllComponentsResponses];
+
 export type GetCropsData = {
     body?: never;
     path?: never;

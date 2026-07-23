@@ -24,7 +24,6 @@ namespace WysiwgUmbracoCommunityExtensions.PropertyEditors
         public override bool IsConverter(IPublishedPropertyType propertyType)
         {
             var rVal = propertyType.EditorAlias.Equals("Wysiwg.ImageAndCropPicker");
-
             return rVal;
         }
 
@@ -43,14 +42,12 @@ namespace WysiwgUmbracoCommunityExtensions.PropertyEditors
         public override Type GetPropertyValueType(IPublishedPropertyType propertyType)
         {
             var rVal = typeof(MediaWithSelectedCrop);
-
             return rVal;
         }
 
         public override PropertyCacheLevel GetPropertyCacheLevel(IPublishedPropertyType propertyType)
         {
             var baseLevel = base.GetPropertyCacheLevel(propertyType);
-
             return baseLevel == PropertyCacheLevel.None
                 ? PropertyCacheLevel.Element
                 : baseLevel;

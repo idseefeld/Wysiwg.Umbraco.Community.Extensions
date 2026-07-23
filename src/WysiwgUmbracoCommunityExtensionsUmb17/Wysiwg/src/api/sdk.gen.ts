@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetCropsData, GetCropsErrors, GetCropsResponses, GetCropUrlData, GetCropUrlErrors, GetCropUrlResponses, GetFixUpgradeData, GetFixUpgradeErrors, GetFixUpgradeResponses, GetImageUrlData, GetImageUrlErrors, GetImageUrlResponses, GetInstallData, GetInstallErrors, GetInstallResponses, GetMediaTypesData, GetMediaTypesErrors, GetMediaTypesResponses, GetSiteBackgroundColorData, GetSiteBackgroundColorErrors, GetSiteBackgroundColorResponses, GetUnInstallData, GetUnInstallErrors, GetUnInstallResponses, GetUpdateStatusCodeData, GetUpdateStatusCodeErrors, GetUpdateStatusCodeResponses, GetV2CropUrlData, GetV2CropUrlErrors, GetV2CropUrlResponses, GetVariationsData, GetVariationsErrors, GetVariationsResponses } from './types.gen';
+import type { GetAllComponentsData, GetAllComponentsErrors, GetAllComponentsResponses, GetCropsData, GetCropsErrors, GetCropsResponses, GetCropUrlData, GetCropUrlErrors, GetCropUrlResponses, GetFixUpgradeData, GetFixUpgradeErrors, GetFixUpgradeResponses, GetImageUrlData, GetImageUrlErrors, GetImageUrlResponses, GetInstallData, GetInstallErrors, GetInstallResponses, GetMediaTypesData, GetMediaTypesErrors, GetMediaTypesResponses, GetSiteBackgroundColorData, GetSiteBackgroundColorErrors, GetSiteBackgroundColorResponses, GetUnInstallData, GetUnInstallErrors, GetUnInstallResponses, GetUpdateStatusCodeData, GetUpdateStatusCodeErrors, GetUpdateStatusCodeResponses, GetV2CropUrlData, GetV2CropUrlErrors, GetV2CropUrlResponses, GetVariationsData, GetVariationsErrors, GetVariationsResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -17,6 +17,12 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
      */
     meta?: Record<string, unknown>;
 };
+
+export const getAllComponents = <ThrowOnError extends boolean = false>(options?: Options<GetAllComponentsData, ThrowOnError>) => (options?.client ?? client).get<GetAllComponentsResponses, GetAllComponentsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/wysiwg/all-components',
+    ...options
+});
 
 export const getCrops = <ThrowOnError extends boolean = false>(options?: Options<GetCropsData, ThrowOnError>) => (options?.client ?? client).get<GetCropsResponses, GetCropsErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],

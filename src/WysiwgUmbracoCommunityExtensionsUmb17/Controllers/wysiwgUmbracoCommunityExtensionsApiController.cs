@@ -47,7 +47,8 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
         ILogger<WysiwgApiController> logger,
         ISetupService setupService,
         IWysiwygPublishedContentService wysiwygPublishedContentService,
-        IBackOfficeSecurityAccessor backOfficeSecurityAccessor
+        IBackOfficeSecurityAccessor backOfficeSecurityAccessor,
+        IComponentService componentService
         ) : Controller
     {
         [ApiExplorerSettings(GroupName = "Croping")]
@@ -225,6 +226,15 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
         public IActionResult SiteBackgroundColor(string pageKey)
         {
             return Ok(wysiwygPublishedContentService.GetBackgroundColor(pageKey));
+        }
+
+        [ApiExplorerSettings(GroupName = "Components")]
+        [HttpGet("all-components", Name = "GetAllComponents")]
+        [MapToApiVersion("1.0")]
+        [ProducesResponseType<string>(StatusCodes.Status200OK)]
+        public IActionResult GetAllComponents()
+        {
+            return Ok(componentService.GetComponents());
         }
 
         [ApiExplorerSettings(GroupName = "Settings")]
