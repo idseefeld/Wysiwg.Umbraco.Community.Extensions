@@ -1,6 +1,6 @@
 import { UMB_AUTH_CONTEXT as o } from "@umbraco-cms/backoffice/auth";
 import { c as i } from "./client.gen-vBuWXWwf.js";
-import { c as s } from "./client.gen-v1-aVGe2.js";
+import { c as s } from "./client.gen-Cmrrvp-8.js";
 const a = async (e, t) => {
   const n = await e.getContext(o);
   if (!n) {
@@ -15,4 +15,4 @@ export {
   a as onInit,
   g as onUnload
 };
-//# sourceMappingURL=entrypoint-BpgyRrYo.js.map
+//# sourceMappingURL=entrypoint-B5rcutBo.js.map

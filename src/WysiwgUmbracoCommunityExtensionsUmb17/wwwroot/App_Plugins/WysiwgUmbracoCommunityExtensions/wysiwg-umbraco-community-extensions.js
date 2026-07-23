@@ -4,14 +4,14 @@ const a = [
     name: "wysiwg Extensions Entrypoint",
     alias: "WysiwgExtensions.Entrypoint",
     type: "backofficeEntryPoint",
-    js: () => import("./entrypoint-BpgyRrYo.js")
+    js: () => import("./entrypoint-B5rcutBo.js")
   }
 ], r = [
   {
     type: "sectionView",
     alias: "WysiwgDashboardElement.Section",
     name: "WYSIWYG Extensions Section",
-    element: () => import("./dashboard.element-CuNv1IIu.js"),
+    element: () => import("./dashboard.element-BrK95_2_.js"),
     meta: {
       label: "WYSIWYG",
       icon: "icon-settings",
