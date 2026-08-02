@@ -1,3 +1,5 @@
 export type WysiwgComponentPickerElementPropertyValue = {
-  value: string | undefined;
+  selectedValue: string | undefined;
 }
+
+export type WysiwgComponentPickerElementPropertyValues = Array<WysiwgComponentPickerElementPropertyValue>;

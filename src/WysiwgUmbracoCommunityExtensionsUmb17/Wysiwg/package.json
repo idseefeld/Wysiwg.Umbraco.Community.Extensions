@@ -6,9 +6,8 @@
   "type": "module",
   "scripts": {
     "watch": "tsc && vite build --watch",
-    "build": "tsc && vite build",
     "build-dev": "tsc && vite build --mode development",
-    "release-build": "tsc && vite build",
+    "build-release": "tsc && vite build",
     "generate-client": "node scripts/generate-openapi.js https://localhost:44313/umbraco/openapi/wysiwg-umbraco-community-extensions.json",
     "generate-management-client": "node scripts/generate-management-openapi.js https://localhost:44313/umbraco/openapi/management.json"
   },

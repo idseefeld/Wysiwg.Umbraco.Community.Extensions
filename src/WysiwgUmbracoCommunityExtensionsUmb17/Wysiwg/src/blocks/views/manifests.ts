@@ -26,6 +26,14 @@ export const manifests: Array<UmbExtensionManifest> = [
   },
   {
     type: "blockEditorCustomView",
+    alias: "wysiwg.PorpertyEditorUi.genericComponent",
+    name: "Block Editor Custom View for Component",
+    element: () => import("./component.view.js"),
+    forContentTypeAlias: prefix + "genericComponent",
+    forBlockEditor: "block-grid",
+  },
+  {
+    type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockParagraph",
     name: "Block Editor Custom View for Paragraph",
     element: () => import("./paragraph.view.js"),

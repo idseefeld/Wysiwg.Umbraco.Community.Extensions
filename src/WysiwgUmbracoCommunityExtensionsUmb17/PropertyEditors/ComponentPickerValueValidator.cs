@@ -7,7 +7,7 @@ using Umbraco.Cms.Core.PropertyEditors;
 
 namespace WysiwgUmbracoCommunityExtensions.PropertyEditors
 {
-    public class ComponentPickerDataValueValidator : IValueValidator
+    public class ComponentPickerValueValidator : IValueValidator
     {
         public IEnumerable<ValidationResult> Validate(object? value, string? valueType, object? dataTypeConfiguration, PropertyValidationContext validationContext)
         {

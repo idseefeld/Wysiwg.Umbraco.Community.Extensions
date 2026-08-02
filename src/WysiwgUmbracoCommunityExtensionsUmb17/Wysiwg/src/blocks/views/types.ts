@@ -31,3 +31,9 @@ export type LayoutSettings = {
   size: string,
   inlineStyle: string
 };
+
+export type ComponentPickerViewProps = {
+  componentPicker: {
+    selectedValue: string;
+  }[];
+};

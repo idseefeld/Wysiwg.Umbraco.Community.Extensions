@@ -28,6 +28,7 @@
   <PropertyGroup>
     <!-- Razor files are needed for the backoffice to work correctly -->
     <CopyRazorGenerateFilesToPublishDirectory>true</CopyRazorGenerateFilesToPublishDirectory>
+    <UserSecretsId>6d9b3bcc-e24d-40bb-a661-1e8ee80f2942</UserSecretsId>
   </PropertyGroup>
 
 

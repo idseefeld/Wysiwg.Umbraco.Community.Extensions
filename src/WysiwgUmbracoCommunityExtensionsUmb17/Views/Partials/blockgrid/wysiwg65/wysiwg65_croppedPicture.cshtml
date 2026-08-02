@@ -15,6 +15,14 @@
 @inject IMediaNavigationQueryService MediaNavigationQueryService
 @inject IPublishedMediaCache PublishedMediaCache
 @model BlockGridItem
+
+
+<h4>TODOs</h4>
+<ul>
+    <li>Fix picture drop zone editor. Use new UI element.</li>
+</ul>
+
+
 @{
     var content = new Wysiwg65_croppedPicture(Model.Content);
     if (content?.MediaItem == null) return;

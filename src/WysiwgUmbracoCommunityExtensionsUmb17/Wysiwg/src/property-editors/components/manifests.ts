@@ -18,9 +18,9 @@ export const manifests: Array<UmbExtensionManifest> = [
     alias: 'Wysiwg.ComponentPicker',
     meta: {
       defaultPropertyEditorUiAlias: 'wysiwg.PropertyEditorUi.ComponentPicker',
-      settings: {
-        properties: [],
-      },
+      // settings: {
+      //   properties: [],
+      // },
     },
   },
 ];

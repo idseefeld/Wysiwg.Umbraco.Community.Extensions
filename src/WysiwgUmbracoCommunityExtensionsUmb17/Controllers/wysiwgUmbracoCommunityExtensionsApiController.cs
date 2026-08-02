@@ -231,7 +231,7 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
         [ApiExplorerSettings(GroupName = "Components")]
         [HttpGet("all-components", Name = "GetAllComponents")]
         [MapToApiVersion("1.0")]
-        [ProducesResponseType<string>(StatusCodes.Status200OK)]
+        [ProducesResponseType<IEnumerable<ComponentPickerOption>>(StatusCodes.Status200OK)]
         public IActionResult GetAllComponents()
         {
             return Ok(componentService.GetComponents());

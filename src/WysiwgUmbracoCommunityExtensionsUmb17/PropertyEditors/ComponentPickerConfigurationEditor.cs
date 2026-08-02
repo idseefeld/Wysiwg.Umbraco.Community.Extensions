@@ -4,7 +4,5 @@ using WysiwgUmbracoCommunityExtensions.Models;
 
 namespace WysiwgUmbracoCommunityExtensions.PropertyEditors
 {
-    public class ComponentPickerConfigurationEditor(IIOHelper ioHelper) : ConfigurationEditor<ComponentPickerConfiguration>(ioHelper)
-    {
-    }
+    public class ComponentPickerConfigurationEditor(IIOHelper ioHelper) : ConfigurationEditor<ComponentPicker>(ioHelper) { }
 }

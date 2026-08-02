@@ -9,7 +9,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services;
 
 public class ComponentService(ILogger<ComponentService> logger) : IComponentService
 {
-    public ComponentPickerConfigurationItem[] GetComponents()
+    public ComponentPickerOption[] GetComponents()
     {
         try
         {
@@ -22,16 +22,21 @@ public class ComponentService(ILogger<ComponentService> logger) : IComponentServ
             logger.LogError(ex, "Error retrieving components.");
         }
 
-        return Array.Empty<ComponentPickerConfigurationItem>();
+        return Array.Empty<ComponentPickerOption>();
     }
 
-    private ComponentPickerConfigurationItem[] GetViewComponents()
+    private ComponentPickerOption[] GetViewComponents()
     {
         return [
-            new ComponentPickerConfigurationItem
+            new ComponentPickerOption
             {
                 Name = "Sample Component",
-                Path = "~/"
+                Value = "SampleComponent"
+            },
+            new ComponentPickerOption
+            {
+                Name = "Contact Form",
+                Value = "ContactForm"
             }
             ];
     }

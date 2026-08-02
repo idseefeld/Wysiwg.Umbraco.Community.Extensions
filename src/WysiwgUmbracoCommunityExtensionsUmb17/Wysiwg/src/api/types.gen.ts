@@ -4,6 +4,12 @@ export type ClientOptions = {
     baseUrl: 'https://localhost:44313/' | (string & {});
 };
 
+export type ComponentPickerOption = {
+    name?: null | string;
+    value?: null | string;
+    selected: boolean;
+};
+
 export type ContentTypeSortModel = {
     sortOrder: number | string;
     alias: string;
@@ -158,7 +164,7 @@ export type GetAllComponentsResponses = {
     /**
      * OK
      */
-    200: string;
+    200: Array<ComponentPickerOption>;
 };
 
 export type GetAllComponentsResponse = GetAllComponentsResponses[keyof GetAllComponentsResponses];

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using StackExchange.Profiling.Internal;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.DeliveryApi;
 using Umbraco.Cms.Core.Models.PublishedContent;
@@ -10,11 +11,11 @@ using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Serialization;
 using Umbraco.Cms.Infrastructure.DeliveryApi;
 using WysiwgUmbracoCommunityExtensions.Models;
+using WysiwgUmbracoCommunityExtensions.Services;
 
 namespace WysiwgUmbracoCommunityExtensions.PropertyEditors
 {
     public class ComponentPickerValueConverter(
-        IPublishedMediaCache publishedMediaCache,
         IPublishedUrlProvider publishedUrlProvider,
         IPublishedValueFallback publishedValueFallback,
         IJsonSerializer jsonSerializer
@@ -40,7 +41,7 @@ namespace WysiwgUmbracoCommunityExtensions.PropertyEditors
 
         public override Type GetPropertyValueType(IPublishedPropertyType propertyType)
         {
-            var rVal = typeof(ComponentPickerConfigurationItem);
+            var rVal = typeof(ComponentPicker);
             return rVal;
         }
 
@@ -64,34 +65,32 @@ namespace WysiwgUmbracoCommunityExtensions.PropertyEditors
 
         public Type GetDeliveryApiPropertyValueType()
         {
-            return typeof(IEnumerable<IApiMediaWithCrops>);
+            return typeof(ComponentPicker);
         }
 
         public override object? ConvertIntermediateToObject(IPublishedElement owner, IPublishedPropertyType propertyType, PropertyCacheLevel referenceCacheLevel, object? inter, bool preview)
         {
-            if (string.IsNullOrEmpty(inter?.ToString()))
+            if (inter is string str)
             {
-                // Short-circuit on empty value
-                return null;
+                if (!str.IsNullOrWhiteSpace())
+                {
+                    return jsonSerializer.Deserialize<IEnumerable<ComponentPicker>>(str);
+                }
             }
 
-            var components = ComponentPickerDataValueEditor.Deserialize(jsonSerializer, inter);
-
-            return components.FirstOrDefault();
+            return null;
         }
 
         public object? ConvertIntermediateToDeliveryApiObject(IPublishedElement owner, IPublishedPropertyType propertyType, PropertyCacheLevel referenceCacheLevel, object? inter, bool preview)
         {
             // NOTE: eventually we might implement this explicitly instead of piggybacking on the default object conversion. however, this only happens once per cache rebuild,
             // and the performance gain from an explicit implementation is negligible, so... at least for the time being this will do just fine.
-            var converted = ConvertIntermediateToObject(owner, propertyType, referenceCacheLevel, inter, preview);
-
-            if (converted is ComponentPickerConfigurationItem items)
+            if (ConvertIntermediateToObject(owner, propertyType, referenceCacheLevel, inter, preview) is ComponentPicker picker)
             {
-                return new[] { items };
+                return picker;
             }
 
-            return Array.Empty<ComponentPickerConfigurationItem>();
+            return new ComponentPicker();
         }
     }
 }

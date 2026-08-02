@@ -1,10 +1,11 @@
 @using Umbraco.Cms.Core.Models.Blocks
-@using Umbraco.Cms.Core.Strings
 @using Umbraco.Extensions
 @using WysiwgUmbracoCommunityExtensions.Services
 @using WysiwgUmbracoCommunityExtensions.ViewModels
 @model BlockGridItem
 @{
+    // depricated
+
     var content = new Wysiwg65_pictureWithCrop(Model.Content);
     if (content?.MediaItem == null) return;
 
