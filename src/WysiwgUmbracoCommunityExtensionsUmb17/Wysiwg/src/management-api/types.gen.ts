@@ -87,6 +87,11 @@ export type BatchResponseModelMemberTypeResponseModel = {
     items: Array<MemberTypeResponseModel>;
 };
 
+export type BatchResponseModelUserResponseModel = {
+    total: number;
+    items: Array<UserResponseModel>;
+};
+
 export type CalculatedUserStartNodesResponseModel = {
     id: string;
     documentStartNodeIds: Array<ReferenceByIdModel>;
@@ -113,6 +118,8 @@ export type ConsentLevelPresentationModel = {
     description: string;
 };
 
+export type ContentSortFieldModel = 'Name' | 'CreateDate' | 'UpdateDate';
+
 export type CopyDataTypeRequestModel = {
     target?: null | ReferenceByIdModel;
 };
@@ -137,6 +144,25 @@ export type CopyMediaTypeRequestModel = {
 
 export type CopyMemberTypeRequestModel = {
     target?: null | ReferenceByIdModel;
+};
+
+export type CreateAndPublishDocumentRequestModel = {
+    culturesToPublish: Array<string>;
+    template: null | ReferenceByIdModel;
+    documentType: ReferenceByIdModel;
+    parent?: null | ReferenceByIdModel;
+    id?: null | string;
+    values: Array<DocumentValueModel>;
+    variants: Array<DocumentVariantRequestModel>;
+};
+
+export type CreateAndPublishElementRequestModel = {
+    culturesToPublish: Array<string>;
+    documentType: ReferenceByIdModel;
+    parent?: null | ReferenceByIdModel;
+    id?: null | string;
+    values: Array<ElementValueModel>;
+    variants: Array<ElementVariantRequestModel>;
 };
 
 export type CreateDataTypeRequestModel = {
@@ -372,6 +398,7 @@ export type CreatePackageRequestModel = {
     contentLoadChildNodes: boolean;
     mediaIds: Array<string>;
     mediaLoadChildNodes: boolean;
+    elementIds?: null | Array<string>;
     documentTypes: Array<string>;
     mediaTypes: Array<string>;
     dataTypes: Array<string>;
@@ -1475,6 +1502,7 @@ export type ManifestResponseModel = {
     name: string;
     id?: null | string;
     version?: null | string;
+    cacheBuster?: null | string;
     extensions: Array<unknown>;
 };
 
@@ -1950,6 +1978,7 @@ export type PackageDefinitionResponseModel = {
     contentLoadChildNodes: boolean;
     mediaIds: Array<string>;
     mediaLoadChildNodes: boolean;
+    elementIds?: null | Array<string>;
     documentTypes: Array<string>;
     mediaTypes: Array<string>;
     dataTypes: Array<string>;
@@ -2412,6 +2441,15 @@ export type PublishedDocumentResponseModel = {
     variants: Array<DocumentVariantResponseModel>;
 };
 
+export type PublishedElementResponseModel = {
+    isTrashed: boolean;
+    documentType: DocumentTypeReferenceResponseModel;
+    id: string;
+    flags: Array<FlagModel>;
+    values: Array<ElementValueResponseModel>;
+    variants: Array<ElementVariantResponseModel>;
+};
+
 export type PublishElementRequestModel = {
     publishSchedules: Array<CultureAndScheduleRequestModel>;
 };
@@ -2603,9 +2641,20 @@ export type SignalRClientSettingsResponseModel = {
     skipNegotiation: boolean;
 };
 
+export type SortDocumentChildrenByFieldRequestModel = {
+    culture?: null | string;
+    field: ContentSortFieldModel;
+    direction: DirectionModel;
+};
+
 export type SortingRequestModel = {
     parent?: null | ReferenceByIdModel;
     sorting: Array<ItemSortingRequestModel>;
+};
+
+export type SortMediaChildrenByFieldRequestModel = {
+    field: ContentSortFieldModel;
+    direction: DirectionModel;
 };
 
 export type StaticFileItemResponseModel = {
@@ -2849,6 +2898,19 @@ export type UnpublishElementRequestModel = {
     cultures?: null | Array<string>;
 };
 
+export type UpdateAndPublishDocumentRequestModel = {
+    culturesToPublish: Array<string>;
+    template?: null | ReferenceByIdModel;
+    values: Array<DocumentValueModel>;
+    variants: Array<DocumentVariantRequestModel>;
+};
+
+export type UpdateAndPublishElementRequestModel = {
+    culturesToPublish: Array<string>;
+    values: Array<ElementValueModel>;
+    variants: Array<ElementVariantRequestModel>;
+};
+
 export type UpdateCurrentUserRequestModel = {
     languageIsoCode: string;
 };
@@ -3051,6 +3113,7 @@ export type UpdatePackageRequestModel = {
     contentLoadChildNodes: boolean;
     mediaIds: Array<string>;
     mediaLoadChildNodes: boolean;
+    elementIds?: null | Array<string>;
     documentTypes: Array<string>;
     mediaTypes: Array<string>;
     dataTypes: Array<string>;
