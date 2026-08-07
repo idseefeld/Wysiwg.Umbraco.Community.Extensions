@@ -7,9 +7,9 @@
   "scripts": {
     "watch": "tsc && vite build --watch",
     "build-dev": "tsc && vite build --mode development",
-    "build-release": "tsc && vite build",
     "generate-client": "node scripts/generate-openapi.js https://localhost:44313/umbraco/openapi/wysiwg-umbraco-community-extensions.json",
-    "generate-management-client": "node scripts/generate-management-openapi.js https://localhost:44313/umbraco/openapi/management.json"
+    "generate-management-client": "node scripts/generate-management-openapi.js https://localhost:44313/umbraco/openapi/management.json",
+    "build-release": "tsc && vite build"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "^0.97.3",

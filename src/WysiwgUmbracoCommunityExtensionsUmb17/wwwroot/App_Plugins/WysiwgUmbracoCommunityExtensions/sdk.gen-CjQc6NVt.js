@@ -17,44 +17,39 @@ const s = (e) => (e?.client ?? t).get({
   ...e
 }), l = (e) => (e?.client ?? t).get({
   security: [{ scheme: "bearer", type: "http" }],
-  url: "/api/v1/wysiwg/mediatypes",
+  url: "/api/v1/wysiwg/site-background-color",
   ...e
 }), g = (e) => (e?.client ?? t).get({
   security: [{ scheme: "bearer", type: "http" }],
-  url: "/api/v1/wysiwg/site-background-color",
+  url: "/api/v1/wysiwg/fixupgrade",
   ...e
 }), p = (e) => (e?.client ?? t).get({
   security: [{ scheme: "bearer", type: "http" }],
-  url: "/api/v1/wysiwg/fixupgrade",
+  url: "/api/v1/wysiwg/install",
   ...e
 }), y = (e) => (e?.client ?? t).get({
   security: [{ scheme: "bearer", type: "http" }],
-  url: "/api/v1/wysiwg/install",
+  url: "/api/v1/wysiwg/uninstall",
   ...e
 }), u = (e) => (e?.client ?? t).get({
   security: [{ scheme: "bearer", type: "http" }],
-  url: "/api/v1/wysiwg/uninstall",
-  ...e
-}), n = (e) => (e?.client ?? t).get({
-  security: [{ scheme: "bearer", type: "http" }],
   url: "/api/v1/wysiwg/variations",
   ...e
-}), h = (e) => (e?.client ?? t).get({
+}), n = (e) => (e?.client ?? t).get({
   security: [{ scheme: "bearer", type: "http" }],
   url: "/api/v1/wysiwg/updateStatusCode",
   ...e
 });
 export {
-  p as a,
-  y as b,
-  u as c,
-  n as d,
+  g as a,
+  p as b,
+  y as c,
+  u as d,
   i as e,
   c as f,
-  h as g,
-  g as h,
-  l as i,
-  a as j,
-  s as k
+  n as g,
+  l as h,
+  a as i,
+  s as j
 };
-//# sourceMappingURL=sdk.gen-ZN_nSxDw.js.map
+//# sourceMappingURL=sdk.gen-CjQc6NVt.js.map

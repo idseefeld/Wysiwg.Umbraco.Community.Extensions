@@ -1,8 +1,8 @@
 import { UmbTextStyles as C } from "@umbraco-cms/backoffice/style";
 import { html as g, nothing as B, styleMap as k, css as _, property as y, state as b, customElement as x } from "@umbraco-cms/backoffice/external/lit";
-import { W as E } from "./wysiwg-base-block-editor-custom.view-ChCFhrhJ.js";
+import { W as E } from "./wysiwg-base-block-editor-custom.view-BoT8cJ6_.js";
 import { U as I } from "./types-eEpi63XY.js";
-import { f as M, h as $ } from "./sdk.gen-ZN_nSxDw.js";
+import { f as M, h as $ } from "./sdk.gen-CjQc6NVt.js";
 var P = Object.defineProperty, H = Object.getOwnPropertyDescriptor, f = (t) => {
   throw TypeError(t);
 }, c = (t, e, o, a) => {
@@ -208,4 +208,4 @@ export {
   i as WysiwgBlockLayoutView,
   R as default
 };
-//# sourceMappingURL=block-layout.view-lDPcdVm3.js.map
+//# sourceMappingURL=block-layout.view-DwTvwv0f.js.map

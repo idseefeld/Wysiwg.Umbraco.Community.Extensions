@@ -3,7 +3,7 @@ import { UmbElementMixin as m } from "@umbraco-cms/backoffice/element-api";
 import { UMB_PROPERTY_DATASET_CONTEXT as v } from "@umbraco-cms/backoffice/property";
 import { D as S, T as y } from "./constants-C2L7NEyy.js";
 import { UMB_DOCUMENT_WORKSPACE_CONTEXT as C } from "@umbraco-cms/backoffice/document";
-import { WYSIWG_BLOCKGRID_CONTEXT as b } from "./wysiwg.workspace.context-C_ANnVjx.js";
+import { WYSIWG_BLOCKGRID_CONTEXT as b } from "./wysiwg.workspace.context-CeinJtuE.js";
 var _ = Object.defineProperty, T = Object.getOwnPropertyDescriptor, c = (t, e, i, o) => {
   for (var s = o > 1 ? void 0 : o ? T(e, i) : e, a = t.length - 1, n; a >= 0; a--)
     (n = t[a]) && (s = (o ? n(e, i, s) : n(s)) || s);
@@ -113,4 +113,4 @@ u = c([
 export {
   u as W
 };
-//# sourceMappingURL=wysiwg-base-block-editor-custom.view-ChCFhrhJ.js.map
+//# sourceMappingURL=wysiwg-base-block-editor-custom.view-BoT8cJ6_.js.map

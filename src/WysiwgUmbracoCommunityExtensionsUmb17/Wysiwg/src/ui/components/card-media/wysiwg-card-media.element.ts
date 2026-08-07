@@ -1,10 +1,21 @@
-import { ifDefined } from '@umbraco-cms/backoffice/external/lit';
-import { UUICardElement } from '@umbraco-cms/backoffice/external/uui';
-import { html, css, nothing, customElement, property, state } from "@umbraco-cms/backoffice/external/lit";
+import { html, css, nothing } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { ifDefined } from 'lit/directives/if-defined.js';
+import { UUICardElement } from "@umbraco-cms/backoffice/external/uui";
 
-const elementName = 'wysiwg-card-image';
+import {
+  UUISymbolFolderElement,
+  UUISymbolFileElement,
+  UUISymbolExpandElement
+} from "@umbraco-cms/backoffice/external/uui";
+
+/*
+* base on UUICardMediaElement
+  src/components/card-media/card-media.element.ts of Umbraco.UI repository
+*/
+const elementName = 'wysiwg-card-media';
 @customElement(elementName)
-export class WysiwgCardImageElement extends UUICardElement {
+export class WysiwgCardMediaElement extends UUICardElement {
   /**
    * Media name
    * @type {string}
@@ -33,14 +44,15 @@ export class WysiwgCardImageElement extends UUICardElement {
   fileExt = '';
 
   @state()
+  private _iconSlotHasContent = false;
+
+  private _iconSlotChanged = (e: Event): void => {
+    this._iconSlotHasContent =
+      (e.target as HTMLSlotElement).assignedNodes({ flatten: true }).length > 0;
+  };
+
+  @state()
   protected hasPreview = false;
-
-  connectedCallback(): void {
-    super.connectedCallback();
-
-    // demandCustomElement(this, 'uui-symbol-folder');
-    // demandCustomElement(this, 'uui-symbol-file');
-  }
 
   private queryPreviews(e: Event): void {
     this.hasPreview =
@@ -62,10 +74,11 @@ export class WysiwgCardImageElement extends UUICardElement {
   }
 
   #renderButton() {
+    const tabIndex = !this.disabled ? (this.selectOnly ? -1 : 0) : undefined;
     return html`
       <button
         id="open-part"
-        tabindex=${this.disabled ? (nothing as any) : '0'}
+        tabindex=${ifDefined(tabIndex)}
         @click=${this.handleOpenClick}
         @keydown=${this.handleOpenKeydown}>
         ${this.#renderContent()}
@@ -74,46 +87,53 @@ export class WysiwgCardImageElement extends UUICardElement {
   }
 
   #renderLink() {
+    const tabIndex = !this.disabled ? (this.selectOnly ? -1 : 0) : undefined;
+    const rel = this.target === '_blank' ? 'noopener noreferrer' : undefined;
     return html`
       <a
         id="open-part"
-        tabindex=${this.disabled ? (nothing as any) : '0'}
+        tabindex=${ifDefined(tabIndex)}
         href=${ifDefined(!this.disabled ? this.href : undefined)}
         target=${ifDefined(this.target || undefined)}
-        rel=${ifDefined(
-      this.rel ||
-      ifDefined(
-        this.target === '_blank' ? 'noopener noreferrer' : undefined,
-      ),
-    )}>
+        rel=${ifDefined(this.rel || rel)}>
         ${this.#renderContent()}
       </a>
     `;
   }
 
   #renderContent() {
-    //return nothing;
-
     return html`
-      <div id="content" class="uui-text ellipsis">
-        <span id="name" title="${this.name}">${this.name}</span>
+      <div id="content" class="uui-text">
+        <span id="name" title="${this.name}">
+          ${this.hasChildren
+        ? html`<uui-symbol-expand aria-hidden="true"></uui-symbol-expand>`
+        : nothing}
+          <slot
+            name="icon"
+            id="icon"
+            style=${this._iconSlotHasContent ? '' : 'display: none;'}
+            @slotchange=${this._iconSlotChanged}></slot
+          ><span class="label">${this.name}</span>
+        </span>
         <small id="detail">${this.detail}<slot name="detail"></slot></small>
       </div>
     `;
   }
 
   public render() {
-    return html` ${this.renderMedia()}
+    const rVal = html` ${this.renderMedia()}
       <slot @slotchange=${this.queryPreviews}></slot>
       ${this.href ? this.#renderLink() : this.#renderButton()}
       <!-- Select border must be right after .open-part -->
       <div id="select-border"></div>
-
+      ${this.selectable ? this.renderCheckbox() : nothing}
       <slot name="tag"></slot>
       <slot name="actions"></slot>`;
+
+    return rVal;
   }
 
-  static styles = [
+  static override readonly styles = [
     ...UUICardElement.styles,
     css`
       #entity-symbol {
@@ -123,9 +143,15 @@ export class WysiwgCardImageElement extends UUICardElement {
         padding: var(--uui-size-space-6);
       }
 
+      slot:not([name]) {
+        display: block;
+        overflow: clip;
+        border-radius: calc(var(--uui-border-radius-2) - 1px);
+      }
+
       slot[name='tag'] {
         position: absolute;
-        top: var(--uui-size-4);
+        bottom: var(--uui-size-2);
         right: var(--uui-size-4);
         display: flex;
         justify-content: right;
@@ -134,8 +160,8 @@ export class WysiwgCardImageElement extends UUICardElement {
 
       slot[name='actions'] {
         position: absolute;
-        top: var(--uui-size-4);
-        right: var(--uui-size-4);
+        top: var(--uui-size-space-3);
+        right: var(--uui-size-space-3);
         display: flex;
         justify-content: right;
         z-index: 2;
@@ -150,7 +176,6 @@ export class WysiwgCardImageElement extends UUICardElement {
 
       slot:not([name])::slotted(*) {
         align-self: center;
-        border-radius: var(--uui-border-radius);
         object-fit: cover;
         width: 100%;
         height: 100%;
@@ -161,6 +186,7 @@ export class WysiwgCardImageElement extends UUICardElement {
         position: absolute;
         z-index: 1;
         inset: 0;
+        margin-bottom: 0;
         color: var(--uui-color-interactive);
         border: none;
         cursor: pointer;
@@ -182,6 +208,12 @@ export class WysiwgCardImageElement extends UUICardElement {
       }
 
       #open-part #name {
+        display: flex;
+        align-items: center;
+        gap: var(--uui-size-space-1);
+      }
+
+      #open-part #name .label {
         display: -webkit-box;
         -webkit-line-clamp: 1;
         -webkit-box-orient: vertical;
@@ -198,38 +230,34 @@ export class WysiwgCardImageElement extends UUICardElement {
       #content {
         position: relative;
         display: flex;
-        width: 100%;
-        align-items: center;
+        flex-direction: column;
         font-family: inherit;
         box-sizing: border-box;
         text-align: left;
         word-break: break-word;
         padding-top: var(--uui-size-space-3);
-        opacity: 0.5;
       }
-      #content:hover {
-        opacity: 1;
-      }
+
       #content::before {
         content: '';
         position: absolute;
         inset: 0;
         z-index: -1;
         border-top: 1px solid var(--uui-color-divider);
-        border-radius: 0 0 var(--uui-border-radius) var(--uui-border-radius);
+        border-radius: 0 0 calc(var(--uui-border-radius-2) - 1px)
+          calc(var(--uui-border-radius-2) - 1px);
         background-color: var(--uui-color-surface);
         pointer-events: none;
         opacity: 0.96;
       }
 
-      #detail {
-        opacity: 0.6;
+      #icon {
+        display: inline-flex;
+        margin-right: var(--uui-size-1);
       }
 
-      .ellipse{
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+      #detail {
+        opacity: 0.6;
       }
 
       :host(
@@ -256,12 +284,32 @@ export class WysiwgCardImageElement extends UUICardElement {
           calc(var(--uui-size-space-4) * -1);
         top: 0;
       }
+
+      :host([active]) {
+        background-color: var(--uui-color-surface);
+      }
+
+      :host([active]) #content::before {
+        background-color: var(--uui-color-current);
+        bottom: -1px;
+      }
+
+      /*
+      #info-icon {
+        margin-right: var(--uui-size-2);
+        display: flex;
+        height: var(--uui-size-8);
+      }
+      */
     `,
   ];
 }
 
+export default WysiwgCardMediaElement;
+
 declare global {
   interface HTMLElementTagNameMap {
-    [elementName]: WysiwgCardImageElement;
+    'wysiwg-card-media': WysiwgCardMediaElement;
   }
+
 }

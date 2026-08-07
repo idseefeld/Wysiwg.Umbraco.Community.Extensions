@@ -7,12 +7,12 @@ import {
 } from "@umbraco-cms/backoffice/external/lit";
 import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
 import { UmbTextStyles } from "@umbraco-cms/backoffice/style";
-import { WysiwgMediaPickerPropertyValueEntry } from "../../property-editors/picture/types";
+import { WysiwgMediaPickerPropertyValueEntry } from "../../property-editors/picture/types.js";
 import { UmbPropertyEditorUiElement } from "@umbraco-cms/backoffice/property-editor";
 import { UmbChangeEvent } from "@umbraco-cms/backoffice/event";
 import { getV2CropUrl, GetV2CropUrlData } from "../../api/index.js";
 
-const elementName = "wysiwg-cropped-image";
+const elementName = 'wysiwg-cropped-image';
 @customElement(elementName)
 export class WysiwgCroppedImageElement extends UmbLitElement implements UmbPropertyEditorUiElement {
   //#region Properties

@@ -41,7 +41,7 @@ export const manifests: Array<UmbExtensionManifest> = [
             alias: 'crops',
             label: 'Image Crops',
             description: 'Local crops, stored on document',
-            propertyEditorUiAlias: 'Umb.PropertyEditorUi.Label',
+            propertyEditorUiAlias: 'Umb.PropertyEditorUi.ImageCropsConfiguration',
           },
           {
             alias: 'ignoreUserStartNodes',

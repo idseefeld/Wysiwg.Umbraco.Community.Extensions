@@ -14,6 +14,7 @@ import { UMB_PROPERTY_CONTEXT } from "@umbraco-cms/backoffice/property";
 import {
   UmbPropertyEditorConfigCollection,
   UmbPropertyEditorUiElement,
+  UmbPropertyEditorUiInteractionMemoryManager,
 } from "@umbraco-cms/backoffice/property-editor";
 import type { UmbTreeStartNode } from "@umbraco-cms/backoffice/tree";
 import {
@@ -28,7 +29,7 @@ import {
 import {
   WysiwgCropModel,
   WysiwgMediaPickerPropertyValueEntry,
-  WysiwgMediaPickerPropertyValues,
+  WysiwgMediaPickerModel,
 } from "./types";
 import { GetCropsData, GetCropsResponse, IMediaTypeModel, GetMediaTypesResponse, getMediaTypes, getCrops } from "../../api";
 import { UmbNumberRangeValueType } from "@umbraco-cms/backoffice/models";
@@ -36,29 +37,29 @@ import { UmbNumberRangeValueType } from "@umbraco-cms/backoffice/models";
 import type { WysiwgInputRichMediaElement } from "./wysiwg-input-rich-media.element.js";
 import './wysiwg-input-rich-media.element.js';
 import { UmbChangeEvent } from "@umbraco-cms/backoffice/event";
+import { UmbInteractionMemoryModel } from "@umbraco-cms/backoffice/interaction-memory";
 
+import "../../ui/components/card-media/wysiwg-card-media.element.js";
 /**
  * based on @element umb-property-editor-ui-media-picker
- */
+ * src\packages\media\media\property-editors\media-picker\property-editor-ui-media-picker.element.ts
+*/
 
 const elementName = "wysiwg-image-and-crop-picker";
 @customElement(elementName)
 export class WysiwgImageAndCropPickerElement
-  extends UmbFormControlMixin<WysiwgMediaPickerPropertyValues | undefined, typeof UmbLitElement, undefined>(UmbLitElement)
+  extends UmbFormControlMixin<WysiwgMediaPickerModel | undefined, typeof UmbLitElement, undefined>(UmbLitElement)
   implements UmbPropertyEditorUiElement {
 
   //#region properties, states, ctor, methods
   //#region properties
   public set config(config: UmbPropertyEditorConfigCollection | undefined) {
+    this.#interactionMemoryManager.setPropertyEditorConfig(config);
+
     if (!config) return;
 
-    this._allowedMediaTypes = config.getValueByAlias<string>("filter")?.split(",") ?? [];
-    if (this._allowedMediaTypes.length === 0) {
-      this.getMediaTypes();
-    }
+    this._allowedMediaTypes = config.getValueByAlias<string>("filter")?.split(",") ?? undefined;
     this._focalPointEnabled = Boolean(config.getValueByAlias("enableLocalFocalPoint"));
-    this._multiple = Boolean(config.getValueByAlias("multiple"));
-
     this._preselectedCrops = config?.getValueByAlias<Array<WysiwgCropModel>>("crops") ?? [];
 
     if (this._preselectedCrops.length > 0) {
@@ -80,9 +81,10 @@ export class WysiwgImageAndCropPickerElement
     const startNodeId = config.getValueByAlias<string>("startNodeId") ?? "";
     this._startNode = startNodeId ? { unique: startNodeId, entityType: UMB_MEDIA_ENTITY_TYPE } : undefined;
 
-    const minMax = config.getValueByAlias<UmbNumberRangeValueType>('validationLimit');
-    this._min = minMax?.min ?? 0;
-    this._max = minMax?.max ?? Infinity;
+    // currently not used, but could be used in the future for min/max validation
+    // const minMax = config.getValueByAlias<UmbNumberRangeValueType>('validationLimit');
+    // this._min = minMax?.min ?? 0;
+    // this._max = minMax?.max ?? 1;
   }
 
   /**
@@ -117,7 +119,7 @@ export class WysiwgImageAndCropPickerElement
   private _preselectedCrops: Array<WysiwgCropModel> = [];
 
   @state()
-  private _allowedMediaTypes: Array<string> = [];
+  private _allowedMediaTypes?: Array<string>;
 
   @state()
   private _multiple: boolean = false;
@@ -126,7 +128,7 @@ export class WysiwgImageAndCropPickerElement
   private _min: number = 0;
 
   @state()
-  private _max: number = Infinity;
+  private _max: number = 1;
 
   @state()
   private _alias?: string;
@@ -134,15 +136,19 @@ export class WysiwgImageAndCropPickerElement
   @state()
   private _variantId?: string;
 
+  @state()
+  private _interactionMemories: Array<UmbInteractionMemoryModel> = [];
+
+  #interactionMemoryManager = new UmbPropertyEditorUiInteractionMemoryManager(this, {
+    memoryUniquePrefix: 'UmbMediaPicker',
+  });
+
   // additions
   @state()
   private _selectedCropAlias: string = "";
 
   @state()
   private _options: Array<any & { invalid?: boolean }> = [];
-
-  @state()
-  private _mediaTypes?: Array<IMediaTypeModel> = [];
 
   @state()
   private _imgSrc: string = "";
@@ -154,53 +160,26 @@ export class WysiwgImageAndCropPickerElement
     super();
 
     this.consumeContext(UMB_PROPERTY_CONTEXT, (context) => {
-      this.observe(context?.alias,
-        (alias) => (this._alias = alias),
-        "_observeAlias");
-      this.observe(context?.variantId,
-        (variantId) => (this._variantId = variantId?.toString() || "invariant"),
-        "_observeVariantId");
+      this.observe(context?.alias, (alias) => (this._alias = alias));
+      this.observe(context?.variantId, (variantId) => (this._variantId = variantId?.toString() || 'invariant'));
+    });
+
+    this.observe(this.#interactionMemoryManager.memoriesForPropertyEditor, (interactionMemories) => {
+      this._interactionMemories = interactionMemories ?? [];
     });
   }
 
   override firstUpdated() {
     this.addFormControlElement(this.shadowRoot!.querySelector("wysiwg-input-rich-media")!);
+
     const cropSelect = this.shadowRoot?.querySelector<UUISelectElement>("umb-input-dropdown-list");
     if (cropSelect) {
       this.addFormControlElement(this.shadowRoot!.querySelector("umb-input-dropdown-list")!);
     }
   }
 
-  // override focus(options?: FocusOptions) {
-  //   return this.shadowRoot?.querySelector<WysiwgInputRichMediaElement>("wysiwg-input-rich-media")?.focus();
-  // }
-
-  private async getMediaTypes() {
-    await this.apiMediaTypes().then((data) => {
-      if (data === "error") {
-        this._mediaTypes = [];
-        return;
-      } else if (data === "no data") {
-        this._mediaTypes = [];
-        return;
-      }
-      const mediaTypes = data as Array<IMediaTypeModel>;
-
-      this._mediaTypes = mediaTypes;
-      const imageType = this._mediaTypes?.find((type) => type.alias.toLowerCase() === "image");
-      this._allowedMediaTypes = !imageType?.key ? [] : [imageType.key];
-    });
-  }
-
-  private async apiMediaTypes(): Promise<GetMediaTypesResponse | "error" | "no data"> {
-    const { data, error } = await getMediaTypes();
-    if (error) {
-      console.error(error);
-    }
-    if (data !== undefined) {
-      return data;
-    }
-    return "no data";
+  override focus(options?: FocusOptions) {
+    return this.shadowRoot?.querySelector<WysiwgInputRichMediaElement>("wysiwg-input-rich-media")?.focus();
   }
 
   private async getImageCropperCrops(mediaKey?: string) {
@@ -256,7 +235,7 @@ export class WysiwgImageAndCropPickerElement
     }
 
     const isEmpty = event.target.value?.length === 0;
-    const mediaItems: UmbMediaPickerPropertyValueEntry | undefined =
+    const mediaItems: WysiwgMediaPickerPropertyValueEntry | undefined =
       event.target.value?.find((item) => !!item.mediaKey) ?? undefined;
     let newValue = isEmpty ? undefined : mediaItems;
 
@@ -275,7 +254,7 @@ export class WysiwgImageAndCropPickerElement
         focalPoint: newValue?.focalPoint,
         crops: crops,
         selectedCropAlias: selectedCropAlias,
-      } as UmbMediaPickerPropertyValueEntry);
+      } as WysiwgMediaPickerPropertyValueEntry);
     }
   }
 
@@ -289,7 +268,7 @@ export class WysiwgImageAndCropPickerElement
   }
 
   private _updateValue(fieldsToUpdate: Partial<WysiwgMediaPickerPropertyValueEntry>, deleteImage: boolean = false) {
-    const newValue: WysiwgMediaPickerPropertyValues = [];
+    const newValue: WysiwgMediaPickerModel = [];
     if (!this.value || !this.value.length || deleteImage) {
       const item = {
         ...fieldsToUpdate,
@@ -308,14 +287,22 @@ export class WysiwgImageAndCropPickerElement
     this.dispatchEvent(new UmbChangeEvent());
   }
 
+  async #onInputInteractionMemoriesChange(event: UmbChangeEvent) {
+    const target = event.target as WysiwgInputRichMediaElement;
+    const interactionMemories = target.interactionMemories;
+
+    if (interactionMemories && interactionMemories.length > 0) {
+      await this.#interactionMemoryManager.saveMemoriesForPropertyEditor(interactionMemories);
+    } else {
+      await this.#interactionMemoryManager.deleteMemoriesForPropertyEditor();
+    }
+  }
+
   render() {
     return html`
-    <div id="container">
-      <div id="left">
-        ${this.#renderEditImage()}
-        ${this.#renderDropdown()}
-      </div>
-    </div>`;
+      ${this.#renderDropdown()}
+      ${this.#renderEditImage()}
+    `;
   }
 
   #renderEditImage() {
@@ -324,7 +311,7 @@ export class WysiwgImageAndCropPickerElement
       .alias=${this._alias}
       .allowedContentTypeIds=${this._allowedMediaTypes}
       .focalPointEnabled=${this._focalPointEnabled}
-      .value=${this.value ?? []}
+      .value=${(this.value ?? [])}
       .max=${this._max}
       .min=${this._min}
       .preselectedCrops=${this._preselectedCrops}
@@ -335,7 +322,8 @@ export class WysiwgImageAndCropPickerElement
       ?multiple=${this._multiple}
       @change=${this.#onChangeImage}
       ?readonly=${this.readonly}
-    >
+			.interactionMemories=${this._interactionMemories}
+			@interaction-memories-change=${this.#onInputInteractionMemoriesChange}>
     </wysiwg-input-rich-media>
   `;
   }
@@ -362,33 +350,8 @@ export class WysiwgImageAndCropPickerElement
     UUISelectElement.styles,
     css`
       uui-select {
-        margin-top: 8px;
-      }
-
-      :host {
-        display: inline;
-      }
-
-      #container {
-        display: flex;
-        flex-wrap: wrap;
-        row-gap: 20px;
-        column-gap: 20px;
+        margin-bottom: 8px;
         width: 100%;
-        min-width: 150px;
-        height: 100%;
-      }
-
-      #left, #right {
-        display: flex;
-        flex-direction: column;
-        position: relative;
-        width: 100%;
-        max-width: 200px;
-        min-width: 100px;
-      }
-      #left {
-        margin-right: 20px;
       }
     `,
   ];

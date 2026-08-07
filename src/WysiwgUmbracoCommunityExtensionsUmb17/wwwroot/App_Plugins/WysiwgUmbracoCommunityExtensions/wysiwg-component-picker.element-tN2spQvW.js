@@ -3,7 +3,7 @@ import { UmbLitElement as w } from "@umbraco-cms/backoffice/lit-element";
 import { UUISelectElement as g } from "@umbraco-cms/backoffice/external/uui";
 import { UmbFormControlMixin as C, UMB_VALIDATION_EMPTY_LOCALIZATION_KEY as E } from "@umbraco-cms/backoffice/validation";
 import { UmbChangeEvent as V } from "@umbraco-cms/backoffice/event";
-import { k as b } from "./sdk.gen-ZN_nSxDw.js";
+import { j as b } from "./sdk.gen-CjQc6NVt.js";
 var A = Object.defineProperty, O = Object.getOwnPropertyDescriptor, d = (e) => {
   throw TypeError(e);
 }, a = (e, t, o, s) => {
@@ -100,4 +100,4 @@ export {
   n as WysiwgComponentPickerElement,
   L as default
 };
-//# sourceMappingURL=wysiwg-component-picker.element-B9xnUs6X.js.map
+//# sourceMappingURL=wysiwg-component-picker.element-tN2spQvW.js.map

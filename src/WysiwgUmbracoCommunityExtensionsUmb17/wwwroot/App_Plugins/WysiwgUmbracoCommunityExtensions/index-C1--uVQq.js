@@ -2,7 +2,7 @@ import { html as p, css as C, property as l, state as b, customElement as S } fr
 import { UmbLitElement as x } from "@umbraco-cms/backoffice/lit-element";
 import { UmbTextStyles as O } from "@umbraco-cms/backoffice/style";
 import { UmbChangeEvent as U } from "@umbraco-cms/backoffice/event";
-import { e as E } from "./sdk.gen-ZN_nSxDw.js";
+import { e as E } from "./sdk.gen-CjQc6NVt.js";
 var k = Object.defineProperty, z = Object.getOwnPropertyDescriptor, y = (e) => {
   throw TypeError(e);
 }, s = (e, t, i, o) => {
@@ -145,4 +145,4 @@ r = s([
 export {
   r as WysiwgCroppedImageElement
 };
-//# sourceMappingURL=index-Buir1JBj.js.map
+//# sourceMappingURL=index-C1--uVQq.js.map

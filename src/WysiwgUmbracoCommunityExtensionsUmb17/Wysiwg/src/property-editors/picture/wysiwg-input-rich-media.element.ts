@@ -1,46 +1,59 @@
 import { UmbChangeEvent } from "@umbraco-cms/backoffice/event";
-import { css, customElement, html, nothing, property, repeat, state } from "@umbraco-cms/backoffice/external/lit";
+import {
+  css, customElement, html, nothing,
+  property, repeat, state
+} from "@umbraco-cms/backoffice/external/lit";
 import { UmbId } from "@umbraco-cms/backoffice/id";
 import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
-import { UMB_IMAGE_CROPPER_EDITOR_MODAL, UMB_MEDIA_ITEM_REPOSITORY_ALIAS, UMB_MEDIA_PICKER_MODAL, UmbCropModel, UmbMediaItemModel, UmbMediaPickerPropertyValueEntry } from "@umbraco-cms/backoffice/media";
+import {
+  UMB_IMAGE_CROPPER_EDITOR_MODAL, UMB_MEDIA_ITEM_REPOSITORY_ALIAS, UMB_MEDIA_PICKER_MODAL,
+  UmbCropModel, UmbMediaItemModel,
+  UmbMediaPickerInputContext,
+  UmbMediaPickerPropertyValueEntry
+} from "@umbraco-cms/backoffice/media";
 import { UMB_MODAL_MANAGER_CONTEXT, umbConfirmModal } from "@umbraco-cms/backoffice/modal";
 import { UmbRepositoryItemsManager } from "@umbraco-cms/backoffice/repository";
 import { UmbModalRouteBuilder, UmbModalRouteRegistrationController } from "@umbraco-cms/backoffice/router";
 import { UmbSorterController, UmbSorterResolvePlacementAsGrid } from "@umbraco-cms/backoffice/sorter";
 import { UmbTreeStartNode } from "@umbraco-cms/backoffice/tree";
-import { UMB_VALIDATION_EMPTY_LOCALIZATION_KEY, UmbFormControlMixin } from "@umbraco-cms/backoffice/validation";
+import {
+  UMB_VALIDATION_EMPTY_LOCALIZATION_KEY,
+  UmbFormControlMixin
+} from "@umbraco-cms/backoffice/validation";
 import { UmbVariantId } from "@umbraco-cms/backoffice/variant";
 import { WysiwgCroppedImageElement } from "../../blocks/components/wysiwg-cropped-image.element";
-import { WysiwgMediaPickerPropertyValueEntry, WysiwgMediaPickerPropertyValues } from "./types";
-import { UmbUploadableItem } from "@umbraco-cms/backoffice/dropzone";
+import { WysiwgMediaPickerPropertyValueEntry, WysiwgMediaPickerModel } from "./types";
+import { UmbDropzoneChangeEvent, UmbFileDropzoneItemStatus, UmbUploadableItem } from "@umbraco-cms/backoffice/dropzone";
+import { UmbEntityInputInteractionMemoryManager } from "@umbraco-cms/backoffice/entity";
+import { UmbInteractionMemoryModel } from "@umbraco-cms/backoffice/interaction-memory";
 
-type RichMediaCardModel = {
+type WysiwgRichMediaCardModel = {
   unique: string;
   media: string;
   name: string;
   src?: string;
   icon?: string;
   isTrashed?: boolean;
+  isLoading?: boolean;
 };
 
 // this is based on a copy of class UmbInputRichMediaElement from "@umbraco-cms/backoffice/media"; which is not extendable.
 const elementName = 'wysiwg-input-rich-media';
 @customElement(elementName)
 export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
-  Array<UmbMediaPickerPropertyValueEntry>,
+  Array<WysiwgMediaPickerPropertyValueEntry>,
   typeof UmbLitElement,
   undefined
 >(UmbLitElement, undefined) {
-  //#region unchanged
-  #sorter = new UmbSorterController<UmbMediaPickerPropertyValueEntry>(this, {
+  #sorter = new UmbSorterController<WysiwgMediaPickerPropertyValueEntry>(this, {
     getUniqueOfElement: (element) => {
       return element.id;
     },
     getUniqueOfModel: (modelEntry) => {
       return modelEntry.key;
     },
-    identifier: 'Umb.SorterIdentifier.InputRichMedia',
-    itemSelector: 'uui-card-media',
+    identifier: 'Umb.SorterIdentifier.WysiwgInputRichMedia',
+    itemSelector: 'wysiwg-card-image', // Ensure this matches the custom element name for the card image component
     containerSelector: '.container',
     resolvePlacement: UmbSorterResolvePlacementAsGrid,
     onChange: ({ model }) => {
@@ -96,14 +109,15 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
   maxMessage = 'This field exceeds the allowed amount of items';
 
   @property({ type: Array })
-  public override set value(value: Array<UmbMediaPickerPropertyValueEntry> | undefined) {
+  public override set value(value: WysiwgMediaPickerModel | undefined) {
     super.value = value;
     this.#sorter.setModel(value);
+    this.#pickerInputContext.setSelection(value?.map((item) => item.mediaKey) ?? []);
     this.#itemManager.setUniques(value?.map((x) => x.mediaKey));
     // Maybe the new value is using an existing media, and there we need to update the cards despite no repository update.
     this.#populateCards();
   }
-  public override get value(): Array<UmbMediaPickerPropertyValueEntry> | undefined {
+  public override get value(): WysiwgMediaPickerModel | undefined {
     return super.value;
   }
 
@@ -128,26 +142,6 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
   }
   #focalPointEnabled: boolean = false;
 
-  @property()
-  /** @deprecated will be removed in v17 */
-  public set alias(value: string | undefined) {
-    if (!value) { }
-    //this.#modalRouter.setUniquePathValue('propertyAlias', value);
-  }
-  public get alias(): string | undefined {
-    return undefined; //this.#modalRouter.getUniquePathValue('propertyAlias');
-  }
-
-  @property()
-  /** @deprecated will be removed in v17 */
-  public set variantId(value: string | UmbVariantId | undefined) {
-    if (!value) { }
-    //this.#modalRouter.setUniquePathValue('variantId', value?.toString());
-  }
-  public get variantId(): string | undefined {
-    return undefined; //this.#modalRouter.getUniquePathValue('variantId');
-  }
-
   /**
    * Sets the input to readonly mode, meaning value cannot be changed but still able to read and select its content.
    * @type {boolean}
@@ -169,13 +163,27 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
   }
   #readonly = false;
 
+  @property({ type: Array, attribute: false })
+  public get interactionMemories(): Array<UmbInteractionMemoryModel> | undefined {
+    return this.#interactionMemoryManager.getMemories();
+  }
+  public set interactionMemories(value: Array<UmbInteractionMemoryModel> | undefined) {
+    this.#interactionMemoryManager.setMemories(value);
+  }
+
   @state()
-  private _cards: Array<RichMediaCardModel> = [];
+  private _cards: Array<WysiwgRichMediaCardModel> = [];
 
   @state()
   private _routeBuilder?: UmbModalRouteBuilder;
 
   readonly #itemManager = new UmbRepositoryItemsManager<UmbMediaItemModel>(this, UMB_MEDIA_ITEM_REPOSITORY_ALIAS);
+
+  readonly #pickerInputContext = new UmbMediaPickerInputContext(this);
+  readonly #interactionMemoryManager = new UmbEntityInputInteractionMemoryManager(
+    this,
+    this.#pickerInputContext.interactionMemory,
+  );
 
   constructor() {
     super();
@@ -230,6 +238,10 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
         this._routeBuilder = routeBuilder;
       });
 
+    this.observe(this.#pickerInputContext.selection, (selection) => {
+      this.#addItems(selection);
+    });
+
     this.addValidator(
       'valueMissing',
       () => this.requiredMessage ?? UMB_VALIDATION_EMPTY_LOCALIZATION_KEY,
@@ -264,16 +276,6 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
   async #populateCards() {
     const mediaItems = this.#itemManager.getItems();
 
-    if (!mediaItems.length) {
-      this._cards = [];
-      return;
-    }
-    // Check if all media items is loaded.
-    // But notice, it would be nicer UX if we could show a loading state on the cards that are missing(loading) their items.
-    const missingCards = mediaItems.filter((item) => !this._cards.find((card) => card.unique === item.unique));
-    const removedCards = this._cards.filter((card) => !mediaItems.find((item) => card.unique === item.unique));
-    if (missingCards.length === 0 && removedCards.length === 0) return;
-
     this._cards =
       this.value?.map((item) => {
         const media = mediaItems.find((x) => x.unique === item.mediaKey);
@@ -283,6 +285,7 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
           name: media?.name ?? '',
           icon: media?.mediaType?.icon,
           isTrashed: media?.isTrashed ?? false,
+          isLoading: !media,
         };
       }) ?? [];
   }
@@ -294,7 +297,10 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
     return true;
   };
 
-  #addItems(uniques: string[]) {
+  #addItems(additionalMediaKeys: string[]) {
+    // Check that the unique is not already added
+    const uniques = additionalMediaKeys.filter((key) => !this.value?.some((item) => item.mediaKey === key));
+
     if (!uniques.length) return;
 
     const additions: Array<UmbMediaPickerPropertyValueEntry> = uniques.map((unique) => ({
@@ -327,7 +333,7 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
     this.#addItems(selection);
   }
 
-  async #onRemove(item: RichMediaCardModel) {
+  async #onRemove(item: WysiwgRichMediaCardModel) {
     await umbConfirmModal(this, {
       color: 'danger',
       headline: `${this.localize.term('actions_remove')} ${item.name}?`,
@@ -340,12 +346,15 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
     this.dispatchEvent(new UmbChangeEvent());
   }
 
-  async #onUploadCompleted(e: CustomEvent) {
-    const completed = e.detail as Array<UmbUploadableItem>;
-    const uploaded = completed.map((file) => file.unique);
+  async #onUploadCompleted(e: UmbDropzoneChangeEvent) {
+    if (this.readonly) return;
+
+    // If there are any finished uploadable items, we need to add them to the value
+    const uploaded = e.items
+      .filter((file) => file.status === UmbFileDropzoneItemStatus.COMPLETE)
+      .map((file) => file.unique);
     this.#addItems(uploaded);
   }
-  //#endregion
 
   override render() {
     return html`
@@ -356,8 +365,11 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
 
   #renderDropzone() {
     if (this.readonly) return nothing;
-    if (this._cards && this._cards.length >= this.max) return;
-    return html`<umb-dropzone ?multiple=${this.max > 1} @complete=${this.#onUploadCompleted}></umb-dropzone>`;
+    return html`<umb-dropzone-media
+			id="dropzone"
+			?multiple=${this.multiple}
+			.parentUnique=${this.startNode?.unique ?? null}
+			@change=${this.#onUploadCompleted}></umb-dropzone-media>`;
   }
 
   #renderItems() {
@@ -372,42 +384,48 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
   }
 
   #renderAddButton() {
-    if (this._cards && this._cards.length && !this.multiple) return;
-    if (this.readonly && this._cards.length > 0) {
-      return nothing;
-    } else {
-      const chooseLabel = this.localize.term('general_choose', 'Choose');
-      return html`
-      <uui-button
-        id="btn-add"
-        look="placeholder"
-        @blur=${() => {
-          this.pristine = false;
-          this.checkValidity();
-        }}
-        @click=${this.#openPicker}
-        label=${chooseLabel}
-        ?disabled=${this.readonly}>
-        <uui-icon name="icon-add"></uui-icon>
-        ${chooseLabel}
-      </uui-button>
-    `;
-    }
+    if (this.readonly) return nothing;
+    if (this.max === 1 && this._cards.length > 0) return nothing;
+    return html`
+			<uui-button
+				id="btn-add"
+				look="placeholder"
+				@blur=${() => {
+        this.pristine = false;
+        this.checkValidity();
+      }}
+				@click=${this.#openPicker}
+				label=${this.localize.term('general_choose')}
+				?disabled=${this.readonly}>
+				<uui-icon name="icon-add"></uui-icon>
+				${this.localize.term('general_choose')}
+			</uui-button>
+		`;
   }
 
-  #renderItem(item: RichMediaCardModel) {
+  #renderItem(item: WysiwgRichMediaCardModel) {
     const mediaItem = this.value?.length ? this.value[0] : undefined;
+
     if (!item.unique || !mediaItem) return nothing;
-
     const href = this.readonly ? undefined : this._routeBuilder?.({ key: item.unique });
-    return html`
-    <wysiwg-card-image id=${item.unique} name=${item.name} .href=${href} ?readonly=${this.readonly}>
 
-      <wysiwg-cropped-image .mediaItem=${mediaItem} @change=${this.#onChangePreview}></wysiwg-cropped-image>
+    const rVal = html`
+    <wysiwg-card-media id=${item.unique} title=${item.name} name=${item.name} .href=${href} ?readonly=${this.readonly}>
+
+      <wysiwg-cropped-image
+        .mediaItem=${mediaItem} @change=${this.#onChangePreview}></wysiwg-cropped-image>
+
+      <!-- <umb-media-thumbnail
+					.unique=${item.media}
+					.alt=${item.name}
+					.icon=${item.icon ?? 'icon-picture'}
+					.externalLoading=${item.isLoading ?? false}></umb-media-thumbnail> -->
+
       ${this.#renderIsTrashed(item)} ${this.#renderActions(item)}
 
-    </wysiwg-card-image>
+    </wysiwg-card-media>
   `;
+    return rVal;
   }
 
   #onChangePreview(event: CustomEvent & { target: WysiwgCroppedImageElement }) {
@@ -419,7 +437,7 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
   }
 
   private _updateValue(fieldsToUpdate: Partial<WysiwgMediaPickerPropertyValueEntry>, deleteImage: boolean = false) {
-    const newValue: WysiwgMediaPickerPropertyValues = [];
+    const newValue: WysiwgMediaPickerModel = [];
     if (!this.value || !this.value.length || deleteImage) {
       const item = {
         ...fieldsToUpdate,
@@ -438,7 +456,7 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
     this.dispatchEvent(new UmbChangeEvent());
   }
 
-  #renderActions(item: RichMediaCardModel) {
+  #renderActions(item: WysiwgRichMediaCardModel) {
     if (this.readonly) return nothing;
     return html`
     <uui-action-bar slot="actions">
@@ -449,7 +467,7 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
   `;
   }
 
-  #renderIsTrashed(item: RichMediaCardModel) {
+  #renderIsTrashed(item: WysiwgRichMediaCardModel) {
     if (!item.isTrashed) return;
     return html`
     <uui-tag size="s" slot="tag" color="danger">
@@ -460,40 +478,41 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
 
   static override styles = [
     css`
-    :host {
-      position: relative;
-    }
+			:host {
+				position: relative;
+				width: 100%;
+				display: flex;
+				flex-direction: column-reverse;
+			}
+			.container {
+				display: grid;
+				gap: var(--uui-size-space-5);
+				grid-template-columns: repeat(auto-fill, minmax(var(--umb-card-medium-min-width), 1fr));
+				grid-auto-rows: var(--umb-card-medium-min-width);
+			}
 
-    .container{
-      min-width: 150px;
-      min-height: 150px;
-      display: block;
-    }
+			#btn-add {
+				text-align: center;
+				height: 100%;
+			}
 
-    #btn-add {
-      text-align: center;
-      min-height: 150px;
-      min-width: 150px;
-      width: 100%;
-    }
+			uui-icon {
+				display: block;
+				margin: 0 auto;
+			}
 
-    uui-icon {
-      display: block;
-      margin: 0 auto;
-    }
+			uui-card-media umb-icon {
+				font-size: var(--uui-size-8);
+			}
 
-    uui-card-media umb-icon {
-      font-size: var(--uui-size-8);
-    }
-
-    uui-card-media[drag-placeholder] {
-      opacity: 0.2;
-    }
-    img {
-      background-image: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill-opacity=".1"><path d="M50 0h50v50H50zM0 50h50v50H0z"/></svg>');
-      background-size: 10px 10px;
-      background-repeat: repeat;
-    }
+			uui-card-media[drag-placeholder] {
+				opacity: 0.2;
+			}
+			img {
+				background-image: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill-opacity=".1"><path d="M50 0h50v50H50zM0 50h50v50H0z"/></svg>');
+				background-size: 10px 10px;
+				background-repeat: repeat;
+			}
   `,
   ];
 }
