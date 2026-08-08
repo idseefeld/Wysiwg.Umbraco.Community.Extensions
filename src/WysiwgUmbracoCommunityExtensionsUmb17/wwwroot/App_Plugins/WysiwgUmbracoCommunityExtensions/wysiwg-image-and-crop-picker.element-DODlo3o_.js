@@ -1,46 +1,45 @@
-import { UMB_MEDIA_ITEM_REPOSITORY_ALIAS as _t, UmbMediaPickerInputContext as yt, UMB_IMAGE_CROPPER_EDITOR_MODAL as gt, UMB_MEDIA_PICKER_MODAL as $t, UMB_MEDIA_ENTITY_TYPE as vt } from "@umbraco-cms/backoffice/media";
-import { html as w, css as Ne, property as _, state as v, customElement as Re, nothing as F, repeat as bt } from "@umbraco-cms/backoffice/external/lit";
+import { UMB_MEDIA_ITEM_REPOSITORY_ALIAS as mt, UmbMediaPickerInputContext as ft, UMB_IMAGE_CROPPER_EDITOR_MODAL as _t, UMB_MEDIA_PICKER_MODAL as yt, UMB_MEDIA_ENTITY_TYPE as gt } from "@umbraco-cms/backoffice/media";
+import { html as w, css as ze, property as f, state as v, customElement as Re, repeat as vt, nothing as se } from "@umbraco-cms/backoffice/external/lit";
 import { UmbLitElement as He } from "@umbraco-cms/backoffice/lit-element";
-import { UMB_PROPERTY_CONTEXT as wt } from "@umbraco-cms/backoffice/property";
-import { UmbPropertyEditorUiInteractionMemoryManager as At } from "@umbraco-cms/backoffice/property-editor";
+import { UMB_PROPERTY_CONTEXT as $t } from "@umbraco-cms/backoffice/property";
+import { UmbPropertyEditorUiInteractionMemoryManager as bt } from "@umbraco-cms/backoffice/property-editor";
 import { UmbFormControlMixin as qe, UMB_VALIDATION_EMPTY_LOCALIZATION_KEY as Be } from "@umbraco-cms/backoffice/validation";
-import { UUICardElement as De, UUISelectElement as Et } from "@umbraco-cms/backoffice/external/uui";
-import { i as Ct } from "./sdk.gen-CjQc6NVt.js";
+import { UUICardElement as De, UUISelectElement as wt } from "@umbraco-cms/backoffice/external/uui";
+import { i as At } from "./sdk.gen-CjQc6NVt.js";
 import { UmbChangeEvent as T } from "@umbraco-cms/backoffice/event";
 import { UmbId as Le } from "@umbraco-cms/backoffice/id";
-import { UMB_MODAL_MANAGER_CONTEXT as St, umbConfirmModal as Mt } from "@umbraco-cms/backoffice/modal";
-import { UmbRepositoryItemsManager as Pt } from "@umbraco-cms/backoffice/repository";
-import { UmbModalRouteRegistrationController as xt } from "@umbraco-cms/backoffice/router";
-import { UmbSorterController as It, UmbSorterResolvePlacementAsGrid as Ut } from "@umbraco-cms/backoffice/sorter";
-import { UmbFileDropzoneItemStatus as Ot } from "@umbraco-cms/backoffice/dropzone";
-import { UmbEntityInputInteractionMemoryManager as kt } from "@umbraco-cms/backoffice/entity";
-var Tt = Object.defineProperty, zt = Object.getOwnPropertyDescriptor, Ve = (t) => {
+import { UMB_MODAL_MANAGER_CONTEXT as Et, umbConfirmModal as Ct } from "@umbraco-cms/backoffice/modal";
+import { UmbRepositoryItemsManager as St } from "@umbraco-cms/backoffice/repository";
+import { UmbModalRouteRegistrationController as Mt } from "@umbraco-cms/backoffice/router";
+import { UmbSorterController as Pt, UmbSorterResolvePlacementAsGrid as xt } from "@umbraco-cms/backoffice/sorter";
+import { UmbEntityInputInteractionMemoryManager as It } from "@umbraco-cms/backoffice/entity";
+var Ot = Object.defineProperty, Ut = Object.getOwnPropertyDescriptor, Ve = (t) => {
   throw TypeError(t);
-}, y = (t, e, i, s) => {
-  for (var r = s > 1 ? void 0 : s ? zt(e, i) : e, o = t.length - 1, n; o >= 0; o--)
+}, _ = (t, e, i, s) => {
+  for (var r = s > 1 ? void 0 : s ? Ut(e, i) : e, o = t.length - 1, n; o >= 0; o--)
     (n = t[o]) && (r = (s ? n(e, i, r) : n(r)) || r);
-  return s && r && Tt(e, i, r), r;
-}, fe = (t, e, i) => e.has(t) || Ve("Cannot " + i), $ = (t, e, i) => (fe(t, e, "read from private field"), i ? i.call(t) : e.get(t)), C = (t, e, i) => e.has(t) ? Ve("Cannot add the same private member more than once") : e instanceof WeakSet ? e.add(t) : e.set(t, i), Ae = (t, e, i, s) => (fe(t, e, "write to private field"), e.set(t, i), i), b = (t, e, i) => (fe(t, e, "access private method"), i), D, ee, L, K, V, te, f, me, re, he, We, Ke, je, Fe, Ye, Ge, Ze, Je, Xe, Qe;
-const Nt = "wysiwg-input-rich-media";
+  return s && r && Ot(e, i, r), r;
+}, me = (t, e, i) => e.has(t) || Ve("Cannot " + i), g = (t, e, i) => (me(t, e, "read from private field"), i ? i.call(t) : e.get(t)), C = (t, e, i) => e.has(t) ? Ve("Cannot add the same private member more than once") : e instanceof WeakSet ? e.add(t) : e.set(t, i), Ae = (t, e, i, s) => (me(t, e, "write to private field"), e.set(t, i), i), b = (t, e, i) => (me(t, e, "access private method"), i), D, Q, L, K, V, ee, $, ue, re, fe, We, Ke, je, Fe, Ye, Ge, Ze, Je;
+const kt = "wysiwg-input-rich-media";
 let p = class extends qe(He, void 0) {
   constructor() {
-    super(), C(this, f), C(this, D, new It(this, {
+    super(), C(this, $), C(this, D, new Pt(this, {
       getUniqueOfElement: (t) => t.id,
       getUniqueOfModel: (t) => t.key,
       identifier: "Umb.SorterIdentifier.WysiwgInputRichMedia",
       itemSelector: "wysiwg-card-image",
       // Ensure this matches the custom element name for the card image component
       containerSelector: ".container",
-      resolvePlacement: Ut,
+      resolvePlacement: xt,
       onChange: ({ model: t }) => {
         this.value = t, this.dispatchEvent(new T());
       }
-    })), this.min = 0, this.minMessage = "This field need more items", this.max = 1 / 0, this.maxMessage = "This field exceeds the allowed amount of items", this.multiple = !1, C(this, ee, !1), C(this, L, !1), this._cards = [], C(this, K, new Pt(this, _t)), C(this, V, new yt(this)), C(this, te, new kt(
+    })), this.min = 0, this.minMessage = "This field need more items", this.max = 1 / 0, this.maxMessage = "This field exceeds the allowed amount of items", this.multiple = !1, C(this, Q, !1), C(this, L, !1), this._cards = [], C(this, K, new St(this, mt)), C(this, V, new ft(this)), C(this, ee, new It(
       this,
-      $(this, V).interactionMemory
-    )), C(this, re, (t) => this.allowedContentTypeIds && this.allowedContentTypeIds.length > 0 ? this.allowedContentTypeIds.includes(t.mediaType.unique) : !0), this.observe($(this, K).items, () => {
-      b(this, f, me).call(this);
-    }), new xt(this, gt).addAdditionalPath(":key").onSetup((t) => {
+      g(this, V).interactionMemory
+    )), C(this, re, (t) => this.allowedContentTypeIds && this.allowedContentTypeIds.length > 0 ? this.allowedContentTypeIds.includes(t.mediaType.unique) : !0), this.observe(g(this, K).items, () => {
+      b(this, $, ue).call(this);
+    }), new Mt(this, _t).addAdditionalPath(":key").onSetup((t) => {
       const e = t.key;
       if (!e) return !1;
       const i = this.value?.find((s) => s.key === e);
@@ -50,7 +49,7 @@ let p = class extends qe(He, void 0) {
           hideFocalPoint: !this.focalPointEnabled,
           key: e,
           unique: i.mediaKey,
-          pickableFilter: $(this, re)
+          pickableFilter: g(this, re)
         },
         value: {
           crops: i.crops ?? [],
@@ -68,8 +67,8 @@ let p = class extends qe(He, void 0) {
       }), this.dispatchEvent(new T());
     }).observeRouteBuilder((t) => {
       this._routeBuilder = t;
-    }), this.observe($(this, V).selection, (t) => {
-      b(this, f, he).call(this, t);
+    }), this.observe(g(this, V).selection, (t) => {
+      b(this, $, fe).call(this, t);
     }), this.addValidator(
       "valueMissing",
       () => this.requiredMessage ?? Be,
@@ -88,35 +87,34 @@ let p = class extends qe(He, void 0) {
     );
   }
   set value(t) {
-    super.value = t, $(this, D).setModel(t), $(this, V).setSelection(t?.map((e) => e.mediaKey) ?? []), $(this, K).setUniques(t?.map((e) => e.mediaKey)), b(this, f, me).call(this);
+    super.value = t, g(this, D).setModel(t), g(this, V).setSelection(t?.map((e) => e.mediaKey) ?? []), g(this, K).setUniques(t?.map((e) => e.mediaKey)), b(this, $, ue).call(this);
   }
   get value() {
     return super.value;
   }
   set focalPointEnabled(t) {
-    Ae(this, ee, t);
+    Ae(this, Q, t);
   }
   get focalPointEnabled() {
-    return $(this, ee);
+    return g(this, Q);
   }
   get readonly() {
-    return $(this, L);
+    return g(this, L);
   }
   set readonly(t) {
-    Ae(this, L, t), $(this, L) ? $(this, D).disable() : $(this, D).enable();
+    Ae(this, L, t), g(this, L) ? g(this, D).disable() : g(this, D).enable();
   }
   get interactionMemories() {
-    return $(this, te).getMemories();
+    return g(this, ee).getMemories();
   }
   set interactionMemories(t) {
-    $(this, te).setMemories(t);
+    g(this, ee).setMemories(t);
   }
   getFormElement() {
   }
   render() {
     return w`
-    ${b(this, f, Fe).call(this)}
-    <div class="container">${b(this, f, Ye).call(this)} ${b(this, f, Ge).call(this)}</div>
+    <div class="container">${b(this, $, je).call(this)} ${b(this, $, Fe).call(this)}</div>
   `;
   }
   _updateValue(t, e = !1) {
@@ -138,14 +136,16 @@ let p = class extends qe(He, void 0) {
   }
 };
 D = /* @__PURE__ */ new WeakMap();
-ee = /* @__PURE__ */ new WeakMap();
+Q = /* @__PURE__ */ new WeakMap();
 L = /* @__PURE__ */ new WeakMap();
 K = /* @__PURE__ */ new WeakMap();
 V = /* @__PURE__ */ new WeakMap();
-te = /* @__PURE__ */ new WeakMap();
-f = /* @__PURE__ */ new WeakSet();
-me = async function() {
-  const t = $(this, K).getItems();
+ee = /* @__PURE__ */ new WeakMap();
+$ = /* @__PURE__ */ new WeakSet();
+ue = async function() {
+  const t = g(this, K).getItems();
+  if (t.length === 0)
+    return this._cards = [], [];
   this._cards = this.value?.map((e) => {
     const i = t.find((s) => s.unique === e.mediaKey);
     return {
@@ -159,7 +159,7 @@ me = async function() {
   }) ?? [];
 };
 re = /* @__PURE__ */ new WeakMap();
-he = function(t) {
+fe = function(t) {
   const e = t.filter((s) => !this.value?.some((r) => r.mediaKey === s));
   if (!e.length) return;
   const i = e.map((s) => ({
@@ -172,57 +172,45 @@ he = function(t) {
   this.value = [...this.value ?? [], ...i], this.dispatchEvent(new T());
 };
 We = async function() {
-  const i = await (await this.getContext(St))?.open(this, $t, {
+  const i = await (await this.getContext(Et))?.open(this, yt, {
     data: {
       multiple: this.multiple,
       startNode: this.startNode,
-      pickableFilter: $(this, re)
+      pickableFilter: g(this, re)
     },
     value: { selection: [] }
   })?.onSubmit().catch(() => null);
   if (!i) return;
   const s = i.selection.filter((r) => r !== null);
-  b(this, f, he).call(this, s);
+  b(this, $, fe).call(this, s);
 };
 Ke = async function(t) {
-  await Mt(this, {
+  await Ct(this, {
     color: "danger",
     headline: `${this.localize.term("actions_remove")} ${t.name}?`,
     content: `${this.localize.term("defaultdialogs_confirmremove")} ${t.name}?`,
     confirmLabel: this.localize.term("actions_remove")
   }), this.value = this.value?.filter((e) => e.key !== t.unique), this.dispatchEvent(new T());
 };
-je = async function(t) {
-  if (this.readonly) return;
-  const e = t.items.filter((i) => i.status === Ot.COMPLETE).map((i) => i.unique);
-  b(this, f, he).call(this, e);
-};
-Fe = function() {
-  return this.readonly ? F : w`<umb-dropzone-media
-			id="dropzone"
-			?multiple=${this.multiple}
-			.parentUnique=${this.startNode?.unique ?? null}
-			@change=${b(this, f, je)}></umb-dropzone-media>`;
-};
-Ye = function() {
+je = function() {
   if (this._cards.length)
     return w`
-    ${bt(
+    ${vt(
       this._cards,
       (t) => t.unique,
-      (t) => b(this, f, Ze).call(this, t)
+      (t) => b(this, $, Ye).call(this, t)
     )}
   `;
 };
-Ge = function() {
-  return this.readonly ? F : this.max === 1 && this._cards.length > 0 ? F : w`
+Fe = function() {
+  return this.readonly ? se : this.max === 1 && this._cards.length > 0 ? se : w`
 			<uui-button
 				id="btn-add"
 				look="placeholder"
 				@blur=${() => {
     this.pristine = !1, this.checkValidity();
   }}
-				@click=${b(this, f, We)}
+				@click=${b(this, $, We)}
 				label=${this.localize.term("general_choose")}
 				?disabled=${this.readonly}>
 				<uui-icon name="icon-add"></uui-icon>
@@ -230,15 +218,15 @@ Ge = function() {
 			</uui-button>
 		`;
 };
-Ze = function(t) {
+Ye = function(t) {
   const e = this.value?.length ? this.value[0] : void 0;
-  if (!t.unique || !e) return F;
+  if (!t.unique || !e) return se;
   const i = this.readonly ? void 0 : this._routeBuilder?.({ key: t.unique });
   return w`
     <wysiwg-card-media id=${t.unique} title=${t.name} name=${t.name} .href=${i} ?readonly=${this.readonly}>
 
       <wysiwg-cropped-image
-        .mediaItem=${e} @change=${b(this, f, Je)}></wysiwg-cropped-image>
+        .mediaItem=${e} @change=${b(this, $, Ge)}></wysiwg-cropped-image>
 
       <!-- <umb-media-thumbnail
 					.unique=${t.media}
@@ -246,26 +234,26 @@ Ze = function(t) {
 					.icon=${t.icon ?? "icon-picture"}
 					.externalLoading=${t.isLoading ?? !1}></umb-media-thumbnail> -->
 
-      ${b(this, f, Qe).call(this, t)} ${b(this, f, Xe).call(this, t)}
+      ${b(this, $, Je).call(this, t)} ${b(this, $, Ze).call(this, t)}
 
     </wysiwg-card-media>
   `;
 };
-Je = function(t) {
+Ge = function(t) {
   t?.target?.value?.length > 0 && this._updateValue({
     cropUrl: t?.target?.value
   });
 };
-Xe = function(t) {
-  return this.readonly ? F : w`
+Ze = function(t) {
+  return this.readonly ? se : w`
     <uui-action-bar slot="actions">
-      <uui-button label=${this.localize.term("general_remove")} look="secondary" @click=${() => b(this, f, Ke).call(this, t)}>
+      <uui-button label=${this.localize.term("general_remove")} look="secondary" @click=${() => b(this, $, Ke).call(this, t)}>
         <uui-icon name="icon-trash"></uui-icon>
       </uui-button>
     </uui-action-bar>
   `;
 };
-Qe = function(t) {
+Je = function(t) {
   if (t.isTrashed)
     return w`
     <uui-tag size="s" slot="tag" color="danger">
@@ -274,7 +262,7 @@ Qe = function(t) {
   `;
 };
 p.styles = [
-  Ne`
+  ze`
 			:host {
 				position: relative;
 				width: 100%;
@@ -285,7 +273,9 @@ p.styles = [
 				display: grid;
 				gap: var(--uui-size-space-5);
 				grid-template-columns: repeat(auto-fill, minmax(var(--umb-card-medium-min-width), 1fr));
-				grid-auto-rows: var(--umb-card-medium-min-width);
+
+        /* remove next line to show height of the image */
+        /*grid-auto-rows: var(--umb-card-medium-min-width); */
 			}
 
 			#btn-add {
@@ -312,59 +302,59 @@ p.styles = [
 			}
   `
 ];
-y([
-  _({ type: Boolean })
+_([
+  f({ type: Boolean })
 ], p.prototype, "required", 2);
-y([
-  _({ type: String })
+_([
+  f({ type: String })
 ], p.prototype, "requiredMessage", 2);
-y([
-  _({ type: Number })
+_([
+  f({ type: Number })
 ], p.prototype, "min", 2);
-y([
-  _({ type: String, attribute: "min-message" })
+_([
+  f({ type: String, attribute: "min-message" })
 ], p.prototype, "minMessage", 2);
-y([
-  _({ type: Number })
+_([
+  f({ type: Number })
 ], p.prototype, "max", 2);
-y([
-  _({ type: String, attribute: "min-message" })
+_([
+  f({ type: String, attribute: "min-message" })
 ], p.prototype, "maxMessage", 2);
-y([
-  _({ type: Array })
+_([
+  f({ type: Array })
 ], p.prototype, "value", 1);
-y([
-  _({ type: Array })
+_([
+  f({ type: Array })
 ], p.prototype, "allowedContentTypeIds", 2);
-y([
-  _({ type: Object, attribute: !1 })
+_([
+  f({ type: Object, attribute: !1 })
 ], p.prototype, "startNode", 2);
-y([
-  _({ type: Boolean })
+_([
+  f({ type: Boolean })
 ], p.prototype, "multiple", 2);
-y([
-  _({ type: Array })
+_([
+  f({ type: Array })
 ], p.prototype, "preselectedCrops", 2);
-y([
-  _({ type: Boolean })
+_([
+  f({ type: Boolean })
 ], p.prototype, "focalPointEnabled", 1);
-y([
-  _({ type: Boolean, reflect: !0 })
+_([
+  f({ type: Boolean, reflect: !0 })
 ], p.prototype, "readonly", 1);
-y([
-  _({ type: Array, attribute: !1 })
+_([
+  f({ type: Array, attribute: !1 })
 ], p.prototype, "interactionMemories", 1);
-y([
+_([
   v()
 ], p.prototype, "_cards", 2);
-y([
+_([
   v()
 ], p.prototype, "_routeBuilder", 2);
-p = y([
-  Re(Nt)
+p = _([
+  Re(kt)
 ], p);
-const ie = globalThis, _e = ie.ShadowRoot && (ie.ShadyCSS === void 0 || ie.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, ye = /* @__PURE__ */ Symbol(), Ee = /* @__PURE__ */ new WeakMap();
-let et = class {
+const te = globalThis, _e = te.ShadowRoot && (te.ShadyCSS === void 0 || te.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, ye = /* @__PURE__ */ Symbol(), Ee = /* @__PURE__ */ new WeakMap();
+let Xe = class {
   constructor(e, i, s) {
     if (this._$cssResult$ = !0, s !== ye) throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
     this.cssText = e, this.t = i;
@@ -382,28 +372,28 @@ let et = class {
     return this.cssText;
   }
 };
-const Rt = (t) => new et(typeof t == "string" ? t : t + "", void 0, ye), Ht = (t, ...e) => {
+const Tt = (t) => new Xe(typeof t == "string" ? t : t + "", void 0, ye), Nt = (t, ...e) => {
   const i = t.length === 1 ? t[0] : e.reduce((s, r, o) => s + ((n) => {
     if (n._$cssResult$ === !0) return n.cssText;
     if (typeof n == "number") return n;
     throw Error("Value passed to 'css' function must be a 'css' function result: " + n + ". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.");
   })(r) + t[o + 1], t[0]);
-  return new et(i, t, ye);
-}, qt = (t, e) => {
+  return new Xe(i, t, ye);
+}, zt = (t, e) => {
   if (_e) t.adoptedStyleSheets = e.map((i) => i instanceof CSSStyleSheet ? i : i.styleSheet);
   else for (const i of e) {
-    const s = document.createElement("style"), r = ie.litNonce;
+    const s = document.createElement("style"), r = te.litNonce;
     r !== void 0 && s.setAttribute("nonce", r), s.textContent = i.cssText, t.appendChild(s);
   }
 }, Ce = _e ? (t) => t : (t) => t instanceof CSSStyleSheet ? ((e) => {
   let i = "";
   for (const s of e.cssRules) i += s.cssText;
-  return Rt(i);
+  return Tt(i);
 })(t) : t;
-const { is: Bt, defineProperty: Dt, getOwnPropertyDescriptor: Lt, getOwnPropertyNames: Vt, getOwnPropertySymbols: Wt, getPrototypeOf: Kt } = Object, ce = globalThis, Se = ce.trustedTypes, jt = Se ? Se.emptyScript : "", Ft = ce.reactiveElementPolyfillSupport, j = (t, e) => t, oe = { toAttribute(t, e) {
+const { is: Rt, defineProperty: Ht, getOwnPropertyDescriptor: qt, getOwnPropertyNames: Bt, getOwnPropertySymbols: Dt, getPrototypeOf: Lt } = Object, he = globalThis, Se = he.trustedTypes, Vt = Se ? Se.emptyScript : "", Wt = he.reactiveElementPolyfillSupport, j = (t, e) => t, oe = { toAttribute(t, e) {
   switch (e) {
     case Boolean:
-      t = t ? jt : null;
+      t = t ? Vt : null;
       break;
     case Object:
     case Array:
@@ -428,8 +418,8 @@ const { is: Bt, defineProperty: Dt, getOwnPropertyDescriptor: Lt, getOwnProperty
       }
   }
   return i;
-} }, ge = (t, e) => !Bt(t, e), Me = { attribute: !0, type: String, converter: oe, reflect: !1, useDefault: !1, hasChanged: ge };
-Symbol.metadata ??= /* @__PURE__ */ Symbol("metadata"), ce.litPropertyMetadata ??= /* @__PURE__ */ new WeakMap();
+} }, ge = (t, e) => !Rt(t, e), Me = { attribute: !0, type: String, converter: oe, reflect: !1, useDefault: !1, hasChanged: ge };
+Symbol.metadata ??= /* @__PURE__ */ Symbol("metadata"), he.litPropertyMetadata ??= /* @__PURE__ */ new WeakMap();
 let k = class extends HTMLElement {
   static addInitializer(e) {
     this._$Ei(), (this.l ??= []).push(e);
@@ -440,11 +430,11 @@ let k = class extends HTMLElement {
   static createProperty(e, i = Me) {
     if (i.state && (i.attribute = !1), this._$Ei(), this.prototype.hasOwnProperty(e) && ((i = Object.create(i)).wrapped = !0), this.elementProperties.set(e, i), !i.noAccessor) {
       const s = /* @__PURE__ */ Symbol(), r = this.getPropertyDescriptor(e, s, i);
-      r !== void 0 && Dt(this.prototype, e, r);
+      r !== void 0 && Ht(this.prototype, e, r);
     }
   }
   static getPropertyDescriptor(e, i, s) {
-    const { get: r, set: o } = Lt(this.prototype, e) ?? { get() {
+    const { get: r, set: o } = qt(this.prototype, e) ?? { get() {
       return this[i];
     }, set(n) {
       this[i] = n;
@@ -459,13 +449,13 @@ let k = class extends HTMLElement {
   }
   static _$Ei() {
     if (this.hasOwnProperty(j("elementProperties"))) return;
-    const e = Kt(this);
+    const e = Lt(this);
     e.finalize(), e.l !== void 0 && (this.l = [...e.l]), this.elementProperties = new Map(e.elementProperties);
   }
   static finalize() {
     if (this.hasOwnProperty(j("finalized"))) return;
     if (this.finalized = !0, this._$Ei(), this.hasOwnProperty(j("properties"))) {
-      const i = this.properties, s = [...Vt(i), ...Wt(i)];
+      const i = this.properties, s = [...Bt(i), ...Dt(i)];
       for (const r of s) this.createProperty(r, i[r]);
     }
     const e = this[Symbol.metadata];
@@ -511,7 +501,7 @@ let k = class extends HTMLElement {
   }
   createRenderRoot() {
     const e = this.shadowRoot ?? this.attachShadow(this.constructor.shadowRootOptions);
-    return qt(e, this.constructor.elementStyles), e;
+    return zt(e, this.constructor.elementStyles), e;
   }
   connectedCallback() {
     this.renderRoot ??= this.createRenderRoot(), this.enableUpdating(!0), this._$EO?.forEach((e) => e.hostConnected?.());
@@ -611,51 +601,51 @@ let k = class extends HTMLElement {
   firstUpdated(e) {
   }
 };
-k.elementStyles = [], k.shadowRootOptions = { mode: "open" }, k[j("elementProperties")] = /* @__PURE__ */ new Map(), k[j("finalized")] = /* @__PURE__ */ new Map(), Ft?.({ ReactiveElement: k }), (ce.reactiveElementVersions ??= []).push("2.1.2");
-const $e = globalThis, Pe = (t) => t, ne = $e.trustedTypes, xe = ne ? ne.createPolicy("lit-html", { createHTML: (t) => t }) : void 0, tt = "$lit$", S = `lit$${Math.random().toFixed(9).slice(2)}$`, it = "?" + S, Yt = `<${it}>`, O = document, Y = () => O.createComment(""), G = (t) => t === null || typeof t != "object" && typeof t != "function", ve = Array.isArray, Gt = (t) => ve(t) || typeof t?.[Symbol.iterator] == "function", ue = `[ 	
-\f\r]`, B = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, Ie = /-->/g, Ue = />/g, P = RegExp(`>|${ue}(?:([^\\s"'>=/]+)(${ue}*=${ue}*(?:[^ 	
-\f\r"'\`<>=]|("|')|))|$)`, "g"), Oe = /'/g, ke = /"/g, st = /^(?:script|style|textarea|title)$/i, Zt = (t) => (e, ...i) => ({ _$litType$: t, strings: e, values: i }), I = Zt(1), R = /* @__PURE__ */ Symbol.for("lit-noChange"), c = /* @__PURE__ */ Symbol.for("lit-nothing"), Te = /* @__PURE__ */ new WeakMap(), x = O.createTreeWalker(O, 129);
-function rt(t, e) {
-  if (!ve(t) || !t.hasOwnProperty("raw")) throw Error("invalid template strings array");
+k.elementStyles = [], k.shadowRootOptions = { mode: "open" }, k[j("elementProperties")] = /* @__PURE__ */ new Map(), k[j("finalized")] = /* @__PURE__ */ new Map(), Wt?.({ ReactiveElement: k }), (he.reactiveElementVersions ??= []).push("2.1.2");
+const ve = globalThis, Pe = (t) => t, ne = ve.trustedTypes, xe = ne ? ne.createPolicy("lit-html", { createHTML: (t) => t }) : void 0, Qe = "$lit$", S = `lit$${Math.random().toFixed(9).slice(2)}$`, et = "?" + S, Kt = `<${et}>`, U = document, F = () => U.createComment(""), Y = (t) => t === null || typeof t != "object" && typeof t != "function", $e = Array.isArray, jt = (t) => $e(t) || typeof t?.[Symbol.iterator] == "function", pe = `[ 	
+\f\r]`, B = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, Ie = /-->/g, Oe = />/g, P = RegExp(`>|${pe}(?:([^\\s"'>=/]+)(${pe}*=${pe}*(?:[^ 	
+\f\r"'\`<>=]|("|')|))|$)`, "g"), Ue = /'/g, ke = /"/g, tt = /^(?:script|style|textarea|title)$/i, Ft = (t) => (e, ...i) => ({ _$litType$: t, strings: e, values: i }), I = Ft(1), R = /* @__PURE__ */ Symbol.for("lit-noChange"), c = /* @__PURE__ */ Symbol.for("lit-nothing"), Te = /* @__PURE__ */ new WeakMap(), x = U.createTreeWalker(U, 129);
+function it(t, e) {
+  if (!$e(t) || !t.hasOwnProperty("raw")) throw Error("invalid template strings array");
   return xe !== void 0 ? xe.createHTML(e) : e;
 }
-const Jt = (t, e) => {
+const Yt = (t, e) => {
   const i = t.length - 1, s = [];
   let r, o = e === 2 ? "<svg>" : e === 3 ? "<math>" : "", n = B;
   for (let l = 0; l < i; l++) {
     const a = t[l];
-    let u, g, h = -1, A = 0;
-    for (; A < a.length && (n.lastIndex = A, g = n.exec(a), g !== null); ) A = n.lastIndex, n === B ? g[1] === "!--" ? n = Ie : g[1] !== void 0 ? n = Ue : g[2] !== void 0 ? (st.test(g[2]) && (r = RegExp("</" + g[2], "g")), n = P) : g[3] !== void 0 && (n = P) : n === P ? g[0] === ">" ? (n = r ?? B, h = -1) : g[1] === void 0 ? h = -2 : (h = n.lastIndex - g[2].length, u = g[1], n = g[3] === void 0 ? P : g[3] === '"' ? ke : Oe) : n === ke || n === Oe ? n = P : n === Ie || n === Ue ? n = B : (n = P, r = void 0);
+    let u, y, h = -1, A = 0;
+    for (; A < a.length && (n.lastIndex = A, y = n.exec(a), y !== null); ) A = n.lastIndex, n === B ? y[1] === "!--" ? n = Ie : y[1] !== void 0 ? n = Oe : y[2] !== void 0 ? (tt.test(y[2]) && (r = RegExp("</" + y[2], "g")), n = P) : y[3] !== void 0 && (n = P) : n === P ? y[0] === ">" ? (n = r ?? B, h = -1) : y[1] === void 0 ? h = -2 : (h = n.lastIndex - y[2].length, u = y[1], n = y[3] === void 0 ? P : y[3] === '"' ? ke : Ue) : n === ke || n === Ue ? n = P : n === Ie || n === Oe ? n = B : (n = P, r = void 0);
     const E = n === P && t[l + 1].startsWith("/>") ? " " : "";
-    o += n === B ? a + Yt : h >= 0 ? (s.push(u), a.slice(0, h) + tt + a.slice(h) + S + E) : a + S + (h === -2 ? l : E);
+    o += n === B ? a + Kt : h >= 0 ? (s.push(u), a.slice(0, h) + Qe + a.slice(h) + S + E) : a + S + (h === -2 ? l : E);
   }
-  return [rt(t, o + (t[i] || "<?>") + (e === 2 ? "</svg>" : e === 3 ? "</math>" : "")), s];
+  return [it(t, o + (t[i] || "<?>") + (e === 2 ? "</svg>" : e === 3 ? "</math>" : "")), s];
 };
-class Z {
+class G {
   constructor({ strings: e, _$litType$: i }, s) {
     let r;
     this.parts = [];
     let o = 0, n = 0;
-    const l = e.length - 1, a = this.parts, [u, g] = Jt(e, i);
-    if (this.el = Z.createElement(u, s), x.currentNode = this.el.content, i === 2 || i === 3) {
+    const l = e.length - 1, a = this.parts, [u, y] = Yt(e, i);
+    if (this.el = G.createElement(u, s), x.currentNode = this.el.content, i === 2 || i === 3) {
       const h = this.el.content.firstChild;
       h.replaceWith(...h.childNodes);
     }
     for (; (r = x.nextNode()) !== null && a.length < l; ) {
       if (r.nodeType === 1) {
-        if (r.hasAttributes()) for (const h of r.getAttributeNames()) if (h.endsWith(tt)) {
-          const A = g[n++], E = r.getAttribute(h).split(S), Q = /([.?@])?(.*)/.exec(A);
-          a.push({ type: 1, index: o, name: Q[2], strings: E, ctor: Q[1] === "." ? Qt : Q[1] === "?" ? ei : Q[1] === "@" ? ti : de }), r.removeAttribute(h);
+        if (r.hasAttributes()) for (const h of r.getAttributeNames()) if (h.endsWith(Qe)) {
+          const A = y[n++], E = r.getAttribute(h).split(S), X = /([.?@])?(.*)/.exec(A);
+          a.push({ type: 1, index: o, name: X[2], strings: E, ctor: X[1] === "." ? Zt : X[1] === "?" ? Jt : X[1] === "@" ? Xt : ce }), r.removeAttribute(h);
         } else h.startsWith(S) && (a.push({ type: 6, index: o }), r.removeAttribute(h));
-        if (st.test(r.tagName)) {
+        if (tt.test(r.tagName)) {
           const h = r.textContent.split(S), A = h.length - 1;
           if (A > 0) {
             r.textContent = ne ? ne.emptyScript : "";
-            for (let E = 0; E < A; E++) r.append(h[E], Y()), x.nextNode(), a.push({ type: 2, index: ++o });
-            r.append(h[A], Y());
+            for (let E = 0; E < A; E++) r.append(h[E], F()), x.nextNode(), a.push({ type: 2, index: ++o });
+            r.append(h[A], F());
           }
         }
-      } else if (r.nodeType === 8) if (r.data === it) a.push({ type: 2, index: o });
+      } else if (r.nodeType === 8) if (r.data === et) a.push({ type: 2, index: o });
       else {
         let h = -1;
         for (; (h = r.data.indexOf(S, h + 1)) !== -1; ) a.push({ type: 7, index: o }), h += S.length - 1;
@@ -664,17 +654,17 @@ class Z {
     }
   }
   static createElement(e, i) {
-    const s = O.createElement("template");
+    const s = U.createElement("template");
     return s.innerHTML = e, s;
   }
 }
 function H(t, e, i = t, s) {
   if (e === R) return e;
   let r = s !== void 0 ? i._$Co?.[s] : i._$Cl;
-  const o = G(e) ? void 0 : e._$litDirective$;
+  const o = Y(e) ? void 0 : e._$litDirective$;
   return r?.constructor !== o && (r?._$AO?.(!1), o === void 0 ? r = void 0 : (r = new o(t), r._$AT(t, i, s)), s !== void 0 ? (i._$Co ??= [])[s] = r : i._$Cl = r), r !== void 0 && (e = H(t, r._$AS(t, e.values), r, s)), e;
 }
-class Xt {
+class Gt {
   constructor(e, i) {
     this._$AV = [], this._$AN = void 0, this._$AD = e, this._$AM = i;
   }
@@ -685,24 +675,24 @@ class Xt {
     return this._$AM._$AU;
   }
   u(e) {
-    const { el: { content: i }, parts: s } = this._$AD, r = (e?.creationScope ?? O).importNode(i, !0);
+    const { el: { content: i }, parts: s } = this._$AD, r = (e?.creationScope ?? U).importNode(i, !0);
     x.currentNode = r;
     let o = x.nextNode(), n = 0, l = 0, a = s[0];
     for (; a !== void 0; ) {
       if (n === a.index) {
         let u;
-        a.type === 2 ? u = new X(o, o.nextSibling, this, e) : a.type === 1 ? u = new a.ctor(o, a.name, a.strings, this, e) : a.type === 6 && (u = new ii(o, this, e)), this._$AV.push(u), a = s[++l];
+        a.type === 2 ? u = new J(o, o.nextSibling, this, e) : a.type === 1 ? u = new a.ctor(o, a.name, a.strings, this, e) : a.type === 6 && (u = new Qt(o, this, e)), this._$AV.push(u), a = s[++l];
       }
       n !== a?.index && (o = x.nextNode(), n++);
     }
-    return x.currentNode = O, r;
+    return x.currentNode = U, r;
   }
   p(e) {
     let i = 0;
     for (const s of this._$AV) s !== void 0 && (s.strings !== void 0 ? (s._$AI(e, s, i), i += s.strings.length - 2) : s._$AI(e[i])), i++;
   }
 }
-class X {
+class J {
   get _$AU() {
     return this._$AM?._$AU ?? this._$Cv;
   }
@@ -721,7 +711,7 @@ class X {
     return this._$AB;
   }
   _$AI(e, i = this) {
-    e = H(this, e, i), G(e) ? e === c || e == null || e === "" ? (this._$AH !== c && this._$AR(), this._$AH = c) : e !== this._$AH && e !== R && this._(e) : e._$litType$ !== void 0 ? this.$(e) : e.nodeType !== void 0 ? this.T(e) : Gt(e) ? this.k(e) : this._(e);
+    e = H(this, e, i), Y(e) ? e === c || e == null || e === "" ? (this._$AH !== c && this._$AR(), this._$AH = c) : e !== this._$AH && e !== R && this._(e) : e._$litType$ !== void 0 ? this.$(e) : e.nodeType !== void 0 ? this.T(e) : jt(e) ? this.k(e) : this._(e);
   }
   O(e) {
     return this._$AA.parentNode.insertBefore(e, this._$AB);
@@ -730,25 +720,25 @@ class X {
     this._$AH !== e && (this._$AR(), this._$AH = this.O(e));
   }
   _(e) {
-    this._$AH !== c && G(this._$AH) ? this._$AA.nextSibling.data = e : this.T(O.createTextNode(e)), this._$AH = e;
+    this._$AH !== c && Y(this._$AH) ? this._$AA.nextSibling.data = e : this.T(U.createTextNode(e)), this._$AH = e;
   }
   $(e) {
-    const { values: i, _$litType$: s } = e, r = typeof s == "number" ? this._$AC(e) : (s.el === void 0 && (s.el = Z.createElement(rt(s.h, s.h[0]), this.options)), s);
+    const { values: i, _$litType$: s } = e, r = typeof s == "number" ? this._$AC(e) : (s.el === void 0 && (s.el = G.createElement(it(s.h, s.h[0]), this.options)), s);
     if (this._$AH?._$AD === r) this._$AH.p(i);
     else {
-      const o = new Xt(r, this), n = o.u(this.options);
+      const o = new Gt(r, this), n = o.u(this.options);
       o.p(i), this.T(n), this._$AH = o;
     }
   }
   _$AC(e) {
     let i = Te.get(e.strings);
-    return i === void 0 && Te.set(e.strings, i = new Z(e)), i;
+    return i === void 0 && Te.set(e.strings, i = new G(e)), i;
   }
   k(e) {
-    ve(this._$AH) || (this._$AH = [], this._$AR());
+    $e(this._$AH) || (this._$AH = [], this._$AR());
     const i = this._$AH;
     let s, r = 0;
-    for (const o of e) r === i.length ? i.push(s = new X(this.O(Y()), this.O(Y()), this, this.options)) : s = i[r], s._$AI(o), r++;
+    for (const o of e) r === i.length ? i.push(s = new J(this.O(F()), this.O(F()), this, this.options)) : s = i[r], s._$AI(o), r++;
     r < i.length && (this._$AR(s && s._$AB.nextSibling, r), i.length = r);
   }
   _$AR(e = this._$AA.nextSibling, i) {
@@ -761,7 +751,7 @@ class X {
     this._$AM === void 0 && (this._$Cv = e, this._$AP?.(e));
   }
 }
-class de {
+class ce {
   get tagName() {
     return this.element.tagName;
   }
@@ -774,11 +764,11 @@ class de {
   _$AI(e, i = this, s, r) {
     const o = this.strings;
     let n = !1;
-    if (o === void 0) e = H(this, e, i, 0), n = !G(e) || e !== this._$AH && e !== R, n && (this._$AH = e);
+    if (o === void 0) e = H(this, e, i, 0), n = !Y(e) || e !== this._$AH && e !== R, n && (this._$AH = e);
     else {
       const l = e;
       let a, u;
-      for (e = o[0], a = 0; a < o.length - 1; a++) u = H(this, l[s + a], i, a), u === R && (u = this._$AH[a]), n ||= !G(u) || u !== this._$AH[a], u === c ? e = c : e !== c && (e += (u ?? "") + o[a + 1]), this._$AH[a] = u;
+      for (e = o[0], a = 0; a < o.length - 1; a++) u = H(this, l[s + a], i, a), u === R && (u = this._$AH[a]), n ||= !Y(u) || u !== this._$AH[a], u === c ? e = c : e !== c && (e += (u ?? "") + o[a + 1]), this._$AH[a] = u;
     }
     n && !r && this.j(e);
   }
@@ -786,7 +776,7 @@ class de {
     e === c ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, e ?? "");
   }
 }
-class Qt extends de {
+class Zt extends ce {
   constructor() {
     super(...arguments), this.type = 3;
   }
@@ -794,7 +784,7 @@ class Qt extends de {
     this.element[this.name] = e === c ? void 0 : e;
   }
 }
-class ei extends de {
+class Jt extends ce {
   constructor() {
     super(...arguments), this.type = 4;
   }
@@ -802,7 +792,7 @@ class ei extends de {
     this.element.toggleAttribute(this.name, !!e && e !== c);
   }
 }
-class ti extends de {
+class Xt extends ce {
   constructor(e, i, s, r, o) {
     super(e, i, s, r, o), this.type = 5;
   }
@@ -815,7 +805,7 @@ class ti extends de {
     typeof this._$AH == "function" ? this._$AH.call(this.options?.host ?? this.element, e) : this._$AH.handleEvent(e);
   }
 }
-class ii {
+class Qt {
   constructor(e, i, s) {
     this.element = e, this.type = 6, this._$AN = void 0, this._$AM = i, this.options = s;
   }
@@ -826,19 +816,19 @@ class ii {
     H(this, e);
   }
 }
-const si = $e.litHtmlPolyfillSupport;
-si?.(Z, X), ($e.litHtmlVersions ??= []).push("3.3.3");
-const ri = (t, e, i) => {
+const ei = ve.litHtmlPolyfillSupport;
+ei?.(G, J), (ve.litHtmlVersions ??= []).push("3.3.3");
+const ti = (t, e, i) => {
   const s = i?.renderBefore ?? e;
   let r = s._$litPart$;
   if (r === void 0) {
     const o = i?.renderBefore ?? null;
-    s._$litPart$ = r = new X(e.insertBefore(Y(), o), o, void 0, i ?? {});
+    s._$litPart$ = r = new J(e.insertBefore(F(), o), o, void 0, i ?? {});
   }
   return r._$AI(t), r;
 };
 const be = globalThis;
-class se extends k {
+class ie extends k {
   constructor() {
     super(...arguments), this.renderOptions = { host: this }, this._$Do = void 0;
   }
@@ -848,7 +838,7 @@ class se extends k {
   }
   update(e) {
     const i = this.render();
-    this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(e), this._$Do = ri(i, this.renderRoot, this.renderOptions);
+    this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(e), this._$Do = ti(i, this.renderRoot, this.renderOptions);
   }
   connectedCallback() {
     super.connectedCallback(), this._$Do?.setConnected(!0);
@@ -860,16 +850,16 @@ class se extends k {
     return R;
   }
 }
-se._$litElement$ = !0, se.finalized = !0, be.litElementHydrateSupport?.({ LitElement: se });
-const oi = be.litElementPolyfillSupport;
-oi?.({ LitElement: se });
+ie._$litElement$ = !0, ie.finalized = !0, be.litElementHydrateSupport?.({ LitElement: ie });
+const ii = be.litElementPolyfillSupport;
+ii?.({ LitElement: ie });
 (be.litElementVersions ??= []).push("4.2.2");
-const ni = (t) => (e, i) => {
+const si = (t) => (e, i) => {
   i !== void 0 ? i.addInitializer(() => {
     customElements.define(t, e);
   }) : customElements.define(t, e);
 };
-const ai = { attribute: !0, type: String, converter: oe, reflect: !1, hasChanged: ge }, li = (t = ai, e, i) => {
+const ri = { attribute: !0, type: String, converter: oe, reflect: !1, hasChanged: ge }, oi = (t = ri, e, i) => {
   const { kind: s, metadata: r } = i;
   let o = globalThis.litPropertyMetadata.get(r);
   if (o === void 0 && globalThis.litPropertyMetadata.set(r, o = /* @__PURE__ */ new Map()), s === "setter" && ((t = Object.create(t)).wrapped = !0), o.set(i.name, t), s === "accessor") {
@@ -890,27 +880,27 @@ const ai = { attribute: !0, type: String, converter: oe, reflect: !1, hasChanged
   }
   throw Error("Unsupported decorator location: " + s);
 };
-function pe(t) {
-  return (e, i) => typeof i == "object" ? li(t, e, i) : ((s, r, o) => {
+function de(t) {
+  return (e, i) => typeof i == "object" ? oi(t, e, i) : ((s, r, o) => {
     const n = r.hasOwnProperty(o);
     return r.constructor.createProperty(o, s), n ? Object.getOwnPropertyDescriptor(r, o) : void 0;
   })(t, e, i);
 }
-function ot(t) {
-  return pe({ ...t, state: !0, attribute: !1 });
+function st(t) {
+  return de({ ...t, state: !0, attribute: !1 });
 }
 const W = (t) => t ?? c;
-var hi = Object.defineProperty, ci = Object.getOwnPropertyDescriptor, nt = (t) => {
+var ni = Object.defineProperty, ai = Object.getOwnPropertyDescriptor, rt = (t) => {
   throw TypeError(t);
 }, q = (t, e, i, s) => {
-  for (var r = s > 1 ? void 0 : s ? ci(e, i) : e, o = t.length - 1, n; o >= 0; o--)
+  for (var r = s > 1 ? void 0 : s ? ai(e, i) : e, o = t.length - 1, n; o >= 0; o--)
     (n = t[o]) && (r = (s ? n(e, i, r) : n(r)) || r);
-  return s && r && hi(e, i, r), r;
-}, di = (t, e, i) => e.has(t) || nt("Cannot " + i), pi = (t, e, i) => e.has(t) ? nt("Cannot add the same private member more than once") : e instanceof WeakSet ? e.add(t) : e.set(t, i), ae = (t, e, i) => (di(t, e, "access private method"), i), z, at, lt, we;
-const ui = "wysiwg-card-media";
+  return s && r && ni(e, i, r), r;
+}, li = (t, e, i) => e.has(t) || rt("Cannot " + i), hi = (t, e, i) => e.has(t) ? rt("Cannot add the same private member more than once") : e instanceof WeakSet ? e.add(t) : e.set(t, i), ae = (t, e, i) => (li(t, e, "access private method"), i), N, ot, nt, we;
+const ci = "wysiwg-card-media";
 let M = class extends De {
   constructor() {
-    super(...arguments), pi(this, z), this.name = "", this.fileExt = "", this._iconSlotHasContent = !1, this._iconSlotChanged = (t) => {
+    super(...arguments), hi(this, N), this.name = "", this.fileExt = "", this._iconSlotHasContent = !1, this._iconSlotChanged = (t) => {
       this._iconSlotHasContent = t.target.assignedNodes({ flatten: !0 }).length > 0;
     }, this.hasPreview = !1;
   }
@@ -927,7 +917,7 @@ let M = class extends De {
   render() {
     return I` ${this.renderMedia()}
       <slot @slotchange=${this.queryPreviews}></slot>
-      ${this.href ? ae(this, z, lt).call(this) : ae(this, z, at).call(this)}
+      ${this.href ? ae(this, N, nt).call(this) : ae(this, N, ot).call(this)}
       <!-- Select border must be right after .open-part -->
       <div id="select-border"></div>
       ${this.selectable ? this.renderCheckbox() : c}
@@ -935,8 +925,8 @@ let M = class extends De {
       <slot name="actions"></slot>`;
   }
 };
-z = /* @__PURE__ */ new WeakSet();
-at = function() {
+N = /* @__PURE__ */ new WeakSet();
+ot = function() {
   const t = this.disabled ? void 0 : this.selectOnly ? -1 : 0;
   return I`
       <button
@@ -944,11 +934,11 @@ at = function() {
         tabindex=${W(t)}
         @click=${this.handleOpenClick}
         @keydown=${this.handleOpenKeydown}>
-        ${ae(this, z, we).call(this)}
+        ${ae(this, N, we).call(this)}
       </button>
     `;
 };
-lt = function() {
+nt = function() {
   const t = this.disabled ? void 0 : this.selectOnly ? -1 : 0, e = this.target === "_blank" ? "noopener noreferrer" : void 0;
   return I`
       <a
@@ -957,7 +947,7 @@ lt = function() {
         href=${W(this.disabled ? void 0 : this.href)}
         target=${W(this.target || void 0)}
         rel=${W(this.rel || e)}>
-        ${ae(this, z, we).call(this)}
+        ${ae(this, N, we).call(this)}
       </a>
     `;
 };
@@ -979,7 +969,7 @@ we = function() {
 };
 M.styles = [
   ...De.styles,
-  Ht`
+  Nt`
       #entity-symbol {
         align-self: center;
         width: 60%;
@@ -989,8 +979,17 @@ M.styles = [
 
       slot:not([name]) {
         display: block;
-        overflow: clip;
-        border-radius: calc(var(--uui-border-radius-2) - 1px);
+        width: 100%;
+        margin: calc(var(--uui-border-radius-2) - 1px);
+        margin-bottom: 38px;
+        overflow: visible;
+      }
+
+      slot:not([name])::slotted(*) {
+        align-self: center;
+        object-fit: cover;
+        width: 100%;
+        pointer-events: none;
       }
 
       slot[name='tag'] {
@@ -1016,14 +1015,6 @@ M.styles = [
       :host(:focus-within) slot[name='actions'],
       :host(:hover) slot[name='actions'] {
         opacity: 1;
-      }
-
-      slot:not([name])::slotted(*) {
-        align-self: center;
-        object-fit: cover;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
       }
 
       #open-part {
@@ -1148,46 +1139,46 @@ M.styles = [
     `
 ];
 q([
-  pe({ type: String })
+  de({ type: String })
 ], M.prototype, "name", 2);
 q([
-  pe({ type: String })
+  de({ type: String })
 ], M.prototype, "detail", 2);
 q([
-  pe({ type: String, attribute: "file-ext" })
+  de({ type: String, attribute: "file-ext" })
 ], M.prototype, "fileExt", 2);
 q([
-  ot()
+  st()
 ], M.prototype, "_iconSlotHasContent", 2);
 q([
-  ot()
+  st()
 ], M.prototype, "hasPreview", 2);
 M = q([
-  ni(ui)
+  si(ci)
 ], M);
-var mi = Object.defineProperty, fi = Object.getOwnPropertyDescriptor, ht = (t) => {
+var di = Object.defineProperty, pi = Object.getOwnPropertyDescriptor, at = (t) => {
   throw TypeError(t);
 }, m = (t, e, i, s) => {
-  for (var r = s > 1 ? void 0 : s ? fi(e, i) : e, o = t.length - 1, n; o >= 0; o--)
+  for (var r = s > 1 ? void 0 : s ? pi(e, i) : e, o = t.length - 1, n; o >= 0; o--)
     (n = t[o]) && (r = (s ? n(e, i, r) : n(r)) || r);
-  return s && r && mi(e, i, r), r;
-}, ct = (t, e, i) => e.has(t) || ht("Cannot " + i), le = (t, e, i) => (ct(t, e, "read from private field"), i ? i.call(t) : e.get(t)), ze = (t, e, i) => e.has(t) ? ht("Cannot add the same private member more than once") : e instanceof WeakSet ? e.add(t) : e.set(t, i), J = (t, e, i) => (ct(t, e, "access private method"), i), N, U, dt, pt, ut, mt, ft;
-const _i = "wysiwg-image-and-crop-picker";
+  return s && r && di(e, i, r), r;
+}, lt = (t, e, i) => e.has(t) || at("Cannot " + i), le = (t, e, i) => (lt(t, e, "read from private field"), i ? i.call(t) : e.get(t)), Ne = (t, e, i) => e.has(t) ? at("Cannot add the same private member more than once") : e instanceof WeakSet ? e.add(t) : e.set(t, i), Z = (t, e, i) => (lt(t, e, "access private method"), i), z, O, ht, ct, dt, pt, ut;
+const ui = "wysiwg-image-and-crop-picker";
 let d = class extends qe(He) {
   //#endregion
   constructor() {
-    super(), ze(this, U), this.mandatoryMessage = Be, this.readonly = !1, this._focalPointEnabled = !1, this._preselectedCrops = [], this._multiple = !1, this._min = 0, this._max = 1, this._interactionMemories = [], ze(this, N, new At(this, {
+    super(), Ne(this, O), this.mandatoryMessage = Be, this.readonly = !1, this._focalPointEnabled = !1, this._preselectedCrops = [], this._multiple = !1, this._min = 0, this._max = 1, this._interactionMemories = [], Ne(this, z, new bt(this, {
       memoryUniquePrefix: "UmbMediaPicker"
-    })), this._selectedCropAlias = "", this._options = [], this._imgSrc = "", this._prevImgSrc = "", this.consumeContext(wt, (t) => {
+    })), this._selectedCropAlias = "", this._options = [], this._imgSrc = "", this._prevImgSrc = "", this.consumeContext($t, (t) => {
       this.observe(t?.alias, (e) => this._alias = e), this.observe(t?.variantId, (e) => this._variantId = e?.toString() || "invariant");
-    }), this.observe(le(this, N).memoriesForPropertyEditor, (t) => {
+    }), this.observe(le(this, z).memoriesForPropertyEditor, (t) => {
       this._interactionMemories = t ?? [];
     });
   }
   //#region properties, states, ctor, methods
   //#region properties
   set config(t) {
-    if (le(this, N).setPropertyEditorConfig(t), !t) return;
+    if (le(this, z).setPropertyEditorConfig(t), !t) return;
     if (this._allowedMediaTypes = t.getValueByAlias("filter")?.split(",") ?? void 0, this._focalPointEnabled = !!t.getValueByAlias("enableLocalFocalPoint"), this._preselectedCrops = t?.getValueByAlias("crops") ?? [], this._preselectedCrops.length > 0) {
       const i = this._preselectedCrops.find((r) => !!r.defaultCrop);
       this._selectedCropAlias = this.value?.[0]?.selectedCropAlias ?? i?.alias ?? "";
@@ -1203,13 +1194,10 @@ let d = class extends qe(He) {
     }
     this.getImageCropperCrops();
     const e = t.getValueByAlias("startNodeId") ?? "";
-    this._startNode = e ? { unique: e, entityType: vt } : void 0;
+    this._startNode = e ? { unique: e, entityType: gt } : void 0;
   }
   firstUpdated() {
     this.addFormControlElement(this.shadowRoot.querySelector("wysiwg-input-rich-media")), this.shadowRoot?.querySelector("umb-input-dropdown-list") && this.addFormControlElement(this.shadowRoot.querySelector("umb-input-dropdown-list"));
-  }
-  focus(t) {
-    return this.shadowRoot?.querySelector("wysiwg-input-rich-media")?.focus();
   }
   async getImageCropperCrops(t) {
     this._selectedCropAlias || (this._selectedCropAlias = this.value?.[0]?.selectedCropAlias ?? ""), await this.crops(t).then((e) => {
@@ -1237,7 +1225,7 @@ let d = class extends qe(He) {
       query: {
         mediaItemId: t ?? ""
       }
-    }, { data: i, error: s } = await Ct(e);
+    }, { data: i, error: s } = await At(e);
     return s ? (console.error(s), "error") : i !== void 0 ? i : "no data";
   }
   _updateValue(t, e = !1) {
@@ -1259,14 +1247,14 @@ let d = class extends qe(He) {
   }
   render() {
     return w`
-      ${J(this, U, ft).call(this)}
-      ${J(this, U, mt).call(this)}
+      ${Z(this, O, ut).call(this)}
+      ${Z(this, O, pt).call(this)}
     `;
   }
 };
-N = /* @__PURE__ */ new WeakMap();
-U = /* @__PURE__ */ new WeakSet();
-dt = function(t) {
+z = /* @__PURE__ */ new WeakMap();
+O = /* @__PURE__ */ new WeakSet();
+ht = function(t) {
   this._imgSrc !== this._prevImgSrc && (this._prevImgSrc = this._imgSrc);
   const e = t.target.value?.length === 0, i = t.target.value?.find((o) => !!o.mediaKey) ?? void 0;
   let s = e ? void 0 : i;
@@ -1287,17 +1275,17 @@ dt = function(t) {
     });
   }
 };
-pt = function(t) {
+ct = function(t) {
   const e = t.target.value;
   this._selectedCropAlias = e, this._updateValue({
     selectedCropAlias: this._selectedCropAlias
   });
 };
-ut = async function(t) {
+dt = async function(t) {
   const i = t.target.interactionMemories;
-  i && i.length > 0 ? await le(this, N).saveMemoriesForPropertyEditor(i) : await le(this, N).deleteMemoriesForPropertyEditor();
+  i && i.length > 0 ? await le(this, z).saveMemoriesForPropertyEditor(i) : await le(this, z).deleteMemoriesForPropertyEditor();
 };
-mt = function() {
+pt = function() {
   return w`
     <wysiwg-input-rich-media
       .alias=${this._alias}
@@ -1312,28 +1300,28 @@ mt = function() {
       .required=${this.mandatory}
       .requiredMessage=${this.mandatoryMessage}
       ?multiple=${this._multiple}
-      @change=${J(this, U, dt)}
+      @change=${Z(this, O, ht)}
       ?readonly=${this.readonly}
 			.interactionMemories=${this._interactionMemories}
-			@interaction-memories-change=${J(this, U, ut)}>
+			@interaction-memories-change=${Z(this, O, dt)}>
     </wysiwg-input-rich-media>
   `;
 };
-ft = function() {
+ut = function() {
   const t = !!this.value?.length && !!this.value[0]?.mediaKey, e = "crop-select";
   return this._options.length ? w`
       <uui-select
         label=${e}
         .disabled=${!t}
         .options=${this._options}
-        @change=${J(this, U, pt)}
+        @change=${Z(this, O, ct)}
         ?readonly=${this.readonly}
       ></uui-select>
     ` : w`<uui-select label=${e}></uui-select>`;
 };
 d.styles = [
-  Et.styles,
-  Ne`
+  wt.styles,
+  ze`
       uui-select {
         margin-bottom: 8px;
         width: 100%;
@@ -1341,13 +1329,13 @@ d.styles = [
     `
 ];
 m([
-  _({ type: Boolean })
+  f({ type: Boolean })
 ], d.prototype, "mandatory", 2);
 m([
-  _({ type: String })
+  f({ type: String })
 ], d.prototype, "mandatoryMessage", 2);
 m([
-  _({ type: Boolean, reflect: !0 })
+  f({ type: Boolean, reflect: !0 })
 ], d.prototype, "readonly", 2);
 m([
   v()
@@ -1392,11 +1380,11 @@ m([
   v()
 ], d.prototype, "_prevImgSrc", 2);
 d = m([
-  Re(_i)
+  Re(ui)
 ], d);
-const zi = d;
+const Oi = d;
 export {
   d as WysiwgImageAndCropPickerElement,
-  zi as default
+  Oi as default
 };
-//# sourceMappingURL=wysiwg-image-and-crop-picker.element-DCtIrIlc.js.map
+//# sourceMappingURL=wysiwg-image-and-crop-picker.element-DODlo3o_.js.map

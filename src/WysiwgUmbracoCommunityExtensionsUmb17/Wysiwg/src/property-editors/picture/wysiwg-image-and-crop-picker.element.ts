@@ -1,6 +1,5 @@
 import {
   UMB_MEDIA_ENTITY_TYPE,
-  UmbMediaPickerPropertyValueEntry,
 } from "@umbraco-cms/backoffice/media";
 import {
   css,
@@ -31,8 +30,7 @@ import {
   WysiwgMediaPickerPropertyValueEntry,
   WysiwgMediaPickerModel,
 } from "./types";
-import { GetCropsData, GetCropsResponse, IMediaTypeModel, GetMediaTypesResponse, getMediaTypes, getCrops } from "../../api";
-import { UmbNumberRangeValueType } from "@umbraco-cms/backoffice/models";
+import { GetCropsData, GetCropsResponse, getCrops } from "../../api";
 
 import type { WysiwgInputRichMediaElement } from "./wysiwg-input-rich-media.element.js";
 import './wysiwg-input-rich-media.element.js';
@@ -176,10 +174,6 @@ export class WysiwgImageAndCropPickerElement
     if (cropSelect) {
       this.addFormControlElement(this.shadowRoot!.querySelector("umb-input-dropdown-list")!);
     }
-  }
-
-  override focus(options?: FocusOptions) {
-    return this.shadowRoot?.querySelector<WysiwgInputRichMediaElement>("wysiwg-input-rich-media")?.focus();
   }
 
   private async getImageCropperCrops(mediaKey?: string) {

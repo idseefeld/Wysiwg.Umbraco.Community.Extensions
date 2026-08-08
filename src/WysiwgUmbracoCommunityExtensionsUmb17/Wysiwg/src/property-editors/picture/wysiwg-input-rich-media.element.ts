@@ -20,10 +20,8 @@ import {
   UMB_VALIDATION_EMPTY_LOCALIZATION_KEY,
   UmbFormControlMixin
 } from "@umbraco-cms/backoffice/validation";
-import { UmbVariantId } from "@umbraco-cms/backoffice/variant";
 import { WysiwgCroppedImageElement } from "../../blocks/components/wysiwg-cropped-image.element";
 import { WysiwgMediaPickerPropertyValueEntry, WysiwgMediaPickerModel } from "./types";
-import { UmbDropzoneChangeEvent, UmbFileDropzoneItemStatus, UmbUploadableItem } from "@umbraco-cms/backoffice/dropzone";
 import { UmbEntityInputInteractionMemoryManager } from "@umbraco-cms/backoffice/entity";
 import { UmbInteractionMemoryModel } from "@umbraco-cms/backoffice/interaction-memory";
 
@@ -275,6 +273,10 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
 
   async #populateCards() {
     const mediaItems = this.#itemManager.getItems();
+    if (mediaItems.length === 0) {
+      this._cards = [];
+      return [];
+    }
 
     this._cards =
       this.value?.map((item) => {
@@ -346,30 +348,10 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
     this.dispatchEvent(new UmbChangeEvent());
   }
 
-  async #onUploadCompleted(e: UmbDropzoneChangeEvent) {
-    if (this.readonly) return;
-
-    // If there are any finished uploadable items, we need to add them to the value
-    const uploaded = e.items
-      .filter((file) => file.status === UmbFileDropzoneItemStatus.COMPLETE)
-      .map((file) => file.unique);
-    this.#addItems(uploaded);
-  }
-
   override render() {
     return html`
-    ${this.#renderDropzone()}
     <div class="container">${this.#renderItems()} ${this.#renderAddButton()}</div>
   `;
-  }
-
-  #renderDropzone() {
-    if (this.readonly) return nothing;
-    return html`<umb-dropzone-media
-			id="dropzone"
-			?multiple=${this.multiple}
-			.parentUnique=${this.startNode?.unique ?? null}
-			@change=${this.#onUploadCompleted}></umb-dropzone-media>`;
   }
 
   #renderItems() {
@@ -488,7 +470,9 @@ export class WysiwgInputRichMediaElement extends UmbFormControlMixin<
 				display: grid;
 				gap: var(--uui-size-space-5);
 				grid-template-columns: repeat(auto-fill, minmax(var(--umb-card-medium-min-width), 1fr));
-				grid-auto-rows: var(--umb-card-medium-min-width);
+
+        /* remove next line to show height of the image */
+        /*grid-auto-rows: var(--umb-card-medium-min-width); */
 			}
 
 			#btn-add {

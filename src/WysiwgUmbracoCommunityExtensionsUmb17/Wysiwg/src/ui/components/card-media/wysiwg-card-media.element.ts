@@ -3,11 +3,11 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { UUICardElement } from "@umbraco-cms/backoffice/external/uui";
 
-import {
-  UUISymbolFolderElement,
-  UUISymbolFileElement,
-  UUISymbolExpandElement
-} from "@umbraco-cms/backoffice/external/uui";
+// import {
+//   UUISymbolFolderElement,
+//   UUISymbolFileElement,
+//   UUISymbolExpandElement
+// } from "@umbraco-cms/backoffice/external/uui";
 
 /*
 * base on UUICardMediaElement
@@ -145,8 +145,17 @@ export class WysiwgCardMediaElement extends UUICardElement {
 
       slot:not([name]) {
         display: block;
-        overflow: clip;
-        border-radius: calc(var(--uui-border-radius-2) - 1px);
+        width: 100%;
+        margin: calc(var(--uui-border-radius-2) - 1px);
+        margin-bottom: 38px;
+        overflow: visible;
+      }
+
+      slot:not([name])::slotted(*) {
+        align-self: center;
+        object-fit: cover;
+        width: 100%;
+        pointer-events: none;
       }
 
       slot[name='tag'] {
@@ -172,14 +181,6 @@ export class WysiwgCardMediaElement extends UUICardElement {
       :host(:focus-within) slot[name='actions'],
       :host(:hover) slot[name='actions'] {
         opacity: 1;
-      }
-
-      slot:not([name])::slotted(*) {
-        align-self: center;
-        object-fit: cover;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
       }
 
       #open-part {
