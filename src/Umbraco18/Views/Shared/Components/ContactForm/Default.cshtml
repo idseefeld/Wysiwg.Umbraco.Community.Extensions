@@ -1,0 +1,65 @@
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContactFormModel>
+@using Microsoft.AspNetCore.Http;
+@{
+    var submitLabel = Umbraco.GetDictionaryValueOrDefault("submitLabel", "Senden");
+    var nameLabel = Umbraco.GetDictionaryValueOrDefault("nameLabel", "Name");
+    var emailLabel = Umbraco.GetDictionaryValueOrDefault("emailLabel", "E-Mail");
+    var subjectLabel = Umbraco.GetDictionaryValueOrDefault("subjectLabel", "Betreff");
+    var messageLabel = Umbraco.GetDictionaryValueOrDefault("messageLabel", "Nachricht");
+    var dataConsentLabel = Umbraco.GetDictionaryValueOrDefault("dataConsentLabel", "Consent for storing submitted data *");
+    var dataConsentCheckboxLabel = Umbraco.GetDictionaryValueOrDefault("dataConsentCheckboxLabel", "Yes, I give permission to store and process my data.");
+    //nameLabel = emailLabel = subjectLabel = messageLabel = "placeholder";
+
+    //var displayName = Model.GetPropertyDisplayName("name");
+    //displayName = Model.GetPropertyDisplayName("email");
+
+    //var lang = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
+
+    var session = this.Context.Session;
+    if (session.GetString(Constances.Common.FormPosted) == null)
+    {
+        session.SetString(Constances.Common.EditStart, DateTime.Now.Ticks.ToString());
+    }
+}
+@using (Html.BeginUmbracoForm<ContactFormController>(nameof(ContactFormController.HandleSubmit)))
+{
+    <div class="form-floating mb-3">
+        <input asp-for="FirstAndLastName" class="form-control" placeholder="@nameLabel" autocomplete="off" />
+        <label asp-for="FirstAndLastName"></label>
+        <span asp-validation-for="FirstAndLastName" class="form-text"></span>
+    </div>
+    <div class="form-floating mb-3">
+        <input asp-for="Email" class="form-control" placeholder="@emailLabel" autocomplete="off" />
+        <label asp-for="Email"></label>
+        <span asp-validation-for="Email" class="form-text"></span>
+    </div>
+    <div class="form-floating mb-3">
+        <input asp-for="Subject" class="form-control" placeholder="@subjectLabel" />
+        <label asp-for="Subject"></label>
+        <span asp-validation-for="Subject" class="form-text"></span>
+    </div>
+    <div class="form-floating mb-3">
+        <textarea asp-for="Message" class="form-control" placeholder="@messageLabel" style="min-height: 100px"></textarea>
+        <label asp-for="Message"></label>
+        <span asp-validation-for="Message" class="form-text"></span>
+    </div>
+
+    <div class="data-consent-wrapper mb-4">
+        <p><strong>@dataConsentLabel</strong></p>
+        <div class="form-check">
+            <input asp-for="DataConsent" class="form-check-input" type="checkbox" onchange="updateDataConsentTextField(this)">
+            <label asp-for="DataConsent" class="form-check-label">
+                @dataConsentCheckboxLabel
+            </label>
+        </div>
+
+        <input asp-for="DataConsentText" type="text" style="float: left;visibility: hidden; height: 0; margin: 0; padding: 0; border: none;">
+        <span asp-validation-for="DataConsentText" class="form-text"></span>
+    </div>
+
+    @*<div class="mb-3" asp-validation-summary="All"></div>*@
+
+    <button type="submit" id="form-submit" class="btn btn-primary" name="Submit">@submitLabel</button>
+}
+
+<script src="~/js/forms.js"></script>

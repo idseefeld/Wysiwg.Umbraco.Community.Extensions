@@ -249,7 +249,8 @@ export class WysiwgBlockLayoutView
 
         <uui-popover-container id="tooltip-popover">
 
-          <div class="popover-container" style="display: flex;flex-direction: column;padding: 1rem;border-radius: 3px;width: 200px;background: var(--uui-color-danger);box-shadow: var(--uui-shadow-depth-3);color: white;line-height: 1.4em;">
+        <a href="/umbraco/section/packages/view/wysiwg-section" target="_self" style="text-decoration: none;color: inherit;">
+          <div class="popover-container" style="display: flex;flex-direction: column;padding: 1rem;border-radius: 3px;background: var(--uui-color-danger);box-shadow: var(--uui-shadow-depth-3);color: white;line-height: 1.4em;">
             <h3>
               <umb-localize key="wysiwg_updateAvailableTitle" .debug=${this._debug}>
                 Update Available
@@ -261,6 +262,7 @@ export class WysiwgBlockLayoutView
               </umb-localize>
             </p>
           </div>
+        </a>
 
         </uui-popover-container>
       `;

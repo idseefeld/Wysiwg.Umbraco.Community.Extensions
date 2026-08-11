@@ -1,5 +1,5 @@
 import { UmbTextStyles as C } from "@umbraco-cms/backoffice/style";
-import { html as g, nothing as B, styleMap as k, css as _, property as y, state as b, customElement as x } from "@umbraco-cms/backoffice/external/lit";
+import { html as g, nothing as _, styleMap as k, css as B, property as y, state as b, customElement as x } from "@umbraco-cms/backoffice/external/lit";
 import { W as E } from "./wysiwg-base-block-editor-custom.view-BoT8cJ6_.js";
 import { U as I } from "./types-eEpi63XY.js";
 import { f as M, h as $ } from "./sdk.gen-CjQc6NVt.js";
@@ -95,7 +95,8 @@ let i = class extends E {
 
         <uui-popover-container id="tooltip-popover">
 
-          <div class="popover-container" style="display: flex;flex-direction: column;padding: 1rem;border-radius: 3px;width: 200px;background: var(--uui-color-danger);box-shadow: var(--uui-shadow-depth-3);color: white;line-height: 1.4em;">
+        <a href="/umbraco/section/packages/view/wysiwg-section" target="_self" style="text-decoration: none;color: inherit;">
+          <div class="popover-container" style="display: flex;flex-direction: column;padding: 1rem;border-radius: 3px;background: var(--uui-color-danger);box-shadow: var(--uui-shadow-depth-3);color: white;line-height: 1.4em;">
             <h3>
               <umb-localize key="wysiwg_updateAvailableTitle" .debug=${this._debug}>
                 Update Available
@@ -107,6 +108,7 @@ let i = class extends E {
               </umb-localize>
             </p>
           </div>
+        </a>
 
         </uui-popover-container>
       `;
@@ -126,7 +128,7 @@ let i = class extends E {
             look="secondary"
             title=${this.localize.term("wysiwg_notExposedDescription")}
             ><umb-localize key="wysiwg_notExposedLabel"></umb-localize
-          ></uui-tag>` : B}
+          ></uui-tag>` : _}
 
       <umb-block-grid-areas-container
         slot="areas"
@@ -166,7 +168,7 @@ w = async function(t) {
 };
 i.styles = [
   C,
-  _`
+  B`
       :host {
         display: flex;
         height: 100%;
@@ -208,4 +210,4 @@ export {
   i as WysiwgBlockLayoutView,
   R as default
 };
-//# sourceMappingURL=block-layout.view-DwTvwv0f.js.map
+//# sourceMappingURL=block-layout.view-BnSeQaD8.js.map
