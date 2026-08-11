@@ -43,7 +43,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.Layouts",
     name: "Block Editor Custom View for Layouts",
-    element: () => import("./block-layout.view-DwTvwv0f.js"),
+    element: () => import("./block-layout.view-BnSeQaD8.js"),
     forContentTypeAlias: s(),
     forBlockEditor: "block-grid"
   },

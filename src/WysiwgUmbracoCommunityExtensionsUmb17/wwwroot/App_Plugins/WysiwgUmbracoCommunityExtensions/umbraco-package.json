@@ -8,7 +8,7 @@
       "name": "wysiwgUmbraco Community Extensions Bundle",
       "alias": "WysiwgUmbracoCommunityExtensions.Bundle",
       "type": "bundle",
-      "js": "/App_Plugins/WysiwgUmbracoCommunityExtensions/wysiwg-umbraco-community-extensions.js?v=18.1.0-nh3k5k"
+      "js": "/App_Plugins/WysiwgUmbracoCommunityExtensions/wysiwg-umbraco-community-extensions.js?v=18.1.0-vndbrm"
     }
   ]
 }
