@@ -1,27 +1,27 @@
 import { html as g, unsafeHTML as y, css as u, property as v, customElement as b } from "@umbraco-cms/backoffice/external/lit";
 import { W as h } from "./wysiwg-base-block-editor-custom.view-BoT8cJ6_.js";
-var C = Object.defineProperty, _ = Object.getOwnPropertyDescriptor, p = (i, r, o, a) => {
-  for (var e = a > 1 ? void 0 : a ? _(r, o) : r, n = i.length - 1, t; n >= 0; n--)
-    (t = i[n]) && (e = (a ? t(r, o, e) : t(e)) || e);
-  return a && e && C(r, o, e), e;
+var C = Object.defineProperty, _ = Object.getOwnPropertyDescriptor, p = (e, t, o, r) => {
+  for (var i = r > 1 ? void 0 : r ? _(t, o) : t, a = e.length - 1, s; a >= 0; a--)
+    (s = e[a]) && (i = (r ? s(t, o, i) : s(i)) || i);
+  return r && i && C(t, o, i), i;
 };
-let s = class extends h {
+let n = class extends h {
   constructor() {
     super(...arguments), this._debugLocalize = !1, this._defaultColor = { label: "Black", value: "#000" };
   }
   render() {
-    const i = this.content;
-    if (!i)
+    const e = this.content;
+    if (!e)
       return g`
       <div class="error">
         <umb-localize key="wysiwg_invalidData" .debug=${this._debugLocalize}
           >invalid data</umb-localize
         >
       </div>`;
-    const o = (i?.mediaItem ?? [])[0] ?? null;
+    const o = (e?.mediaItem ?? [])[0] ?? null;
     if (o ? o.mediaKey : "") {
-      const e = i?.alternativeText ?? o?.selectedCropAlias ?? "", n = g`<wysiwg-cropped-image class="wysiwg-cropped-image" .mediaItem=${o} .alt=${e}></wysiwg-cropped-image>`, t = i?.figCaption, c = i?.captionColor?.value ?? this._defaultColor.value, l = i?.rotation?.from ?? 0, w = l ? `margin: var(--wysiwg-figure-margin, 0);transform: var(--wysiwg-figure-transform, rotate(${l ?? 0}deg));` : "", d = l ? 'class="rotate" ' : "", f = this.isTransparentColor(c) ? "" : `${d}style="color: var(--wysiwg-figcaption-color,${c});"`, m = t ? y(`<figcaption ${f}>${t}</figcaption>`) : "";
-      return g`<figure style=${w}>${n}${m}</figure>`;
+      const i = e?.captionColor?.value ?? this._defaultColor.value, a = e?.alternativeText ?? o?.selectedCropAlias ?? "", s = g`<wysiwg-cropped-image class="wysiwg-cropped-image" .mediaItem=${o} .alt=${a} style="border-color: ${i};"></wysiwg-cropped-image>`, c = e?.figCaption, l = e?.rotation?.from ?? 0, w = l ? `margin: var(--wysiwg-figure-margin, 0);transform: var(--wysiwg-figure-transform, rotate(${l ?? 0}deg));` : "", d = l ? 'class="rotate" ' : "", f = this.isTransparentColor(i) ? "" : `${d}style="color: var(--wysiwg-figcaption-color,${i});"`, m = c ? y(`<figcaption ${f}>${c}</figcaption>`) : "";
+      return g`<figure style=${w}>${s}${m}</figure>`;
     } else
       return g`<div class="error">
         <umb-localize key="wysiwg_noImageSelected" .debug=${this._debugLocalize}
@@ -30,7 +30,7 @@ let s = class extends h {
       </div>`;
   }
 };
-s.styles = [
+n.styles = [
   u`
       :host {
         display: block;
@@ -82,13 +82,13 @@ s.styles = [
 ];
 p([
   v({ attribute: !1 })
-], s.prototype, "content", 2);
-s = p([
+], n.prototype, "content", 2);
+n = p([
   b("wysiwg-cropped-picture-view")
-], s);
-const $ = s;
+], n);
+const z = n;
 export {
-  s as CroppedPictureCustomView,
-  $ as default
+  n as CroppedPictureCustomView,
+  z as default
 };
-//# sourceMappingURL=cropped-picture.view-CWhIqSrw.js.map
+//# sourceMappingURL=cropped-picture.view-BUAqLphC.js.map

@@ -83,7 +83,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.croppedPicture",
     name: "Block Editor Custom View for Cropped Picture",
-    element: () => import("./cropped-picture.view-CWhIqSrw.js"),
+    element: () => import("./cropped-picture.view-BUAqLphC.js"),
     forContentTypeAlias: o + "croppedPicture",
     forBlockEditor: "block-grid"
   },

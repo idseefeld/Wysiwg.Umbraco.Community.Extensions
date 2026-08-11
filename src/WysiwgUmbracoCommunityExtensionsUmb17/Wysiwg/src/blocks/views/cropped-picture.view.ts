@@ -41,12 +41,12 @@ export class CroppedPictureCustomView
         >
       </div>`;
     } else {
-      const alt = pictureWithCrop?.alternativeText ?? mediaCropItem?.selectedCropAlias ?? "";
-      const img = html`<wysiwg-cropped-image class="wysiwg-cropped-image" .mediaItem=${mediaCropItem} .alt=${alt}></wysiwg-cropped-image>`;
-
-      const caption = pictureWithCrop?.figCaption;
       const captionColor =
         pictureWithCrop?.captionColor?.value ?? this._defaultColor.value;
+      const alt = pictureWithCrop?.alternativeText ?? mediaCropItem?.selectedCropAlias ?? "";
+      const img = html`<wysiwg-cropped-image class="wysiwg-cropped-image" .mediaItem=${mediaCropItem} .alt=${alt} style="border-color: ${captionColor};"></wysiwg-cropped-image>`;
+
+      const caption = pictureWithCrop?.figCaption;
       const rotate = pictureWithCrop?.rotation?.from ?? 0;
       const rotationStyle = !rotate ? '' : `margin: var(--wysiwg-figure-margin, 0);transform: var(--wysiwg-figure-transform, rotate(${rotate ?? 0}deg));`;
       const figcaptionClass = !rotate ? '' : 'class="rotate" ';
