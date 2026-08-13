@@ -1,6 +1,6 @@
 import { UmbTextStyles as C } from "@umbraco-cms/backoffice/style";
 import { html as g, nothing as _, styleMap as k, css as B, property as y, state as b, customElement as x } from "@umbraco-cms/backoffice/external/lit";
-import { W as E } from "./wysiwg-base-block-editor-custom.view-BoT8cJ6_.js";
+import { W as E } from "./wysiwg-base-block-editor-custom.view-BSJRTpze.js";
 import { U as I } from "./types-eEpi63XY.js";
 import { f as M, h as $ } from "./sdk.gen-CjQc6NVt.js";
 var P = Object.defineProperty, H = Object.getOwnPropertyDescriptor, f = (t) => {
@@ -78,7 +78,7 @@ let i = class extends E {
       const d = (t?.find((u) => u.alias === "minHeight")?.value ?? "0").toString();
       e.minHeight = d;
       let l = t?.find((u) => u.alias === "padding")?.value.toString();
-      l || (l = a && !r ? "10px" : ""), e.padding = l;
+      l || (l = a ? "10px" : ""), e.padding = l;
     }
     this.backgroundStyleMap = e;
   }
@@ -210,4 +210,4 @@ export {
   i as WysiwgBlockLayoutView,
   R as default
 };
-//# sourceMappingURL=block-layout.view-BnSeQaD8.js.map
+//# sourceMappingURL=block-layout.view-9zdyVhJS.js.map

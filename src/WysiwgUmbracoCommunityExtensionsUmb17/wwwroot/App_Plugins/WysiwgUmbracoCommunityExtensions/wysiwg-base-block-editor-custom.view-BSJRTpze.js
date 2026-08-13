@@ -1,7 +1,7 @@
 import { LitElement as h, property as p, state as d, customElement as f } from "@umbraco-cms/backoffice/external/lit";
 import { UmbElementMixin as m } from "@umbraco-cms/backoffice/element-api";
 import { UMB_PROPERTY_DATASET_CONTEXT as v } from "@umbraco-cms/backoffice/property";
-import { D as S, T as y } from "./constants-C2L7NEyy.js";
+import { D as S, T as y } from "./constants-B4oFBJqb.js";
 import { UMB_DOCUMENT_WORKSPACE_CONTEXT as C } from "@umbraco-cms/backoffice/document";
 import { WYSIWG_BLOCKGRID_CONTEXT as b } from "./wysiwg.workspace.context-CeinJtuE.js";
 var _ = Object.defineProperty, T = Object.getOwnPropertyDescriptor, c = (t, e, i, o) => {
@@ -113,4 +113,4 @@ u = c([
 export {
   u as W
 };
-//# sourceMappingURL=wysiwg-base-block-editor-custom.view-BoT8cJ6_.js.map
+//# sourceMappingURL=wysiwg-base-block-editor-custom.view-BSJRTpze.js.map

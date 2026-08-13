@@ -1,6 +1,6 @@
 import { UmbTextStyles as g } from "@umbraco-cms/backoffice/style";
 import { unsafeHTML as h, html as l, css as p, customElement as w } from "@umbraco-cms/backoffice/external/lit";
-import { W as d } from "./wysiwg-base-block-editor-custom.view-BoT8cJ6_.js";
+import { W as d } from "./wysiwg-base-block-editor-custom.view-BSJRTpze.js";
 var c = Object.getOwnPropertyDescriptor, y = (e, a, i, r) => {
   for (var t = r > 1 ? void 0 : r ? c(a, i) : a, s = e.length - 1, o; s >= 0; s--)
     (o = e[s]) && (t = o(t) || t);
@@ -96,4 +96,4 @@ export {
   n as WysiwgBlockParagraphView,
   x as default
 };
-//# sourceMappingURL=paragraph.view-C0_OlM9h.js.map
+//# sourceMappingURL=paragraph.view-CfK1vUym.js.map

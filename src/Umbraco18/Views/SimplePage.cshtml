@@ -1,7 +1,9 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@using Umbraco.Cms.Web.Common.PublishedModels;
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<SimplePage>
 @{
     Layout = null;
+    var backgroundColor = Model?.PageBackgroundColor?.Color;
+    var backgroundStyle = string.IsNullOrEmpty(backgroundColor) ? string.Empty : $"background-color: {backgroundColor};";
 }
 <!DOCTYPE html>
 <html>
@@ -37,7 +39,7 @@
     </style>
 </head>
 <body id="top">
-    <div id="canvas">
+    <div id="canvas" style="@backgroundStyle">
         @await Html.GetBlockGridHtmlAsync(Model.Grid)
 
         <footer>

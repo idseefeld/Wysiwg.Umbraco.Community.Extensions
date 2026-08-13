@@ -6,7 +6,7 @@ import { g as b, a as y, b as w, c as v, d as x } from "./sdk.gen-CjQc6NVt.js";
 import { U as l } from "./types-eEpi63XY.js";
 import { umbConfirmModal as C } from "@umbraco-cms/backoffice/modal";
 import { c as S } from "./client.gen-Cmrrvp-8.js";
-import { D as z } from "./constants-C2L7NEyy.js";
+import { D as z } from "./constants-B4oFBJqb.js";
 const U = (t) => (t?.client ?? S).get({
   security: [{ scheme: "bearer", type: "http" }],
   url: "/umbraco/management/api/v1/server/information",
@@ -339,4 +339,4 @@ export {
   r as WysiwgDashboardElement,
   P as default
 };
-//# sourceMappingURL=dashboard.element-C4ENntBi.js.map
+//# sourceMappingURL=dashboard.element-DgmTHJZs.js.map

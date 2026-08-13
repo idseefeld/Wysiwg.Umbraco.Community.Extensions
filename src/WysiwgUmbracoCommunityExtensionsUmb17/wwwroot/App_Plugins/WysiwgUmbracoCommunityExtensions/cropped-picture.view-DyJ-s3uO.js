@@ -1,18 +1,18 @@
-import { html as g, unsafeHTML as y, css as u, property as v, customElement as b } from "@umbraco-cms/backoffice/external/lit";
-import { W as h } from "./wysiwg-base-block-editor-custom.view-BoT8cJ6_.js";
-var C = Object.defineProperty, _ = Object.getOwnPropertyDescriptor, p = (e, t, o, r) => {
-  for (var i = r > 1 ? void 0 : r ? _(t, o) : t, a = e.length - 1, s; a >= 0; a--)
-    (s = e[a]) && (i = (r ? s(t, o, i) : s(i)) || i);
-  return r && i && C(t, o, i), i;
+import { html as n, unsafeHTML as u, css as v, property as b, customElement as h } from "@umbraco-cms/backoffice/external/lit";
+import { W as C } from "./wysiwg-base-block-editor-custom.view-BSJRTpze.js";
+var $ = Object.defineProperty, _ = Object.getOwnPropertyDescriptor, w = (e, a, o, s) => {
+  for (var i = s > 1 ? void 0 : s ? _(a, o) : a, t = e.length - 1, r; t >= 0; t--)
+    (r = e[t]) && (i = (s ? r(a, o, i) : r(i)) || i);
+  return s && i && $(a, o, i), i;
 };
-let n = class extends h {
+let g = class extends C {
   constructor() {
     super(...arguments), this._debugLocalize = !1, this._defaultColor = { label: "Black", value: "#000" };
   }
   render() {
     const e = this.content;
     if (!e)
-      return g`
+      return n`
       <div class="error">
         <umb-localize key="wysiwg_invalidData" .debug=${this._debugLocalize}
           >invalid data</umb-localize
@@ -20,18 +20,18 @@ let n = class extends h {
       </div>`;
     const o = (e?.mediaItem ?? [])[0] ?? null;
     if (o ? o.mediaKey : "") {
-      const i = e?.captionColor?.value ?? this._defaultColor.value, a = e?.alternativeText ?? o?.selectedCropAlias ?? "", s = g`<wysiwg-cropped-image class="wysiwg-cropped-image" .mediaItem=${o} .alt=${a} style="border-color: ${i};"></wysiwg-cropped-image>`, c = e?.figCaption, l = e?.rotation?.from ?? 0, w = l ? `margin: var(--wysiwg-figure-margin, 0);transform: var(--wysiwg-figure-transform, rotate(${l ?? 0}deg));` : "", d = l ? 'class="rotate" ' : "", f = this.isTransparentColor(i) ? "" : `${d}style="color: var(--wysiwg-figcaption-color,${i});"`, m = c ? y(`<figcaption ${f}>${c}</figcaption>`) : "";
-      return g`<figure style=${w}>${s}${m}</figure>`;
+      const i = e?.captionColor?.value, t = this.isTransparentColor(i) || !i, r = e?.alternativeText ?? o?.selectedCropAlias ?? "", d = t ? n`<wysiwg-cropped-image .mediaItem=${o} .alt=${r}></wysiwg-cropped-image>` : n`<wysiwg-cropped-image .mediaItem=${o} .alt=${r} class="wysiwg-cropped-image" style="border-color: ${i};"></wysiwg-cropped-image>`, c = e?.figCaption, l = e?.rotation?.from ?? 0, f = l ? `margin: var(--wysiwg-figure-margin, 0);transform: var(--wysiwg-figure-transform, rotate(${l ?? 0}deg));` : "", p = l ? 'class="rotate" ' : "", m = t ? `${p}style="padding-top: 0;"` : `${p}style="color: var(--wysiwg-figcaption-color,${i ?? this._defaultColor.value});"`, y = c ? u(`<figcaption ${m}>${c}</figcaption>`) : "";
+      return n`<figure style=${f}>${d}${y}</figure>`;
     } else
-      return g`<div class="error">
+      return n`<div class="error">
         <umb-localize key="wysiwg_noImageSelected" .debug=${this._debugLocalize}
           >No image selected or found</umb-localize
         >
       </div>`;
   }
 };
-n.styles = [
-  u`
+g.styles = [
+  v`
       :host {
         display: block;
         height: auto;
@@ -59,7 +59,7 @@ n.styles = [
         margin: var(--wysiwg-figcaption-margin, 0);
         padding: var(--wysiwg-figcaption-padding, 0);
         color: var(--wysiwg-figcaption-color, inherit);
-        font-style: var(--wysiwg-figcaption-font-style, italic);
+        font-style: var(--wysiwg-figcaption-font-style, normal);
         font-variant: var(--wysiwg-figcaption-font-variant, normal);
         font-weight: var(--wysiwg-figcaption-font-weight, normal);
         font-size: var(--wysiwg-figcaption-font-size, 90%);
@@ -80,15 +80,15 @@ n.styles = [
       }
     `
 ];
-p([
-  v({ attribute: !1 })
-], n.prototype, "content", 2);
-n = p([
-  b("wysiwg-cropped-picture-view")
-], n);
-const z = n;
+w([
+  b({ attribute: !1 })
+], g.prototype, "content", 2);
+g = w([
+  h("wysiwg-cropped-picture-view")
+], g);
+const I = g;
 export {
-  n as CroppedPictureCustomView,
-  z as default
+  g as CroppedPictureCustomView,
+  I as default
 };
-//# sourceMappingURL=cropped-picture.view-BUAqLphC.js.map
+//# sourceMappingURL=cropped-picture.view-DyJ-s3uO.js.map

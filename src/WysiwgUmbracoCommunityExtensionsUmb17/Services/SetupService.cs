@@ -18,6 +18,7 @@ using Umbraco.Cms.Core.Strings;
 using Umbraco.Extensions;
 using WysiwgUmbracoCommunityExtensions.Extensions;
 using WysiwgUmbracoCommunityExtensions.Models;
+using static Umbraco.Cms.Core.PropertyEditors.ColorPickerConfiguration;
 using uReferenceByIdModel = Umbraco.Cms.Api.Management.ViewModels.ReferenceByIdModel;
 
 namespace WysiwgUmbracoCommunityExtensions.Services
@@ -72,6 +73,12 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         ];
         private readonly string[] _layoutKeyCollection = ["layout1", "layout2", "layout3", "layout4"];
         private readonly string[] _needUpdateContentTypes = [
+            $"{Constants.Prefix}callToActionSettings",
+            $"{Constants.Prefix}headline",
+            $"{Constants.Prefix}paragraph",
+            $"{Constants.Prefix}croppedPicture",
+            $"{Constants.Prefix}paragraphSettings",
+            $"{Constants.Prefix}rowSettings",
             // v18.1.0
             $"{Constants.Prefix}genericComponent"
         ];
@@ -466,65 +473,59 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
         private async Task CreateDataTypeCustomerColors(string name, uReferenceByIdModel parent)
         {
-            CreateDataTypeRequestModel createDataTypeRequestModel;
+            List<ColorPickerItem> defaultItems = new List<ColorPickerItem>()
+            {
+                new() { Value = "d60000", Label = "" },
+                new() { Value = "029400", Label = "" },
+                new() { Value = "5c9aff", Label = "" },
+                new() { Value = "fee648", Label = "" },
+                new() { Value = "ffffff", Label = "" },
+                new() { Value = "000", Label = "" },
+                new() { Value = Constants.TransparentColorValue, Label = "" }
+            };
+            string itemsValueString = JsonSerializer
+                .Serialize(defaultItems)
+                .ToLowerInvariant();
+            var itemsValue = itemsValueString.GetJsonArrayFromString();
+
             IDataType? dataType = _existingDataTypes?.FirstOrDefault(d => d.Name != null && d.Name.Equals(name));
-            if (dataType == null)
+            if (dataType != null)
             {
-                createDataTypeRequestModel = new CreateDataTypeRequestModel
+                if (dataType.ConfigurationObject is ColorPickerConfiguration existingValues)
                 {
-                    Parent = parent,
-                    Name = name,
-                    EditorAlias = "Umbraco.ColorPicker",
-                    EditorUiAlias = "Umb.PropertyEditorUi.ColorPicker",
-                    Values = [
-                        new DataTypePropertyPresentationModel {
+                    foreach (var item in defaultItems)
+                    {
+                        var existingItem = existingValues.Items.FirstOrDefault(i => i.Value != null && i.Value.Equals(item.Value));
+                        if (existingItem == null)
+                        {
+                            existingValues.Items.Add(item);
+                        }
+                    }
+
+                    itemsValueString = JsonSerializer
+                        .Serialize(existingValues.Items)
+                        .ToLowerInvariant();
+                    itemsValue = itemsValueString.GetJsonArrayFromString();
+                }
+            }
+
+            var createDataTypeRequestModel = new CreateDataTypeRequestModel
+            {
+                Parent = parent,
+                Name = name,
+                EditorAlias = "Umbraco.ColorPicker",
+                EditorUiAlias = "Umb.PropertyEditorUi.ColorPicker",
+                Values = [
+                    new DataTypePropertyPresentationModel {
                         Alias = "useLabel",
                         Value = false
                     },
                     new DataTypePropertyPresentationModel {
                         Alias = "items",
-                        Value = @"
-[
-    {""value"":""d60000"",""label"":""""},
-    {""value"":""029400"",""label"":""""},
-    {""value"":""5c9aff"",""label"":""""},
-    {""value"":""fee648"",""label"":""""},
-    {""value"":""ffffff"",""label"":""""},
-    {""value"":""000"",""label"":""""}
-]".GetJsonArrayFromString()
+                        Value = itemsValue
                     }
-                    ]
-                };
-            }
-            else
-            {
-                createDataTypeRequestModel = new CreateDataTypeRequestModel
-                {
-                    Parent = parent,
-                    Name = name,
-                    EditorAlias = "Umbraco.ColorPicker",
-                    EditorUiAlias = "Umb.PropertyEditorUi.ColorPicker",
-                    Values = [
-                        new DataTypePropertyPresentationModel {
-                        Alias = "useLabel",
-                        Value = false
-                    },
-                    new DataTypePropertyPresentationModel {
-                        Alias = "items",
-                        Value = @"
-[
-    {""value"":""d60000"",""label"":""Red""},
-    {""value"":""029400"",""label"":""Green""},
-    {""value"":""5c9aff"",""label"":""Blue""},
-    {""value"":""fee648"",""label"":""Yellow""},
-    {""value"":""ffffff"",""label"":""White""},
-    {""value"":""000"",""label"":""Black""},
-    {""value"":""fff"",""label"":""transparent""}
-]".GetJsonArrayFromString()
-                    }
-                    ]
-                };
-            }
+                ]
+            };
             await CreateOrUpdateDataType(createDataTypeRequestModel);
         }
 
@@ -629,6 +630,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 dataType.ConfigurationData = values;
 
                 attempt = await dataTypeService.UpdateAsync(dataType, CurrentUserKey);
+                if (!attempt.Success)
+                {
+                    throw new Exception($"{msg} Status: {attempt.Status} Exception: {attempt.Exception?.Message}");
+                }
             }
 
             _existingDataTypes = await GetAllWysiwgDataTypes();

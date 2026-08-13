@@ -41,16 +41,20 @@ export class CroppedPictureCustomView
         >
       </div>`;
     } else {
-      const captionColor =
-        pictureWithCrop?.captionColor?.value ?? this._defaultColor.value;
+      const captionColor = pictureWithCrop?.captionColor?.value;
+      const noBorder = this.isTransparentColor(captionColor) || !captionColor;
       const alt = pictureWithCrop?.alternativeText ?? mediaCropItem?.selectedCropAlias ?? "";
-      const img = html`<wysiwg-cropped-image class="wysiwg-cropped-image" .mediaItem=${mediaCropItem} .alt=${alt} style="border-color: ${captionColor};"></wysiwg-cropped-image>`;
+      const img = noBorder
+        ? html`<wysiwg-cropped-image .mediaItem=${mediaCropItem} .alt=${alt}></wysiwg-cropped-image>`
+        : html`<wysiwg-cropped-image .mediaItem=${mediaCropItem} .alt=${alt} class="wysiwg-cropped-image" style="border-color: ${captionColor};"></wysiwg-cropped-image>`;
 
       const caption = pictureWithCrop?.figCaption;
       const rotate = pictureWithCrop?.rotation?.from ?? 0;
       const rotationStyle = !rotate ? '' : `margin: var(--wysiwg-figure-margin, 0);transform: var(--wysiwg-figure-transform, rotate(${rotate ?? 0}deg));`;
       const figcaptionClass = !rotate ? '' : 'class="rotate" ';
-      const figcaptionAttr = this.isTransparentColor(captionColor) ? '' : `${figcaptionClass}style="color: var(--wysiwg-figcaption-color,${captionColor});"`;
+      const figcaptionAttr = noBorder
+        ? `${figcaptionClass}style="padding-top: 0;"`
+        : `${figcaptionClass}style="color: var(--wysiwg-figcaption-color,${captionColor ?? this._defaultColor.value});"`;
       const figCaption = caption
         ? unsafeHTML(`<figcaption ${figcaptionAttr}>${caption}</figcaption>`)
         : "";
@@ -89,7 +93,7 @@ export class CroppedPictureCustomView
         margin: var(--wysiwg-figcaption-margin, 0);
         padding: var(--wysiwg-figcaption-padding, 0);
         color: var(--wysiwg-figcaption-color, inherit);
-        font-style: var(--wysiwg-figcaption-font-style, italic);
+        font-style: var(--wysiwg-figcaption-font-style, normal);
         font-variant: var(--wysiwg-figcaption-font-variant, normal);
         font-weight: var(--wysiwg-figcaption-font-weight, normal);
         font-size: var(--wysiwg-figcaption-font-size, 90%);

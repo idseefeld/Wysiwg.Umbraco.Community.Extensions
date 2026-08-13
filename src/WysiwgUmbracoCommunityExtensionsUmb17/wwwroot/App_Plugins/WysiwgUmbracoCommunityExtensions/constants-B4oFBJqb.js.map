@@ -1,0 +1,1 @@
+{"version":3,"file":"constants-B4oFBJqb.js","sources":["../../../Wysiwg/src/constants.ts"],"sourcesContent":["export const Debugging = false;\r\nexport const TransparentBackgroundColor = \"#fefefe\";//work-a-round: color picker does not support transparent color\r\n"],"names":["Debugging","TransparentBackgroundColor"],"mappings":"AAAO,MAAMA,IAAY,IACZC,IAA6B;"}

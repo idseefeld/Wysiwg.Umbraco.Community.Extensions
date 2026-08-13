@@ -14,5 +14,7 @@ namespace WysiwgUmbracoCommunityExtensions
         public const string BlockGridCssPath = "/wwwroot/styles/wysiwyg-blockgrid.min.css";
 
         public static string DefaultItemAreasTemplate => $"{Prefix}areas";
+
+        public static string TransparentColorValue => "fefefe";
     }
 }
