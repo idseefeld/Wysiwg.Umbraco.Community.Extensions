@@ -71,19 +71,6 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             // v18.1.0
             $"{Constants.Prefix}genericComponent"
         ];
-        private readonly string[] _layoutKeyCollection = ["layout1", "layout2", "layout3", "layout4"];
-        private readonly string[] _needUpdateContentTypes = [
-            $"{Constants.Prefix}callToActionSettings",
-            $"{Constants.Prefix}headline",
-            $"{Constants.Prefix}paragraph",
-            $"{Constants.Prefix}croppedPicture",
-            $"{Constants.Prefix}paragraphSettings",
-            $"{Constants.Prefix}rowSettings",
-            // v18.1.0
-            $"{Constants.Prefix}genericComponent"
-        ];
-        private string[] _deprecatedContentTypes = [$"{Constants.Prefix}pictureWithCrop"];
-        private readonly string _dtContainerName = $"{Constants.Prefix.ToFirstUpper()}DataTypes";
         private readonly string[] _requiredDataTypes = [
             $"{Constants.Prefix}CallToActionLabel",
             $"{Constants.Prefix}CallToActionOnClick",
@@ -96,6 +83,42 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             // v18.1.0
             $"{Constants.Prefix}ComponentPicker"
         ];
+        private readonly Dictionary<string, string[]> _versionNeedUpdateContentTypes = new()
+        {
+            {"17.0.0", [
+                $"{Constants.Prefix}headline",
+                $"{Constants.Prefix}paragraph",
+                $"{Constants.Prefix}croppedPicture",
+                $"{Constants.Prefix}paragraphSettings",
+                $"{Constants.Prefix}rowSettings",
+            ]},
+            {"18.0.0", [
+                $"{Constants.Prefix}callToActionSettings",
+                ]},
+            {"18.1.0", []}
+        };
+        private readonly Dictionary<string, string[]> _versionNewContentTypes = new()
+        {
+            {"17.0.0", [
+                $"{Constants.Prefix}headline",
+                $"{Constants.Prefix}paragraph",
+                $"{Constants.Prefix}croppedPicture",
+                $"{Constants.Prefix}paragraphSettings",
+                $"{Constants.Prefix}rowSettings",
+            ]},
+            {"18.0.0", [
+                $"{Constants.Prefix}callToActionSettings",
+                ]},
+            {"18.1.0", [
+                $"{Constants.Prefix}genericComponent"
+                ]}
+        };
+
+        private readonly string[] _layoutKeyCollection = ["layout1", "layout2", "layout3", "layout4"];
+
+        private string[] _deprecatedContentTypes = [$"{Constants.Prefix}pictureWithCrop"];
+        private readonly string _dtContainerName = $"{Constants.Prefix.ToFirstUpper()}DataTypes";
+
         // Do not remove previus data types without deprecation phase and documentation
         private readonly string[] _removedDataTypes = [
             //$"{Constants.Prefix}ImageMediaPicker",
@@ -690,7 +713,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         {
             CopyBlockGridStyleSheet();
 
-            UpdateContentTypes();
+            UpdateAllExistingContentTypes();
 
             _existingDataTypes = [.. await dataTypeService.GetAllAsync()];
             var current = _existingDataTypes?.FirstOrDefault(d => d.Name != null && d.Name.Equals(_requiredBlockGridName));
@@ -1184,21 +1207,41 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         #endregion
 
         #region block elements
-        private void UpdateContentTypes()
+        private void UpdateAllExistingContentTypes()
         {
             _allContentTypes = [.. contentTypeService.GetAll().Where(t => t.Alias.StartsWith(Constants.Prefix))];
+        }
+
+        private IEnumerable<string> GetContentTypesToUpdate()
+        {
+            foreach (var version in _versionNewContentTypes.Keys.Reverse())
+            {
+                var newContentTypes = _versionNewContentTypes[version];
+                var requiredExists = _allContentTypes
+                    .Select(t => t.Alias)
+                    .Intersect(newContentTypes)
+                    .Count() == newContentTypes.Length;
+                if (requiredExists)
+                {
+                    return newContentTypes;
+                }
+            }
+
+            return Array.Empty<string>();
         }
 
         private async Task CreateBlockElements()
         {
             CreateOrUpdateContentElementContainers();
 
-            UpdateContentTypes();
+            UpdateAllExistingContentTypes();
+
+            IEnumerable<string> _needUpdateContentTypes = GetContentTypesToUpdate();
 
             var requiredExists = _allContentTypes
-                .Select(t => t.Alias)
-                .Intersect(_requiredContentTypes)
-                .Count() == _requiredContentTypes.Length + _needUpdateContentTypes.Length;
+                    .Select(t => t.Alias)
+                    .Intersect(_requiredContentTypes)
+                    .Count() == _requiredContentTypes.Length + _needUpdateContentTypes.Count();
             var missingRequired = _requiredContentTypes
                 .Except(_allContentTypes.Select(t => t.Alias))
                 .Concat(_needUpdateContentTypes);
@@ -1982,7 +2025,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             if (!DataTypeExists("Rotation"))
             { return VersionStatus.Update; }
 
-            UpdateContentTypes();
+            UpdateAllExistingContentTypes();
 
             if (!MinHeightPropertyExists("rowSettings", "minHeight"))
             { return VersionStatus.Update; }
@@ -2236,7 +2279,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
                 var allDataTypes = await GetAllWysiwgDataTypes();
 
-                UpdateContentTypes();
+                UpdateAllExistingContentTypes();
 
                 await CreateOrUpdateContentElements(string.Empty, culture, segment);
 
@@ -2265,7 +2308,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         {
             var variations = string.Empty;
 
-            UpdateContentTypes();
+            UpdateAllExistingContentTypes();
 
             var headlineType = _allContentTypes
                 .FirstOrDefault(t => t.Alias == $"{Constants.Prefix}headline");

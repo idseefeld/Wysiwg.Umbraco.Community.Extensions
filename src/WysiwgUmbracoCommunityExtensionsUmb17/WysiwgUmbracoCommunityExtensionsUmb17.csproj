@@ -26,7 +26,7 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <AssemblyVersion>$(VersionPrefix)</AssemblyVersion>
     <FileVersion>$(VersionPrefix)</FileVersion>
-    <Version>$(VersionPrefix)</Version>
+    <Version>$(VersionPrefix)-rc</Version>
     <RootNamespace>WysiwgUmbracoCommunityExtensions</RootNamespace>
   </PropertyGroup>
 
@@ -35,7 +35,7 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-  </ItemGroup>
+  </ItemGroup>  
 
   <!-- SourceLink -->
   <PropertyGroup>

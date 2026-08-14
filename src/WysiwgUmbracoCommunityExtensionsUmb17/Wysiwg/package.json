@@ -2,7 +2,7 @@
   "name": "wysiwg-umbraco-community-extensions",
   "private": true,
   "license": "MIT",
-  "version": "18.1.0",
+  "version": "18.1.0-rc",
   "type": "module",
   "scripts": {
     "watch": "tsc && vite build --watch",
