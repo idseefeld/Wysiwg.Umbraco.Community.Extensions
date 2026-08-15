@@ -74,7 +74,7 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		public virtual string FigCaption => this.Value<string>(_publishedValueFallback, "figCaption");
 
 		///<summary>
-		/// Media Item: Select image and crop
+		/// Media Item
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "18.1.0+fb0dc5b")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
