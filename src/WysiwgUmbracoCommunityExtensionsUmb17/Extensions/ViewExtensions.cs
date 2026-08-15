@@ -1,11 +1,8 @@
-using System.Drawing;
-using System.Text;
 using Microsoft.AspNetCore.Html;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Strings;
 using Umbraco.Extensions;
 using WysiwgUmbracoCommunityExtensions.Models;
-using WysiwgUmbracoCommunityExtensions.Services;
 using WysiwgUmbracoCommunityExtensions.ViewModels;
 using static Umbraco.Cms.Core.PropertyEditors.ValueConverters.ColorPickerValueConverter;
 
@@ -21,7 +18,7 @@ namespace WysiwgUmbracoCommunityExtensions.Extensions
 
             var color = string.IsNullOrEmpty(rowSettings.BackgroundColor)
                 ? pageColor
-                : rowSettings.BackgroundColor;
+                : GetColorOrTransparent(rowSettings.BackgroundColor);
             string? colorStyle = string.IsNullOrEmpty(color) ? null : $"background-color: {color};";
             string? imageStyle = null;
             string? paddingStyle = null;
@@ -41,6 +38,17 @@ namespace WysiwgUmbracoCommunityExtensions.Extensions
 
             return $"{paddingStyle}{colorStyle}{imageStyle}{minHeightStyle}";
         }
+        public static string GetColorOrTransparent(this string colorValue)
+        {
+            // work-a-round for missing transparent definition in default ColorPicker data type
+            return colorValue.InvariantEquals($"#{Constants.TransparentColorValue}") || string.IsNullOrEmpty(colorValue) ? "transparent" : colorValue;
+
+        }
+        public static bool IsTransparent(this string colorValue)
+        {
+            return colorValue.InvariantEquals("transparent");
+
+        }
         public static string? GetColorStyle(this string color, string? pageColor = null)
         {
             string? colorStyle = null;
@@ -51,7 +59,7 @@ namespace WysiwgUmbracoCommunityExtensions.Extensions
             if (!string.IsNullOrWhiteSpace(colorValue))
             {
                 // work-a-round for missing transparent definition in default ColorPicker data type
-                var isTransparent = colorValue.InvariantEquals("#fff");
+                var isTransparent = colorValue.InvariantEquals($"#{Constants.TransparentColorValue}");
                 if (!isTransparent)
                 { colorStyle = $"color: {colorValue};"; }
             }
@@ -72,7 +80,7 @@ namespace WysiwgUmbracoCommunityExtensions.Extensions
             if (!string.IsNullOrWhiteSpace(colorValue))
             {
                 // work-a-round for missing transparent definition in default ColorPicker data type
-                var isTransparent = colorValue.InvariantEquals("#fff")
+                var isTransparent = colorValue.InvariantEquals($"#{Constants.TransparentColorValue}")
                         || (!string.IsNullOrWhiteSpace(colorLabel)
                             && colorLabel.InvariantEquals("transparent"));
                 if (!isTransparent)

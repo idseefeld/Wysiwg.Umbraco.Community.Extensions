@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -12,7 +13,9 @@ using Umbraco.Cms.Core.Serialization;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Services.OperationStatus;
 using Umbraco.Cms.Core.Strings;
+using WysiwgUmbracoCommunityExtensions.Extensions;
 using WysiwgUmbracoCommunityExtensions.Services;
+using static Umbraco.Cms.Core.PropertyEditors.ColorPickerConfiguration;
 
 namespace WysiwgUmbracoCommunityExtensionsTests.Services
 {
@@ -202,6 +205,26 @@ namespace WysiwgUmbracoCommunityExtensionsTests.Services
                 .Returns(Task.FromResult(Attempt<EntityContainer?, EntityContainerOperationStatus>.Fail(EntityContainerOperationStatus.NotFound)));
 
             Assert.ThrowsAsync<Exception>(async () => await _sut.Install());
+        }
+
+        [Test]
+        public async Task Validate_ColorPickerSetup()
+        {
+            var jsonArray = @"
+[
+    {""value"":""d60000"",""label"":""""},
+    {""value"":""000"",""label"":""""}
+]".GetJsonArrayFromString();
+
+            List<ColorPickerItem> defaultItems = new List<ColorPickerItem>()
+            {
+                new() { Value = "d60000", Label = "" },
+                new() { Value = "000", Label = "" },
+            };
+            string itemsValueString = JsonSerializer.Serialize(defaultItems).ToLowerInvariant();
+            var jsonArray2 = itemsValueString.GetJsonArrayFromString();
+
+            Assert.That(jsonArray.ToJsonString(), Is.EqualTo(jsonArray2.ToJsonString()));
         }
 
         #endregion

@@ -5,6 +5,12 @@
     <Nullable>enable</Nullable>
     <CompressionEnabled>false</CompressionEnabled> <!-- Disable compression. E.g. for umbraco backoffice files. These files should be precompressed by node and not let dotnet handle it -->
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Views\Partials\blockgrid\components\**" />
+    <Content Remove="Views\Partials\blockgrid\components\**" />
+    <EmbeddedResource Remove="Views\Partials\blockgrid\components\**" />
+    <None Remove="Views\Partials\blockgrid\components\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Umbraco.Cms" />
@@ -13,14 +19,20 @@
   <ItemGroup>
     <!-- Opt-in to app-local ICU to ensure consistent globalization APIs across different platforms -->
     <PackageReference Include="Microsoft.ICU.ICU4C.Runtime" />
+    <PackageReference Include="uSync" />
     <ProjectReference Include="..\WysiwgUmbracoCommunityExtensionsUmb17\WysiwgUmbracoCommunityExtensionsUmb17.csproj" />
     <RuntimeHostConfigurationOption Include="System.Globalization.AppLocalIcu" Value="72.1.0.3" Condition="$(RuntimeIdentifier.StartsWith('linux')) or $(RuntimeIdentifier.StartsWith('win')) or ('$(RuntimeIdentifier)' == '' and !$([MSBuild]::IsOSPlatform('osx')))" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\css\" />
   </ItemGroup>
 
 
   <PropertyGroup>
     <!-- Razor files are needed for the backoffice to work correctly -->
     <CopyRazorGenerateFilesToPublishDirectory>true</CopyRazorGenerateFilesToPublishDirectory>
+    <UserSecretsId>6d9b3bcc-e24d-40bb-a661-1e8ee80f2942</UserSecretsId>
   </PropertyGroup>
 
 

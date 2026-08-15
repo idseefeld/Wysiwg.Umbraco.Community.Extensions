@@ -2,10 +2,10 @@ import { UmbContextBase } from '@umbraco-cms/backoffice/class-api';
 import { UmbContextToken } from '@umbraco-cms/backoffice/context-api';
 import { UmbControllerHost } from '@umbraco-cms/backoffice/controller-api';
 import { UmbApi } from '@umbraco-cms/backoffice/extension-api';
-import { WysiwgUmbracoCommunityExtensionsService } from '../api';
 import { UMB_NOTIFICATION_CONTEXT, UmbNotificationContext } from '@umbraco-cms/backoffice/notification';
 import { UmbNumberState, UmbStringState } from '@umbraco-cms/backoffice/observable-api';
 import { UmbLocalizationController } from '@umbraco-cms/backoffice/localization-api';
+import { getUpdateStatusCode } from '../api';
 
 
 export class WysiwgBlockGridContextApi extends UmbContextBase implements UmbApi {
@@ -37,7 +37,7 @@ export class WysiwgBlockGridContextApi extends UmbContextBase implements UmbApi 
   public async setUpdateStatus() {
 
     const { data, error } =
-      await WysiwgUmbracoCommunityExtensionsService.getUpdateStatusCode();
+      await getUpdateStatusCode();
 
     if (error) {
       if (this.#notificationContext) {
@@ -51,7 +51,8 @@ export class WysiwgBlockGridContextApi extends UmbContextBase implements UmbApi 
     }
 
     if (data !== undefined) {
-       this.#updateStatusCode.setValue(data);
+      const numberValue = typeof data === 'string' ? parseInt(data, 10) : data;
+      this.#updateStatusCode.setValue(numberValue);
     }
   }
 }

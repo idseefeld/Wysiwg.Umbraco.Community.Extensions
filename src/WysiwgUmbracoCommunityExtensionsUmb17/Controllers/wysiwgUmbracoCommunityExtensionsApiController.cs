@@ -1,9 +1,14 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Umbraco.Cms.Api.Common.Attributes;
+using Umbraco.Cms.Api.Common.Filters;
+using Umbraco.Cms.Api.Management.Filters;
+using Umbraco.Cms.Api.Management.Routing;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.Membership;
@@ -11,6 +16,10 @@ using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
 using Umbraco.Cms.Core.Security;
 using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Web.Common.Authorization;
+using Umbraco.Cms.Web.Common.Controllers;
+using Umbraco.Cms.Web.Common.Filters;
+using Umbraco.Cms.Web.Common.Security;
 using Umbraco.Extensions;
 using WysiwgUmbracoCommunityExtensions.Models;
 using WysiwgUmbracoCommunityExtensions.Services;
@@ -20,19 +29,31 @@ using MediaConventions = Umbraco.Cms.Core.Constants.Conventions.Media;
 
 namespace WysiwgUmbracoCommunityExtensions.Controllers
 {
+    [ApiController]
     [ApiVersion("1.0")]
-    [ApiExplorerSettings(GroupName = "WysiwgUmbracoCommunityExtensions")]
-    public class WysiwgUmbracoCommunityExtensionsApiController(
+    [MapToApi(Constants.ApiDocumentName)]
+    [Authorize(Policy = AuthorizationPolicies.BackOfficeAccess)]
+    [Route("api/v{version:apiVersion}/wysiwg")]
+    [JsonOptionsName(Umbraco.Cms.Core.Constants.JsonOptionsNames.BackOffice)]
+    [AppendEventMessages]
+    [DisableBrowserCache]
+    [MaintenanceModeActionFilter]
+
+    public class WysiwgApiController(
         IPublishedContentQuery publishedContent,
         IDataTypeService dataTypeService,
         ISetupService installService,
         IMediaTypeService mediaTypeService,
-        ILogger<WysiwgUmbracoCommunityExtensionsApiController> logger,
+        ILogger<WysiwgApiController> logger,
         ISetupService setupService,
-        IWysiwygPublishedContentService wysiwygPublishedContentService
-        ) : WysiwgUmbracoCommunityExtensionsApiControllerBase
+        IWysiwygPublishedContentService wysiwygPublishedContentService,
+        IBackOfficeSecurityAccessor backOfficeSecurityAccessor,
+        IComponentService componentService
+        ) : Controller
     {
-        [HttpGet("crops")]
+        [ApiExplorerSettings(GroupName = "Croping")]
+        [HttpGet("crops", Name = "GetCrops")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType<IEnumerable<ImageCropperCrop>>(StatusCodes.Status200OK)]
         [ProducesResponseType<IEnumerable<ImageCropperCrop>>(StatusCodes.Status404NotFound)]
         public IActionResult Crops(string mediaItemId = "")
@@ -85,7 +106,9 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
             return rVal;
         }
 
-        [HttpGet("cropurl")]
+        [ApiExplorerSettings(GroupName = "Croping")]
+        [HttpGet("cropurl", Name = "GetCropUrl")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType<string>(StatusCodes.Status200OK)]
         [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
         public IActionResult CropUrl(string mediaItemId, string? cropAlias = "", double? width = 1400)
@@ -114,7 +137,10 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
             return url == null ? ImageUrl(mediaItemId) : Ok(url);
         }
 
-        [HttpGet("imageurl")]
+
+        [ApiExplorerSettings(GroupName = "Croping")]
+        [HttpGet("imageurl", Name = "GetImageUrl")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType<string>(StatusCodes.Status200OK)]
         [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
         public IActionResult ImageUrl(string mediaItemId)
@@ -128,36 +154,10 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
             return Ok(url);
         }
 
-        [HttpGet("site-background-color")]
-        [ProducesResponseType<string>(StatusCodes.Status200OK)]
-        public IActionResult SiteBackgroundColor(string pageKey)
-        {
-            return Ok(wysiwygPublishedContentService.GetBackgroundColor(pageKey));
-        }
 
-        [HttpGet("mediatypes")]
-        [ProducesResponseType<IEnumerable<IMediaType>>(StatusCodes.Status200OK)]
-        [ProducesResponseType<IEnumerable<IMediaType>>(StatusCodes.Status404NotFound)]
-        public IActionResult MediaTypes(string name = "")
-        {
-            var mediaTypes = mediaTypeService.GetAll().ToArray();
-            if (string.IsNullOrEmpty(name))
-            {
-                return Ok(mediaTypes);
-            }
-            else
-            {
-                var requestedTypeNames = name.Split(',');
-                var requestedMediaTypes = mediaTypes.Where(x => x.Name.InvariantEquals(name));
-                if (requestedMediaTypes == null)
-                {
-                    return NotFound($"No media type found for: {name}");
-                }
-                return Ok(requestedMediaTypes);
-            }
-        }
-
-        [HttpGet("v2-cropurl")]
+        [ApiExplorerSettings(GroupName = "Croping")]
+        [HttpGet("v2-cropurl", Name = "GetV2CropUrl")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType<string>(StatusCodes.Status200OK)]
         [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
         public IActionResult V2CropUrl(string mediaItemId, string cropAlias = "", string selectedCrop = "", double width = 1400.0, string selectedFocalPoint = "")
@@ -219,24 +219,50 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
             return url == null ? ImageUrl(mediaItemId) : Ok(url);
         }
 
-        [HttpGet("updateStatusCode")]
-        [ProducesResponseType<int>(StatusCodes.Status200OK)]
-        [ProducesResponseType<int>(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetUpdateStatusCode()
+        [ApiExplorerSettings(GroupName = "Settings")]
+        [HttpGet("site-background-color", Name = "GetSiteBackgroundColor")]
+        [MapToApiVersion("1.0")]
+        [ProducesResponseType<string>(StatusCodes.Status200OK)]
+        public IActionResult SiteBackgroundColor(string pageKey)
         {
-            try
+            return Ok(wysiwygPublishedContentService.GetBackgroundColor(pageKey));
+        }
+
+        [ApiExplorerSettings(GroupName = "Components")]
+        [HttpGet("all-components", Name = "GetAllComponents")]
+        [MapToApiVersion("1.0")]
+        [ProducesResponseType<IEnumerable<ComponentPickerOption>>(StatusCodes.Status200OK)]
+        public IActionResult GetAllComponents()
+        {
+            return Ok(componentService.GetComponents());
+        }
+
+        [ApiExplorerSettings(GroupName = "Settings")]
+        [HttpGet("mediatypes", Name = "GetMediaTypes")]
+        [ProducesResponseType<IEnumerable<IMediaType>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<IEnumerable<IMediaType>>(StatusCodes.Status404NotFound)]
+        public IActionResult MediaTypes(string name = "")
+        {
+            var mediaTypes = mediaTypeService.GetAll().ToArray();
+            if (string.IsNullOrEmpty(name))
             {
-                var code = await setupService.GetVersionStatusCode();
-                return Ok(code);
+                return Ok(mediaTypes);
             }
-            catch (Exception ex)
+            else
             {
-                logger.LogError(ex, "Error checking version");
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                var requestedTypeNames = name.Split(',');
+                var requestedMediaTypes = mediaTypes.Where(x => x.Name.InvariantEquals(name));
+                if (requestedMediaTypes == null)
+                {
+                    return NotFound($"No media type found for: {name}");
+                }
+                return Ok(requestedMediaTypes);
             }
         }
 
-        [HttpGet("install")]
+        [ApiExplorerSettings(GroupName = "Setup")]
+        [HttpGet("install", Name = "Install")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType<string>(StatusCodes.Status200OK)]
         [ProducesResponseType<string>(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Install()
@@ -253,7 +279,9 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
             return Ok("Installed");
         }
 
-        [HttpGet("variations")]
+        [ApiExplorerSettings(GroupName = "Setup")]
+        [HttpGet("variations", Name = "GetVariations")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType<string>(StatusCodes.Status200OK)]
         [ProducesResponseType<string>(StatusCodes.Status500InternalServerError)]
         public IActionResult GetVariations()
@@ -270,7 +298,9 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
             }
         }
 
-        [HttpGet("fixupgrade")]
+        [ApiExplorerSettings(GroupName = "Setup")]
+        [HttpGet("fixupgrade", Name = "FixUpgrade")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType<string>(StatusCodes.Status200OK)]
         [ProducesResponseType<string>(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> FixUpgrade(bool? culture, bool? segment)
@@ -288,8 +318,10 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
-
-        [HttpGet("uninstall")]
+        
+        [ApiExplorerSettings(GroupName = "Setup")]
+        [HttpGet("uninstall", Name = "UnInstall")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType<string>(StatusCodes.Status200OK)]
         public IActionResult UnInstall()
         {
@@ -305,6 +337,28 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers
                 return BadRequest(ex.Message);
             }
             return Ok("Uninstalled");
+        }
+
+        [ApiExplorerSettings(GroupName = "Status")]
+        [HttpGet("updateStatusCode", Name = "GetUpdateStatusCode")]
+        [MapToApiVersion("1.0")]
+        [ProducesResponseType<int>(StatusCodes.Status200OK)]
+        [ProducesResponseType<int>(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetUpdateStatusCode()
+        {
+            try
+            {
+                IUser currentUser = backOfficeSecurityAccessor.BackOfficeSecurity?.CurrentUser
+                            ?? throw new InvalidOperationException("No backoffice user found");
+
+                var code = await setupService.GetVersionStatusCode();
+                return Ok(code);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error checking version");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
     }
 }

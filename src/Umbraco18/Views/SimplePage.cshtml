@@ -1,0 +1,52 @@
+@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<SimplePage>
+@{
+    Layout = null;
+    var backgroundColor = Model?.PageBackgroundColor?.Color;
+    var backgroundStyle = string.IsNullOrEmpty(backgroundColor) ? string.Empty : $"background-color: {backgroundColor};";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Simple Page</title>
+
+    <link rel="shortcut icon" type="image/png" href="/favicon.png" />
+
+    <link href="~/styles/wysiwyg-blockgrid.min.css" rel="stylesheet" />
+    <link href="~/css/main.css" rel="stylesheet" />
+
+    <style>
+            figure {
+                margin: 0
+            }
+
+                figure img {
+                    width: 100%;
+                }
+
+            body, html {
+                margin: 0;
+                background-color: #ccc;
+            }
+
+            #canvas {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+    </style>
+</head>
+<body id="top">
+    <div id="canvas" style="@backgroundStyle">
+        @await Html.GetBlockGridHtmlAsync(Model.Grid)
+
+        <footer>
+            <a href="/">EN</a> | <a href="/de">DE</a>
+            <span> - </span><a href="/umbraco" target="_blank">backoffice</a>
+        </footer>
+
+    </div>
+</body>
+</html>

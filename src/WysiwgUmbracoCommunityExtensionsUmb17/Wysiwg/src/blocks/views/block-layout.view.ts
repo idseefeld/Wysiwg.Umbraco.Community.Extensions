@@ -17,9 +17,9 @@ import {
 } from "@umbraco-cms/backoffice/property";
 import { UmbBlockGridValueModel } from "@umbraco-cms/backoffice/block-grid";
 import { BlockGridLayoutModel, MediaPickerValueModel } from "../types";
-import { ImageUrlData, WysiwgUmbracoCommunityExtensionsService } from "../..";
 import WysiwgBaseBlockEditorCustomViewElement from "./wysiwg-base-block-editor-custom.view";
 import { UpdateStatus } from "../../types";
+import { getImageUrl, GetImageUrlData, getSiteBackgroundColor, GetSiteBackgroundColorData } from "../../api";
 
 //this is based on a copy of
 // Umbraco-CMS\src\
@@ -161,7 +161,7 @@ export class WysiwgBlockLayoutView
 
       let padding = properties?.find((v) => v.alias === "padding")?.value.toString();
       if (!padding) {
-        padding = (backgroundColor && !transparentBackground) ? "10px" : "";
+        padding = (backgroundColor) ? "10px" : "";
       }
       inlineStyles.padding = padding;
     }
@@ -191,13 +191,14 @@ export class WysiwgBlockLayoutView
     if (!mediaItemId) {
       return;
     }
-    const options: ImageUrlData = {
+    const options: GetImageUrlData = {
+      url: "/api/v1/wysiwg/imageurl",
       query: {
         mediaItemId,
       },
     };
     const { data, error } =
-      await WysiwgUmbracoCommunityExtensionsService.imageUrl(options);
+      await getImageUrl(options);
 
     if (error) {
       console.error(error);
@@ -209,17 +210,18 @@ export class WysiwgBlockLayoutView
     }
   }
 
-  async #requestBackgroundColor(mediaItemId: string) {
-    if (!mediaItemId) {
+  async #requestBackgroundColor(pageKey: string) {
+    if (!pageKey) {
       return;
     }
-    const options: ImageUrlData = {
+    const options: GetSiteBackgroundColorData = {
+      url: "/api/v1/wysiwg/site-background-color",
       query: {
-        mediaItemId,
+        pageKey,
       },
     };
     const { data, error } =
-      await WysiwgUmbracoCommunityExtensionsService.siteBackgroundColor(options);
+      await getSiteBackgroundColor(options);
 
     if (error) {
       console.error(error);
@@ -247,7 +249,8 @@ export class WysiwgBlockLayoutView
 
         <uui-popover-container id="tooltip-popover">
 
-          <div class="popover-container" style="display: flex;flex-direction: column;padding: 1rem;border-radius: 3px;width: 200px;background: var(--uui-color-danger);box-shadow: var(--uui-shadow-depth-3);color: white;line-height: 1.4em;">
+        <a href="/umbraco/section/packages/view/wysiwg-section" target="_self" style="text-decoration: none;color: inherit;">
+          <div class="popover-container" style="display: flex;flex-direction: column;padding: 1rem;border-radius: 3px;background: var(--uui-color-danger);box-shadow: var(--uui-shadow-depth-3);color: white;line-height: 1.4em;">
             <h3>
               <umb-localize key="wysiwg_updateAvailableTitle" .debug=${this._debug}>
                 Update Available
@@ -259,6 +262,7 @@ export class WysiwgBlockLayoutView
               </umb-localize>
             </p>
           </div>
+        </a>
 
         </uui-popover-container>
       `;

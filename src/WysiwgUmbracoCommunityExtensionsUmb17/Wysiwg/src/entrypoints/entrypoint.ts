@@ -1,47 +1,30 @@
-import { UmbEntryPointOnInit, UmbEntryPointOnUnload } from '@umbraco-cms/backoffice/extension-api';
+import {
+  UmbEntryPointOnInit,
+  UmbEntryPointOnUnload
+} from '@umbraco-cms/backoffice/extension-api';
 import { UMB_AUTH_CONTEXT } from '@umbraco-cms/backoffice/auth';
-import { client } from '../api';
-import { client as managementClient } from '../management-api';
+import { client } from "../api/client.gen.js";
+import { client as managementClient } from '../management-api/client.gen.js';
 
 // load up the manifests here
-export const onInit: UmbEntryPointOnInit = (_host, _extensionRegistry) => {
+export const onInit: UmbEntryPointOnInit = async (host, _extensionRegistry) => {
+  // Wire the generated API client into the backoffice auth context.
+  // configureClient() sets baseUrl + credentials, attaches the auth callback
+  // (cookie-based, with automatic token refresh) and binds the default
+  // response interceptors (401 retry, error notifications, etc.).
+  // The framework awaits onInit, so resolving the context here ensures the
+  // client is fully configured before any element in this extension can use it.
+  const authContext = await host.getContext(UMB_AUTH_CONTEXT);
+  if (!authContext) {
+    console.warn("UMB_AUTH_CONTEXT not available — extension API client will not be authenticated");
+    return;
+  }
 
-  console.log('Moin von WYSIWYG Erweiterungen 🎉');
-  // Will use only to add in Open API config with generated TS OpenAPI HTTPS Client
-  // Do the OAuth token handshake stuff
-  _host.consumeContext(UMB_AUTH_CONTEXT, async (authContext) => {
+  authContext.configureClient(client);
 
-    // Get the token info from Umbraco
-    const config = authContext?.getOpenApiConfiguration();
+  authContext.configureClient(managementClient);
 
-    client.setConfig({
-      baseUrl: config?.base,
-      credentials: config?.credentials
-    });
-
-    // For every request being made, add the token to the headers
-    // Can't use the setConfig approach above as its set only once and
-    // tokens expire and get refreshed
-    client.interceptors.request.use(async (request, _options) => {
-      const token = await config?.token();
-      request.headers.set('Authorization', `Bearer ${token}`);
-      return request;
-    });
-
-    managementClient.setConfig({
-      baseUrl: config?.base,
-      credentials: config?.credentials
-    });
-
-    // For every request being made, add the token to the headers
-    // Can't use the setConfig approach above as its set only once and
-    // tokens expire and get refreshed
-    managementClient.interceptors.request.use(async (request, _options) => {
-      const token = await config?.token();
-      request.headers.set('Authorization', `Bearer ${token}`);
-      return request;
-    });
-  });
+  console.debug('Moin von WYSIWYG Erweiterungen 🎉');
 };
 
 export const onUnload: UmbEntryPointOnUnload = (_host, _extensionRegistry) => {

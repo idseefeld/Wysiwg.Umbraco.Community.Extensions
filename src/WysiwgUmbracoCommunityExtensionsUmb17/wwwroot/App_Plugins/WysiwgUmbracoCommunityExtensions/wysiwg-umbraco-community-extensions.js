@@ -1,17 +1,17 @@
 import { UMB_WORKSPACE_CONDITION_ALIAS as e } from "@umbraco-cms/backoffice/workspace";
-const a = [
+const r = [
   {
     name: "wysiwg Extensions Entrypoint",
     alias: "WysiwgExtensions.Entrypoint",
     type: "backofficeEntryPoint",
-    js: () => import("./entrypoint-Cbcjt8C-.js")
+    js: () => import("./entrypoint-B5rcutBo.js")
   }
-], r = [
+], a = [
   {
     type: "sectionView",
     alias: "WysiwgDashboardElement.Section",
     name: "WYSIWYG Extensions Section",
-    element: () => import("./dashboard.element-C-1-OQHs.js"),
+    element: () => import("./dashboard.element-DDGk3jn9.js"),
     meta: {
       label: "WYSIWYG",
       icon: "icon-settings",
@@ -24,18 +24,18 @@ const a = [
       }
     ]
   }
-], s = [
+], n = [
   {
     type: "bundle",
     name: "wysiwg block components",
     alias: "wysiwg.block.components",
-    js: () => import("./index-CskooPw2.js")
+    js: () => import("./index-C1--uVQq.js")
   }
-], i = "wysiwg65_";
-function n() {
+], o = "wysiwg65_";
+function s() {
   const t = [];
-  for (let o = 1; o <= 50; o++)
-    t.push(`${i}layout${o}`);
+  for (let i = 1; i <= 50; i++)
+    t.push(`${o}layout${i}`);
   return t;
 }
 const l = [
@@ -43,59 +43,67 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.Layouts",
     name: "Block Editor Custom View for Layouts",
-    element: () => import("./block-layout.view-CUYASreV.js"),
-    forContentTypeAlias: n(),
+    element: () => import("./block-layout.view-9zdyVhJS.js"),
+    forContentTypeAlias: s(),
     forBlockEditor: "block-grid"
   },
   {
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockHeadline",
     name: "Block Editor Custom View for Headline",
-    element: () => import("./headline.view-sx2JJfzq.js"),
-    forContentTypeAlias: i + "headline",
+    element: () => import("./headline.view-BJrPIm8S.js"),
+    forContentTypeAlias: o + "headline",
+    forBlockEditor: "block-grid"
+  },
+  {
+    type: "blockEditorCustomView",
+    alias: "wysiwg.PorpertyEditorUi.genericComponent",
+    name: "Block Editor Custom View for Component",
+    element: () => import("./component.view-bhT-xV1y.js"),
+    forContentTypeAlias: o + "genericComponent",
     forBlockEditor: "block-grid"
   },
   {
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockParagraph",
     name: "Block Editor Custom View for Paragraph",
-    element: () => import("./paragraph.view-BURaA7ql.js"),
-    forContentTypeAlias: i + "paragraph",
+    element: () => import("./paragraph.view-CfK1vUym.js"),
+    forContentTypeAlias: o + "paragraph",
     forBlockEditor: "block-grid"
   },
   {
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.pictureWithCrop",
     name: "Block Editor Custom View for Picture with Crop",
-    element: () => import("./picture-with-crop.view-CfZlHvjJ.js"),
-    forContentTypeAlias: i + "pictureWithCrop",
+    element: () => import("./picture-with-crop.view-BzJeA2ZP.js"),
+    forContentTypeAlias: o + "pictureWithCrop",
     forBlockEditor: "block-grid"
   },
   {
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.croppedPicture",
     name: "Block Editor Custom View for Cropped Picture",
-    element: () => import("./cropped-picture.view-CVP3hSKM.js"),
-    forContentTypeAlias: i + "croppedPicture",
+    element: () => import("./cropped-picture.view-DyJ-s3uO.js"),
+    forContentTypeAlias: o + "croppedPicture",
     forBlockEditor: "block-grid"
   },
   {
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.callToAction",
     name: "Block Editor Custom View for Call to Action",
-    element: () => import("./call-to-action.view-DKNbFlYj.js"),
-    forContentTypeAlias: i + "callToAction",
+    element: () => import("./call-to-action.view-kcnHWaBl.js"),
+    forContentTypeAlias: o + "callToAction",
     forBlockEditor: "block-grid"
   }
-], c = [
-  ...s,
+], p = [
+  ...n,
   ...l
-], m = [
+], c = [
   {
     type: "propertyEditorUi",
     alias: "wysiwg.PropertyEditorUi.ImageAndCropPicker",
     name: "WYSIWG Picture and Crop Picker",
-    element: () => import("./wysiwg-image-and-crop-picker.element-BRcRF30-.js"),
+    element: () => import("./wysiwg-image-and-crop-picker.element-DODlo3o_.js"),
     meta: {
       label: "WYSIWG Picture and Crop Picker",
       propertyEditorSchemaAlias: "Wysiwg.ImageAndCropPicker",
@@ -133,7 +141,7 @@ const l = [
             alias: "crops",
             label: "Image Crops",
             description: "Local crops, stored on document",
-            propertyEditorUiAlias: "Wysiwg.ImageCropsWithDefaultConfiguration"
+            propertyEditorUiAlias: "Umb.PropertyEditorUi.ImageCropsConfiguration"
           },
           {
             alias: "ignoreUserStartNodes",
@@ -145,9 +153,35 @@ const l = [
       }
     }
   }
-], p = [
-  ...m
+], m = [
+  {
+    type: "propertyEditorUi",
+    alias: "wysiwg.PropertyEditorUi.ComponentPicker",
+    name: "Wysiwg Component Picker",
+    element: () => import("./wysiwg-component-picker.element-tN2spQvW.js"),
+    meta: {
+      label: "Wysiwg Component PropertyEditorUi Picker",
+      propertyEditorSchemaAlias: "Wysiwg.ComponentPicker",
+      icon: "icon-list",
+      group: "pickers",
+      supportsReadOnly: !0
+    }
+  },
+  {
+    type: "propertyEditorSchema",
+    name: "Wysiwg Component Picker",
+    alias: "Wysiwg.ComponentPicker",
+    meta: {
+      defaultPropertyEditorUiAlias: "wysiwg.PropertyEditorUi.ComponentPicker"
+      // settings: {
+      //   properties: [],
+      // },
+    }
+  }
 ], y = [
+  ...c,
+  ...m
+], d = [
   {
     type: "localization",
     alias: "WysiwgUmbracoCommunityExtensions.Localize.En",
@@ -193,12 +227,12 @@ const l = [
     },
     js: "/App_Plugins/WysiwgUmbracoCommunityExtensions/Localization/de.js"
   }
-], d = [
+], g = [
   {
     type: "workspaceContext",
     alias: "Wysiwg.WorkspaceContext.BlockGrid",
     name: "Wysiwg BlockGrid Context",
-    api: () => import("./wysiwg.workspace.context-B9sJZpkf.js"),
+    api: () => import("./wysiwg.workspace.context-CeinJtuE.js"),
     conditions: [
       {
         alias: e,
@@ -207,12 +241,12 @@ const l = [
     ]
   }
 ], u = [
-  ...a,
   ...r,
-  ...d,
-  ...c,
+  ...a,
+  ...g,
   ...p,
-  ...y
+  ...y,
+  ...d
 ];
 export {
   u as manifests

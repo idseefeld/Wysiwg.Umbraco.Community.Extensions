@@ -18,6 +18,7 @@ using Umbraco.Cms.Core.Strings;
 using Umbraco.Extensions;
 using WysiwgUmbracoCommunityExtensions.Extensions;
 using WysiwgUmbracoCommunityExtensions.Models;
+using static Umbraco.Cms.Core.PropertyEditors.ColorPickerConfiguration;
 using uReferenceByIdModel = Umbraco.Cms.Api.Management.ViewModels.ReferenceByIdModel;
 
 namespace WysiwgUmbracoCommunityExtensions.Services
@@ -66,19 +67,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             $"{Constants.Prefix}callToActionSettings",
             $"{Constants.Prefix}headlineSettings",
             $"{Constants.Prefix}paragraphSettings",
-            $"{Constants.Prefix}rowSettings"
+            $"{Constants.Prefix}rowSettings",
+            // v18.1.0
+            $"{Constants.Prefix}genericComponent"
         ];
-        private readonly string[] _layoutKeyCollection = ["layout1", "layout2", "layout3", "layout4"];
-        private readonly string[] _needUpdateContentTypes = [
-            $"{Constants.Prefix}callToActionSettings",
-            $"{Constants.Prefix}headline",
-            $"{Constants.Prefix}paragraph",
-            $"{Constants.Prefix}croppedPicture",
-            $"{Constants.Prefix}paragraphSettings",
-            $"{Constants.Prefix}rowSettings"
-        ];
-        private string[] _deprecatedContentTypes = [$"{Constants.Prefix}pictureWithCrop"];
-        private readonly string _dtContainerName = $"{Constants.Prefix.ToFirstUpper()}DataTypes";
         private readonly string[] _requiredDataTypes = [
             $"{Constants.Prefix}CallToActionLabel",
             $"{Constants.Prefix}CallToActionOnClick",
@@ -87,8 +79,46 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             $"{Constants.Prefix}ParagaphRTE",
             $"{Constants.Prefix}CustomerColors",
             $"{Constants.Prefix}ImageAndCropPicker",
-            $"{Constants.Prefix}Rotation"
+            $"{Constants.Prefix}Rotation",
+            // v18.1.0
+            $"{Constants.Prefix}ComponentPicker"
         ];
+        private readonly Dictionary<string, string[]> _versionNeedUpdateContentTypes = new()
+        {
+            {"17.0.0", [
+                $"{Constants.Prefix}headline",
+                $"{Constants.Prefix}paragraph",
+                $"{Constants.Prefix}croppedPicture",
+                $"{Constants.Prefix}paragraphSettings",
+                $"{Constants.Prefix}rowSettings",
+            ]},
+            {"18.0.0", [
+                $"{Constants.Prefix}callToActionSettings",
+                ]},
+            {"18.1.0", []}
+        };
+        private readonly Dictionary<string, string[]> _versionNewContentTypes = new()
+        {
+            {"17.0.0", [
+                $"{Constants.Prefix}headline",
+                $"{Constants.Prefix}paragraph",
+                $"{Constants.Prefix}croppedPicture",
+                $"{Constants.Prefix}paragraphSettings",
+                $"{Constants.Prefix}rowSettings",
+            ]},
+            {"18.0.0", [
+                $"{Constants.Prefix}callToActionSettings",
+                ]},
+            {"18.1.0", [
+                $"{Constants.Prefix}genericComponent"
+                ]}
+        };
+
+        private readonly string[] _layoutKeyCollection = ["layout1", "layout2", "layout3", "layout4"];
+
+        private string[] _deprecatedContentTypes = [$"{Constants.Prefix}pictureWithCrop"];
+        private readonly string _dtContainerName = $"{Constants.Prefix.ToFirstUpper()}DataTypes";
+
         // Do not remove previus data types without deprecation phase and documentation
         private readonly string[] _removedDataTypes = [
             //$"{Constants.Prefix}ImageMediaPicker",
@@ -110,6 +140,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         private EntityContainer? _dataTypeContainer;
 
         private bool _isInstalling = false;
+        private bool _isUpgrading = false;
         private bool _isUninstalling = false;
         private bool _restoreAll = false;
         private string? _blockGridCssPath;
@@ -122,10 +153,11 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             try
             {
                 var versionStatus = await GetVersionStatus();
-                if (_isInstalling || _isUninstalling || versionStatus == VersionStatus.UpToDate)
+                if (_isInstalling || _isUninstalling || _isUpgrading || versionStatus == VersionStatus.UpToDate)
                 { return; }
 
-                _isInstalling = true;
+                _isInstalling = versionStatus == VersionStatus.Install;
+                _isUpgrading = versionStatus == VersionStatus.Update;
 
                 _dataTypeContainer ??= (await CreateDataTypeContainer())
                     ?? throw new Exception($"{ErrorMsgPrefix} Could not find data type container.");
@@ -163,6 +195,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 _existingDataTypes = [];
                 _dataTypeContainer = null;
                 _isInstalling = false;
+                _isUpgrading = false;
             }
         }
 
@@ -197,6 +230,9 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     case $"{Constants.Prefix}Rotation":
                         await CreateDataTypeRotation(name, parent);
                         break;
+                    case $"{Constants.Prefix}ComponentPicker":
+                        await CreateDataTypeComponentPicker(name, parent);
+                        break;
                     default:
                         break;
                 }
@@ -204,6 +240,18 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             _existingDataTypes = [.. await GetAllWysiwgDataTypes()];
         }
 
+        private async Task CreateDataTypeComponentPicker(string name, uReferenceByIdModel parent)
+        {
+            var createDataTypeRequestModel = new CreateDataTypeRequestModel
+            {
+                Parent = parent,
+                Name = name,
+                EditorAlias = "Wysiwg.ComponentPicker",
+                EditorUiAlias = "wysiwg.PropertyEditorUi.ComponentPicker",
+                Values = []
+            };
+            await CreateOrUpdateDataType(createDataTypeRequestModel);
+        }
         private async Task CreateDataTypeRotation(string name, uReferenceByIdModel parent)
         {
             var createDataTypeRequestModel = new CreateDataTypeRequestModel
@@ -448,65 +496,59 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
         private async Task CreateDataTypeCustomerColors(string name, uReferenceByIdModel parent)
         {
-            CreateDataTypeRequestModel createDataTypeRequestModel;
+            List<ColorPickerItem> defaultItems = new List<ColorPickerItem>()
+            {
+                new() { Value = "d60000", Label = "" },
+                new() { Value = "029400", Label = "" },
+                new() { Value = "5c9aff", Label = "" },
+                new() { Value = "fee648", Label = "" },
+                new() { Value = "ffffff", Label = "" },
+                new() { Value = "000", Label = "" },
+                new() { Value = Constants.TransparentColorValue, Label = "" }
+            };
+            string itemsValueString = JsonSerializer
+                .Serialize(defaultItems)
+                .ToLowerInvariant();
+            var itemsValue = itemsValueString.GetJsonArrayFromString();
+
             IDataType? dataType = _existingDataTypes?.FirstOrDefault(d => d.Name != null && d.Name.Equals(name));
-            if (dataType == null)
+            if (dataType != null)
             {
-                createDataTypeRequestModel = new CreateDataTypeRequestModel
+                if (dataType.ConfigurationObject is ColorPickerConfiguration existingValues)
                 {
-                    Parent = parent,
-                    Name = name,
-                    EditorAlias = "Umbraco.ColorPicker",
-                    EditorUiAlias = "Umb.PropertyEditorUi.ColorPicker",
-                    Values = [
-                        new DataTypePropertyPresentationModel {
+                    foreach (var item in defaultItems)
+                    {
+                        var existingItem = existingValues.Items.FirstOrDefault(i => i.Value != null && i.Value.Equals(item.Value));
+                        if (existingItem == null)
+                        {
+                            existingValues.Items.Add(item);
+                        }
+                    }
+
+                    itemsValueString = JsonSerializer
+                        .Serialize(existingValues.Items)
+                        .ToLowerInvariant();
+                    itemsValue = itemsValueString.GetJsonArrayFromString();
+                }
+            }
+
+            var createDataTypeRequestModel = new CreateDataTypeRequestModel
+            {
+                Parent = parent,
+                Name = name,
+                EditorAlias = "Umbraco.ColorPicker",
+                EditorUiAlias = "Umb.PropertyEditorUi.ColorPicker",
+                Values = [
+                    new DataTypePropertyPresentationModel {
                         Alias = "useLabel",
                         Value = false
                     },
                     new DataTypePropertyPresentationModel {
                         Alias = "items",
-                        Value = @"
-[
-    {""value"":""d60000"",""label"":""""},
-    {""value"":""029400"",""label"":""""},
-    {""value"":""5c9aff"",""label"":""""},
-    {""value"":""fee648"",""label"":""""},
-    {""value"":""ffffff"",""label"":""""},
-    {""value"":""000"",""label"":""""}
-]".GetJsonArrayFromString()
+                        Value = itemsValue
                     }
-                    ]
-                };
-            }
-            else
-            {
-                createDataTypeRequestModel = new CreateDataTypeRequestModel
-                {
-                    Parent = parent,
-                    Name = name,
-                    EditorAlias = "Umbraco.ColorPicker",
-                    EditorUiAlias = "Umb.PropertyEditorUi.ColorPicker",
-                    Values = [
-                        new DataTypePropertyPresentationModel {
-                        Alias = "useLabel",
-                        Value = false
-                    },
-                    new DataTypePropertyPresentationModel {
-                        Alias = "items",
-                        Value = @"
-[
-    {""value"":""d60000"",""label"":""Red""},
-    {""value"":""029400"",""label"":""Green""},
-    {""value"":""5c9aff"",""label"":""Blue""},
-    {""value"":""fee648"",""label"":""Yellow""},
-    {""value"":""ffffff"",""label"":""White""},
-    {""value"":""000"",""label"":""Black""},
-    {""value"":""fff"",""label"":""transparent""}
-]".GetJsonArrayFromString()
-                    }
-                    ]
-                };
-            }
+                ]
+            };
             await CreateOrUpdateDataType(createDataTypeRequestModel);
         }
 
@@ -611,6 +653,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 dataType.ConfigurationData = values;
 
                 attempt = await dataTypeService.UpdateAsync(dataType, CurrentUserKey);
+                if (!attempt.Success)
+                {
+                    throw new Exception($"{msg} Status: {attempt.Status} Exception: {attempt.Exception?.Message}");
+                }
             }
 
             _existingDataTypes = await GetAllWysiwgDataTypes();
@@ -667,7 +713,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         {
             CopyBlockGridStyleSheet();
 
-            UpdateContentTypes();
+            UpdateAllExistingContentTypes();
 
             _existingDataTypes = [.. await dataTypeService.GetAllAsync()];
             var current = _existingDataTypes?.FirstOrDefault(d => d.Name != null && d.Name.Equals(_requiredBlockGridName));
@@ -769,6 +815,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             var headlineSettingsKey = GetElementKeyByName("headlineSettings");
             var ctaKey = GetElementKeyByName("callToAction");
             var ctaSettingsKey = GetElementKeyByName("callToActionSettings");
+            var genericComponentKey = GetElementKeyByName("genericComponent");
 
             var layoutKeys = _layoutKeyCollection
                 .Where(l => !string.IsNullOrEmpty(GetElementKeyByName(l)))
@@ -798,6 +845,11 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                         ""allowAtRoot"": false,
                         ""allowInAreas"": true,
                         ""settingsElementTypeKey"":""{ctaSettingsKey}""
+                    }},
+                    {{
+                        ""contentElementTypeKey"":""{genericComponentKey}"",
+                        ""allowAtRoot"": false,
+                        ""allowInAreas"": true
                     }},
                     {{
                         ""contentElementTypeKey"":""{layoutKeys[0]}"",
@@ -845,6 +897,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                                     {{
                                     ""minAllowed"":0,
                                     ""elementTypeKey"":""{ctaKey}""
+                                    }},
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{genericComponentKey}""
                                     }}
                                 ]
                             }},
@@ -867,6 +923,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                                     {{
                                     ""minAllowed"":0,
                                     ""elementTypeKey"":""{ctaKey}""
+                                    }},
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{genericComponentKey}""
                                     }}
                                 ]
                             }}
@@ -899,6 +959,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                                     {{
                                     ""minAllowed"":0,
                                     ""elementTypeKey"":""{ctaKey}""
+                                    }},
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{genericComponentKey}""
                                     }}
                                 ]
                             }},
@@ -921,6 +985,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                                     {{
                                     ""minAllowed"":0,
                                     ""elementTypeKey"":""{ctaKey}""
+                                    }},
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{genericComponentKey}""
                                     }}
                                 ]
                             }}
@@ -953,6 +1021,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                                     {{
                                     ""minAllowed"":0,
                                     ""elementTypeKey"":""{ctaKey}""
+                                    }},
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{genericComponentKey}""
                                     }}
                                 ]
                             }},
@@ -975,6 +1047,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                                     {{
                                     ""minAllowed"":0,
                                     ""elementTypeKey"":""{ctaKey}""
+                                    }},
+                                    {{
+                                    ""minAllowed"":0,
+                                    ""elementTypeKey"":""{genericComponentKey}""
                                     }}
                                 ]
                             }}
@@ -1040,6 +1116,23 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 blockModels.Add(callToActionBlock);
             }
 
+
+            var genericComponentElement = GetElementByName("genericComponent", throwIfNotExist: false);
+            var genericComponentBlock = blockModels
+                        .FirstOrDefault(b => b.ContentElementTypeKey != null
+                            && b.ContentElementTypeKey.Equals(genericComponentElement?.Key));
+            if (genericComponentElement != null && genericComponentBlock == null)
+            {
+                genericComponentBlock = new()
+                {
+                    ContentElementTypeKey = genericComponentElement.Key,
+                    AllowAtRoot = false,
+                    AllowInAreas = true,
+                    SettingsElementTypeKey = null
+                };
+                blockModels.Add(genericComponentBlock);
+            }
+
             var croppedPictureElement = GetElementByName("croppedPicture", throwIfNotExist: false);
             var croppedPictureBlock = blockModels
                         .FirstOrDefault(b => b.ContentElementTypeKey != null
@@ -1070,6 +1163,16 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                         {
                             var specifiedAllowance = new List<BGSpecfiedAllowanceModel>();
                             specifiedAllowance.AddRange(areaSpecifiedAllowance);
+
+                            if (areaSpecifiedAllowance.FirstOrDefault(a => a.ElementTypeKey == genericComponentElement?.Key) == null)
+                            {
+                                BGSpecfiedAllowanceModel genericComponentElementAllowance = new()
+                                {
+                                    ElementTypeKey = genericComponentElement?.Key,
+                                    MinAllowed = 0
+                                };
+                                specifiedAllowance.Add(genericComponentElementAllowance);
+                            }
 
                             if (areaSpecifiedAllowance.FirstOrDefault(a => a.ElementTypeKey == callToActionElement?.Key) == null)
                             {
@@ -1104,21 +1207,41 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         #endregion
 
         #region block elements
-        private void UpdateContentTypes()
+        private void UpdateAllExistingContentTypes()
         {
             _allContentTypes = [.. contentTypeService.GetAll().Where(t => t.Alias.StartsWith(Constants.Prefix))];
+        }
+
+        private IEnumerable<string> GetContentTypesToUpdate()
+        {
+            foreach (var version in _versionNewContentTypes.Keys.Reverse())
+            {
+                var newContentTypes = _versionNewContentTypes[version];
+                var requiredExists = _allContentTypes
+                    .Select(t => t.Alias)
+                    .Intersect(newContentTypes)
+                    .Count() == newContentTypes.Length;
+                if (requiredExists)
+                {
+                    return newContentTypes;
+                }
+            }
+
+            return Array.Empty<string>();
         }
 
         private async Task CreateBlockElements()
         {
             CreateOrUpdateContentElementContainers();
 
-            UpdateContentTypes();
+            UpdateAllExistingContentTypes();
+
+            IEnumerable<string> _needUpdateContentTypes = GetContentTypesToUpdate();
 
             var requiredExists = _allContentTypes
-                .Select(t => t.Alias)
-                .Intersect(_requiredContentTypes)
-                .Count() == _requiredContentTypes.Length + _needUpdateContentTypes.Length;
+                    .Select(t => t.Alias)
+                    .Intersect(_requiredContentTypes)
+                    .Count() == _requiredContentTypes.Length + _needUpdateContentTypes.Count();
             var missingRequired = _requiredContentTypes
                 .Except(_allContentTypes.Select(t => t.Alias))
                 .Concat(_needUpdateContentTypes);
@@ -1169,6 +1292,13 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 ? alias
                 : elementTypeAlias;
             await CreateOrUpdateCroppedPictureElementType(compareAlias, alias, elementContainer, culture, segment);
+
+            // v18.1.0
+            alias = $"{Constants.Prefix}genericComponent";
+            compareAlias = string.IsNullOrEmpty(elementTypeAlias)
+                ? alias
+                : elementTypeAlias;
+            await CreateOrUpdateGenericComponentElementType(compareAlias, alias, elementContainer);
 
             #region Deprecated
             if (_deprecatedContentTypes.Length > 0)
@@ -1475,7 +1605,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
             var propertyDefinitions = new List<PropertyDefinition>()
             {
-                new ("Media Item", $"{Constants.Prefix}ImageAndCropPicker", 1),
+                new ("Media Item", $"{Constants.Prefix}ImageAndCropPicker", 1, "Select image and crop", isMandatory: true),
                 new ("Alternative Text", "Textstring", 2, variations : ContentVariation.Culture),
                 new ("Fig Caption", "Textstring", 3, variations : ContentVariation.Culture),
                 new ("Caption Color", $"{Constants.Prefix}CustomerColors", 4),
@@ -1566,6 +1696,35 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);
         }
 
+        private async Task CreateOrUpdateGenericComponentElementType(string elementTypeAlias, string alias, EntityContainer elementContainer, bool? culture = false, bool? segment = false)
+        {
+            if (elementTypeAlias != alias)
+            { return; }
+
+            var newType = new ContentType(shortStringHelper, elementContainer.Id)
+            {
+                Alias = alias,
+                Name = "Generic Component",
+                Icon = "icon-plugin",
+                IsElement = true,
+                AllowedAsRoot = false,
+                Variations = _contentVariationDefault,
+            };
+            var type = contentTypeService.Get(alias);
+            if (type != null)
+            {
+                type.ParentId = elementContainer.Id;
+                UpdateCultureAndSegment(culture, segment, type);
+            }
+
+            var propertyDefinitions = new List<PropertyDefinition>()
+            {
+                new ("Component Picker", $"{Constants.Prefix}ComponentPicker", 1, "Selected component name", variations: ContentVariation.Nothing)
+            };
+
+            await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);
+        }
+
         private async Task CreateOrUpdateCallToActionElementType(string elementTypeAlias, string alias, EntityContainer elementContainer, bool? culture, bool? segment)
         {
             if (elementTypeAlias != alias)
@@ -1627,7 +1786,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 Mandatory = definition.IsMandatory,
                 SortOrder = definition.SortOrder,
                 DataTypeId = dt.Id,
-                Variations = definition.Variations
+                Variations = definition.Variations,
             };
             return propertyType;
         }
@@ -1663,8 +1822,17 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             {
                 foreach (var definition in propertyDefinitions)
                 {
-                    var propertyType = await GetPropertyType(definition);
-                    propItems.Add(propertyType);
+                    try
+                    {
+                        var propertyType = await GetPropertyType(definition);
+
+                        propItems.Add(propertyType);
+                    }
+                    catch (Exception)
+                    {
+
+                        throw;
+                    }
                 }
             }
             await AddOrUpdateProperties(type, propItems, "Content");
@@ -1857,7 +2025,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             if (!DataTypeExists("Rotation"))
             { return VersionStatus.Update; }
 
-            UpdateContentTypes();
+            UpdateAllExistingContentTypes();
 
             if (!MinHeightPropertyExists("rowSettings", "minHeight"))
             { return VersionStatus.Update; }
@@ -1971,7 +2139,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         #region uninstall
         public async Task Uninstall()
         {
-            if (_isInstalling || _isUninstalling)
+            if (_isInstalling || _isUninstalling || _isUpgrading)
             { return; }
 
             _isUninstalling = true;
@@ -2103,6 +2271,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         {
             if (_isInstalling || _isUninstalling)
             { return; }
+
             _isInstalling = true;
             try
             {
@@ -2110,7 +2279,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
                 var allDataTypes = await GetAllWysiwgDataTypes();
 
-                UpdateContentTypes();
+                UpdateAllExistingContentTypes();
 
                 await CreateOrUpdateContentElements(string.Empty, culture, segment);
 
@@ -2139,7 +2308,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         {
             var variations = string.Empty;
 
-            UpdateContentTypes();
+            UpdateAllExistingContentTypes();
 
             var headlineType = _allContentTypes
                 .FirstOrDefault(t => t.Alias == $"{Constants.Prefix}headline");
