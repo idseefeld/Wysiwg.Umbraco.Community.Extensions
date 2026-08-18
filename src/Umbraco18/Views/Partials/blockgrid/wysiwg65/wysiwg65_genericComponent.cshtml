@@ -7,8 +7,16 @@
     if (string.IsNullOrEmpty(selectedComponent)) return;
 
     var html = new HtmlString($"<h2>Razor view rendered content</h2><p>{selectedComponent}</p>");
+
 }
-@html
+@if (selectedComponent == "ContactForm")
+{
+    @await Component.InvokeAsync(selectedComponent)
+}
+else
+{
+    @html
+}
 
 @*
 <p>

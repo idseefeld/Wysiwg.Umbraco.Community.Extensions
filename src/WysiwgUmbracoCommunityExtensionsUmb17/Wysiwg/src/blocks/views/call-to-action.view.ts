@@ -1,4 +1,3 @@
-import { UmbTextStyles } from "@umbraco-cms/backoffice/style";
 import {
   html,
   customElement,
@@ -20,11 +19,11 @@ export class WysiwgBlockCallToActionView
     const jsPrefix = "javascript:";
     const onClick = actionOrUrl.substring(0, jsPrefix.length) === jsPrefix ? actionOrUrl.substring(jsPrefix.length) : `location.href='${actionOrUrl}'`;
     const innerHtml = `<div class="call-to-action"><button ${settings.inlineStyle} title="${onClick}">${callToActionText}</button></div>`;
-    return html`${unsafeHTML(innerHtml)}`;
+    return html`${unsafeHTML(this.setEditorLink(innerHtml))}`;
   }
 
   static override styles = [
-    UmbTextStyles,
+    WysiwgBaseBlockEditorCustomViewElement.baseStyles,
     css`
       :host {
         display: block;

@@ -16,8 +16,8 @@ using WysiwgUmbracoCommunityExtensions.Services;
 namespace WysiwgUmbracoCommunityExtensions.PropertyEditors
 {
     public class ComponentPickerValueConverter(
-        IPublishedUrlProvider publishedUrlProvider,
-        IPublishedValueFallback publishedValueFallback,
+        //IPublishedUrlProvider publishedUrlProvider,
+        //IPublishedValueFallback publishedValueFallback,
         IJsonSerializer jsonSerializer
         ) : PropertyValueConverterBase
     {
@@ -48,7 +48,7 @@ namespace WysiwgUmbracoCommunityExtensions.PropertyEditors
         public override PropertyCacheLevel GetPropertyCacheLevel(IPublishedPropertyType propertyType)
         {
             var baseLevel = base.GetPropertyCacheLevel(propertyType);
-            return baseLevel == PropertyCacheLevel.None
+            return baseLevel != PropertyCacheLevel.None
                 ? PropertyCacheLevel.Element
                 : baseLevel;
         }
@@ -70,12 +70,20 @@ namespace WysiwgUmbracoCommunityExtensions.PropertyEditors
 
         public override object? ConvertIntermediateToObject(IPublishedElement owner, IPublishedPropertyType propertyType, PropertyCacheLevel referenceCacheLevel, object? inter, bool preview)
         {
-            if (inter is string str)
+            try
             {
-                if (!str.IsNullOrWhiteSpace())
+                if (inter is string str)
                 {
-                    return jsonSerializer.Deserialize<IEnumerable<ComponentPicker>>(str);
+                    if (!str.IsNullOrWhiteSpace())
+                    {
+                        return new ComponentPicker() { SelectedValue = str };// jsonSerializer.Deserialize<ComponentPicker>(str);
+                    }
                 }
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
 
             return null;
