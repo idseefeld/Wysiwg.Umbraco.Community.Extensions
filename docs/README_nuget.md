@@ -12,5 +12,5 @@ You find more details in the project [Wiki](https://github.com/idseefeld/Wysiwg.
 
 ### Final Notes
 The Version of this package is related to minimum Umbraco version. For example, if the package is compatible with Umbraco 15.3.0, the version of the package will be 15.3.0.
-New versions of the package will be released as soon as the minimum Umbraco version is updated.
+New versions of the package will be released as soon as the minimum Umbraco version requires an update of this package.
 Patch versions will be released for bug fixes and minor changes independently of the Umbraco version.
