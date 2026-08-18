@@ -2,7 +2,7 @@ import { LitElement as d, html as o, css as g, state as u, customElement as m } 
 import { UmbElementMixin as _ } from "@umbraco-cms/backoffice/element-api";
 import { UMB_NOTIFICATION_CONTEXT as p } from "@umbraco-cms/backoffice/notification";
 import { UMB_CURRENT_USER_CONTEXT as f } from "@umbraco-cms/backoffice/current-user";
-import { g as b, a as y, b as w, c as v, d as x } from "./sdk.gen-CjQc6NVt.js";
+import { g as b, a as y, b as w, c as v, d as x } from "./sdk.gen-CBXr3l_Z.js";
 import { U as l } from "./types-eEpi63XY.js";
 import { umbConfirmModal as C } from "@umbraco-cms/backoffice/modal";
 import { c as S } from "./client.gen-Cmrrvp-8.js";
@@ -339,4 +339,4 @@ export {
   r as WysiwgDashboardElement,
   P as default
 };
-//# sourceMappingURL=dashboard.element-DgmTHJZs.js.map
+//# sourceMappingURL=dashboard.element-d4sn3_P8.js.map

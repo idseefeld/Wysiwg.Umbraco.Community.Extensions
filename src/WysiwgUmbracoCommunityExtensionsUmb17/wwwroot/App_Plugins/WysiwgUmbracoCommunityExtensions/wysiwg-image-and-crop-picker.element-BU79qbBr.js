@@ -5,7 +5,7 @@ import { UMB_PROPERTY_CONTEXT as $t } from "@umbraco-cms/backoffice/property";
 import { UmbPropertyEditorUiInteractionMemoryManager as bt } from "@umbraco-cms/backoffice/property-editor";
 import { UmbFormControlMixin as qe, UMB_VALIDATION_EMPTY_LOCALIZATION_KEY as Be } from "@umbraco-cms/backoffice/validation";
 import { UUICardElement as De, UUISelectElement as wt } from "@umbraco-cms/backoffice/external/uui";
-import { i as At } from "./sdk.gen-CjQc6NVt.js";
+import { i as At } from "./sdk.gen-CBXr3l_Z.js";
 import { UmbChangeEvent as T } from "@umbraco-cms/backoffice/event";
 import { UmbId as Le } from "@umbraco-cms/backoffice/id";
 import { UMB_MODAL_MANAGER_CONTEXT as Et, umbConfirmModal as Ct } from "@umbraco-cms/backoffice/modal";
@@ -1387,4 +1387,4 @@ export {
   d as WysiwgImageAndCropPickerElement,
   Oi as default
 };
-//# sourceMappingURL=wysiwg-image-and-crop-picker.element-DODlo3o_.js.map
+//# sourceMappingURL=wysiwg-image-and-crop-picker.element-BU79qbBr.js.map

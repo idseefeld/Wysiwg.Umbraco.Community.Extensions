@@ -3,7 +3,7 @@ import { UmbContextToken as i } from "@umbraco-cms/backoffice/context-api";
 import { UMB_NOTIFICATION_CONTEXT as r } from "@umbraco-cms/backoffice/notification";
 import { UmbNumberState as a, UmbStringState as n } from "@umbraco-cms/backoffice/observable-api";
 import { UmbLocalizationController as m } from "@umbraco-cms/backoffice/localization-api";
-import { g as p } from "./sdk.gen-CjQc6NVt.js";
+import { g as p } from "./sdk.gen-CBXr3l_Z.js";
 class c extends o {
   constructor(t) {
     super(t, h), this.#e = new m(this), this.#s = new a(0), this.updateStatusCode = this.#s.asObservable(), this.#o = new n(""), this.umbracoVersion = this.#o.asObservable(), this.#t = void 0, this.consumeContext(r, (e) => {
@@ -41,4 +41,4 @@ export {
   c as WysiwgBlockGridContextApi,
   g as api
 };
-//# sourceMappingURL=wysiwg.workspace.context-CeinJtuE.js.map
+//# sourceMappingURL=wysiwg.workspace.context-DCYqdiaY.js.map

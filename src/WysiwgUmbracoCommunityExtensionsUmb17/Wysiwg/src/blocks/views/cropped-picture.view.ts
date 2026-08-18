@@ -23,6 +23,7 @@ export class CroppedPictureCustomView
 
   render() {
     const pictureWithCrop = this.content as CroppedPictureCustomViewProps;
+    const editorUrl = this.config?.editContentPath ?? "";
     if (!pictureWithCrop) {
       return html`
       <div class="error">
@@ -60,11 +61,12 @@ export class CroppedPictureCustomView
         : "";
 
 
-      return html`<figure style=${rotationStyle}>${img}${figCaption}</figure>`;
+      return html`<a id="editor-link" href="${editorUrl}"><figure style=${rotationStyle}>${img}${figCaption}</figure></a>`;
     }
   }
 
   static styles = [
+    WysiwgBaseBlockEditorCustomViewElement.baseStyles,
     css`
       :host {
         display: block;

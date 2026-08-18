@@ -7,11 +7,12 @@ namespace WysiwgUmbracoCommunityExtensions.ViewModels
     public class Wysiwg65_ComponentPicker
     {
         public Wysiwg65_ComponentPicker() { }
-        public Wysiwg65_ComponentPicker(IPublishedElement? element)
+        public Wysiwg65_ComponentPicker(IPublishedElement element)
         {
-            SelectedComponent = element?
-                .Value<IEnumerable<ComponentPicker>>("componentPicker")?
-                .FirstOrDefault();
+            if (element.HasProperty("componentPicker"))
+            {
+                SelectedComponent = element.Value<ComponentPicker>("componentPicker");
+            }
         }
         public ComponentPicker? SelectedComponent { get; set; }
     }

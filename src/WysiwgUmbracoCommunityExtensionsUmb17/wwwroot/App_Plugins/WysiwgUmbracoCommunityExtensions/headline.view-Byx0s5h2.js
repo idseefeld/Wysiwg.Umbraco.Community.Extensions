@@ -1,20 +1,19 @@
-import { UmbTextStyles as o } from "@umbraco-cms/backoffice/style";
-import { unsafeHTML as h, html as g, css as w, customElement as m } from "@umbraco-cms/backoffice/external/lit";
-import { W as d } from "./wysiwg-base-block-editor-custom.view-BSJRTpze.js";
-var y = Object.getOwnPropertyDescriptor, c = (e, i, s, l) => {
-  for (var n = l > 1 ? void 0 : l ? y(i, s) : i, a = e.length - 1, r; a >= 0; a--)
+import { unsafeHTML as o, html as g, css as w, customElement as d } from "@umbraco-cms/backoffice/external/lit";
+import { W as h } from "./wysiwg-base-block-editor-custom.view-Cn6p_o0v.js";
+var m = Object.getOwnPropertyDescriptor, y = (e, i, s, l) => {
+  for (var n = l > 1 ? void 0 : l ? m(i, s) : i, a = e.length - 1, r; a >= 0; a--)
     (r = e[a]) && (n = r(n) || n);
   return n;
 };
-const f = "wysiwg-block-headline-view";
-let t = class extends d {
+const c = "wysiwg-block-headline-view";
+let t = class extends h {
   render() {
     const e = this.getLayoutSettings(), i = this.content?.text ?? "Headline", s = `<${e.size} class="headline" ${e.inlineStyle}>${i}</${e.size}>`;
-    return g`${h(s)}`;
+    return g`${o(this.setEditorLink(s))}`;
   }
 };
 t.styles = [
-  o,
+  h.baseStyles,
   w`
       :host {
         display: block;
@@ -48,12 +47,12 @@ t.styles = [
       }
     `
 ];
-t = c([
-  m(f)
+t = y([
+  d(c)
 ], t);
-const u = t;
+const p = t;
 export {
   t as WysiwgBlockHeadlineView,
-  u as default
+  p as default
 };
-//# sourceMappingURL=headline.view-BJrPIm8S.js.map
+//# sourceMappingURL=headline.view-Byx0s5h2.js.map

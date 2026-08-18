@@ -3,19 +3,27 @@ const s = (e) => (e?.client ?? t).get({
   security: [{ scheme: "bearer", type: "http" }],
   url: "/api/v1/wysiwg/all-components",
   ...e
-}), a = (e) => (e?.client ?? t).get({
+}), a = (e) => (e.client ?? t).post({
+  security: [{ scheme: "bearer", type: "http" }],
+  url: "/api/v1/wysiwg/preview-markup",
+  ...e,
+  headers: {
+    "Content-Type": "application/json",
+    ...e.headers
+  }
+}), c = (e) => (e?.client ?? t).get({
   security: [{ scheme: "bearer", type: "http" }],
   url: "/api/v1/wysiwg/crops",
   ...e
-}), c = (e) => (e?.client ?? t).get({
+}), i = (e) => (e?.client ?? t).get({
   security: [{ scheme: "bearer", type: "http" }],
   url: "/api/v1/wysiwg/imageurl",
   ...e
-}), i = (e) => (e?.client ?? t).get({
+}), l = (e) => (e?.client ?? t).get({
   security: [{ scheme: "bearer", type: "http" }],
   url: "/api/v1/wysiwg/v2-cropurl",
   ...e
-}), l = (e) => (e?.client ?? t).get({
+}), p = (e) => (e?.client ?? t).get({
   security: [{ scheme: "bearer", type: "http" }],
   url: "/api/v1/wysiwg/site-background-color",
   ...e
@@ -23,33 +31,34 @@ const s = (e) => (e?.client ?? t).get({
   security: [{ scheme: "bearer", type: "http" }],
   url: "/api/v1/wysiwg/fixupgrade",
   ...e
-}), p = (e) => (e?.client ?? t).get({
+}), y = (e) => (e?.client ?? t).get({
   security: [{ scheme: "bearer", type: "http" }],
   url: "/api/v1/wysiwg/install",
   ...e
-}), y = (e) => (e?.client ?? t).get({
+}), u = (e) => (e?.client ?? t).get({
   security: [{ scheme: "bearer", type: "http" }],
   url: "/api/v1/wysiwg/uninstall",
   ...e
-}), u = (e) => (e?.client ?? t).get({
+}), n = (e) => (e?.client ?? t).get({
   security: [{ scheme: "bearer", type: "http" }],
   url: "/api/v1/wysiwg/variations",
   ...e
-}), n = (e) => (e?.client ?? t).get({
+}), h = (e) => (e?.client ?? t).get({
   security: [{ scheme: "bearer", type: "http" }],
   url: "/api/v1/wysiwg/updateStatusCode",
   ...e
 });
 export {
   g as a,
-  p as b,
-  y as c,
-  u as d,
-  i as e,
-  c as f,
-  n as g,
-  l as h,
-  a as i,
-  s as j
+  y as b,
+  u as c,
+  n as d,
+  l as e,
+  i as f,
+  h as g,
+  p as h,
+  c as i,
+  s as j,
+  a as p
 };
-//# sourceMappingURL=sdk.gen-CjQc6NVt.js.map
+//# sourceMappingURL=sdk.gen-CBXr3l_Z.js.map
