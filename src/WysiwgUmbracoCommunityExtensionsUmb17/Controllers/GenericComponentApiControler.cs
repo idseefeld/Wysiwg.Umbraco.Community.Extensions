@@ -38,14 +38,13 @@ public partial class WysiwgApiController : ManagementApiControllerBase
     [ApiExplorerSettings(GroupName = "Components")]
     [HttpPost("preview-markup")]
     [MapToApiVersion("1.0")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType<string>(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [EndpointSummary("Gets rendered markup for block element data.")]
     //[EndpointDescription("...")]
     public async Task<IActionResult> PreviewMarkup(RequestPreviewMarkupModel request)
     {
-        string markup;
+        string markup = string.Empty;
 
         try
         {
@@ -71,37 +70,6 @@ public partial class WysiwgApiController : ManagementApiControllerBase
         }
 
         return Ok(this.CleanUpMarkup(markup));
-    }
-
-    private async Task<IPublishedElement?> GetPublishedOwnerAsync(Guid id, IPublishedContent content)
-    {
-        IPublishedElement? rVal = null;
-
-        IContentType? contentType = await contentTypeService.GetAsync(id);
-
-        return rVal;
-    }
-    private IPublishedElement? GetOwner(Guid? key)
-    {
-        if (!umbracoContextAccessor.TryGetUmbracoContext(out IUmbracoContext? context) || context == null)
-        {
-            return null;
-        }
-        if (!key.HasValue)
-        {
-            return null;
-        }
-        IElement? element = elementService.GetById(key.Value);
-        if(element == null)
-        {
-            return null;
-        }
-
-        ContentScheduleCollection contentScheduleCollection = elementService.GetContentScheduleByContentId(key.Value);
-
-        var model = elementPresentationFactory.CreateResponseModel(element, contentScheduleCollection);
-        IPublishedElement? publishedElement = model as IPublishedElement;
-        return publishedElement;
     }
 
     private async Task<string> GetMarkupForBlock(IPublishedElement owner, BlockItemData? blockData)

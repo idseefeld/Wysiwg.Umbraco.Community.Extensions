@@ -1,19 +1,12 @@
 using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.Serialization;
 using Umbraco.Extensions;
 using WysiwgUmbracoCommunityExtensions.Models;
 
 namespace WysiwgUmbracoCommunityExtensions.ViewModels
 {
-    public class Wysiwg65_ComponentPicker
+    public class Wysiwg65_componentPicker(IPublishedElement? element, IPublishedValueFallback publishedValueFallback, IJsonSerializer jsonSerializer)
     {
-        public Wysiwg65_ComponentPicker() { }
-        public Wysiwg65_ComponentPicker(IPublishedElement element)
-        {
-            if (element.HasProperty("componentPicker"))
-            {
-                SelectedComponent = element.Value<ComponentPicker>("componentPicker");
-            }
-        }
-        public ComponentPicker? SelectedComponent { get; set; }
+        public string SelectedComponent => element?.Value<string>(publishedValueFallback, "componentPicker") ?? string.Empty;
     }
 }

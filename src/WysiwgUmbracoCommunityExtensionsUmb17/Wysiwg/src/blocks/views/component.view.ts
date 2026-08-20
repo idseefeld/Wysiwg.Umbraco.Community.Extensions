@@ -18,10 +18,10 @@ export class WysiwgGenericComponentView
   extends WysiwgBaseBlockEditorCustomViewElement {
 
   @state()
-  markup: string = "";
-
-  @state()
   selectedComponent: string | undefined = undefined;
+
+  @property({ attribute: false })
+  markup: string = "";
 
   @property()
   contentKey?: string;
@@ -33,33 +33,41 @@ export class WysiwgGenericComponentView
   blockType?: UmbBlockTypeBaseModel;
 
   override render() {
-    this.getMarkup();
+    const componentPicker = (this.content as ComponentPickerViewProps)?.componentPicker ?? [];
+
+    if (componentPicker.length) {
+      if (this.selectedComponent !== componentPicker) {
+        this.selectedComponent = componentPicker;
+        this.getMarkup();
+      }
+    }
+
     return html`${unsafeHTML(this.setEditorLink(this.markup))}`;
   }
 
   private async getMarkup() {
     this.settings = this.getLayoutSettings()
 
-    this.selectedComponent = (this.content as ComponentPickerViewProps)?.componentPicker[0]?.selectedValue;
+    this.selectedComponent = (this.content as ComponentPickerViewProps)?.componentPicker;
     if (!this.selectedComponent) {
       this.markup = "<em>[no component selected]</em>";
       return;
     }
 
     const requestModel = {
-        data: {
-          contentTypeKey: this.blockType?.contentElementTypeKey ?? "", // "89bb2397-1aac-417f-9e1c-7f3ac0884999",
-          key: this.contentKey ?? "", //"744f4fd0-c0e1-4512-9422-16822b87ac75",
-          values: [
-            {
-              value: this.selectedComponent,
-              alias: "componentPicker"
-            } as BlockPropertyValueModel
-          ],
-        },
-        pageKey: this.documentUnique, // ?? "df06978c-4e12-4205-b020-ba3dccf1fb5a",
-        culture: this.culture ?? "",
-      } as RequestPreviewMarkupModel;
+      data: {
+        contentTypeKey: this.blockType?.contentElementTypeKey ?? "", // "89bb2397-1aac-417f-9e1c-7f3ac0884999",
+        key: this.contentKey ?? "", //"744f4fd0-c0e1-4512-9422-16822b87ac75",
+        values: [
+          {
+            value: this.selectedComponent,
+            alias: "componentPicker"
+          } as BlockPropertyValueModel
+        ],
+      },
+      pageKey: this.documentUnique, // ?? "df06978c-4e12-4205-b020-ba3dccf1fb5a",
+      culture: this.culture ?? "",
+    } as RequestPreviewMarkupModel;
 
 
     const options = { body: requestModel } as PostWysiwgPreviewMarkupData;
@@ -69,7 +77,7 @@ export class WysiwgGenericComponentView
     if (error) {
       this.markup = `<em>[error fetching markup for ${this.selectedComponent}]</em>`;
     } else {
-      this.markup = data?.toString() ?? "<em>[no markup returned]</em>";
+      this.markup = !data ? "<em>[no markup returned]</em>" : data.toString();
     }
   }
 

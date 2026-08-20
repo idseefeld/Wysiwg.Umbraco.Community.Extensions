@@ -33,7 +33,5 @@ export type LayoutSettings = {
 };
 
 export type ComponentPickerViewProps = {
-  componentPicker: {
-    selectedValue: string;
-  }[];
+  componentPicker:  string;
 };

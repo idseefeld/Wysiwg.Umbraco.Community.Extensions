@@ -27,8 +27,7 @@ export const getAllComponents = <ThrowOnError extends boolean = false>(options?:
 /**
  * Gets rendered markup for block element data.
  */
-export const postWysiwgPreviewMarkup = <ThrowOnError extends boolean = false>(options: Options<PostWysiwgPreviewMarkupData, ThrowOnError>) =>
-  (options.client ?? client).post<PostWysiwgPreviewMarkupResponses, PostWysiwgPreviewMarkupErrors, ThrowOnError>({
+export const postWysiwgPreviewMarkup = <ThrowOnError extends boolean = false>(options: Options<PostWysiwgPreviewMarkupData, ThrowOnError>) => (options.client ?? client).post<PostWysiwgPreviewMarkupResponses, PostWysiwgPreviewMarkupErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/wysiwg/preview-markup',
     ...options,

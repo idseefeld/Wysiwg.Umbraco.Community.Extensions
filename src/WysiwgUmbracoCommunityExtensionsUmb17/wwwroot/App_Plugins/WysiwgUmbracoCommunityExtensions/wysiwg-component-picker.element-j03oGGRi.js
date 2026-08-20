@@ -1,23 +1,20 @@
 import { html as c, css as f, state as u, property as m, customElement as v } from "@umbraco-cms/backoffice/external/lit";
 import { UmbLitElement as w } from "@umbraco-cms/backoffice/lit-element";
-import { UUISelectElement as g } from "@umbraco-cms/backoffice/external/uui";
-import { UmbFormControlMixin as C, UMB_VALIDATION_EMPTY_LOCALIZATION_KEY as E } from "@umbraco-cms/backoffice/validation";
-import { UmbChangeEvent as V } from "@umbraco-cms/backoffice/event";
-import { j as b } from "./sdk.gen-CBXr3l_Z.js";
-var A = Object.defineProperty, O = Object.getOwnPropertyDescriptor, d = (e) => {
+import { UUISelectElement as C } from "@umbraco-cms/backoffice/external/uui";
+import { UmbFormControlMixin as g, UMB_VALIDATION_EMPTY_LOCALIZATION_KEY as E } from "@umbraco-cms/backoffice/validation";
+import { UmbChangeEvent as b } from "@umbraco-cms/backoffice/event";
+import { j as A } from "./sdk.gen-CBXr3l_Z.js";
+var O = Object.defineProperty, P = Object.getOwnPropertyDescriptor, d = (e) => {
   throw TypeError(e);
 }, a = (e, t, o, s) => {
-  for (var r = s > 1 ? void 0 : s ? O(t, o) : t, i = e.length - 1, p; i >= 0; i--)
+  for (var r = s > 1 ? void 0 : s ? P(t, o) : t, i = e.length - 1, p; i >= 0; i--)
     (p = e[i]) && (r = (s ? p(t, o, r) : p(r)) || r);
-  return s && r && A(t, o, r), r;
-}, P = (e, t, o) => t.has(e) || d("Cannot " + o), S = (e, t, o) => t.has(e) ? d("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, o), h = (e, t, o) => (P(e, t, "access private method"), o), l, _, y;
+  return s && r && O(t, o, r), r;
+}, S = (e, t, o) => t.has(e) || d("Cannot " + o), V = (e, t, o) => t.has(e) ? d("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(e) : t.set(e, o), h = (e, t, o) => (S(e, t, "access private method"), o), l, _, y;
 const U = "wysiwg-component-picker";
-let n = class extends C(w) {
+let n = class extends g(w) {
   constructor() {
-    super(), S(this, l), this._options = [{ value: "", name: "" }], this._selectedValue = "", this.mandatoryMessage = E, this.readonly = !1;
-  }
-  //#region properties, states, ctor, methods
-  set config(e) {
+    super(...arguments), V(this, l), this._options = [{ value: "", name: "" }], this._selectedValue = "", this.mandatoryMessage = E, this.readonly = !1;
   }
   //#endregion
   async getAllComponents() {
@@ -36,13 +33,11 @@ let n = class extends C(w) {
     });
   }
   async components() {
-    const e = {
-      url: "/api/v1/wysiwg/all-components"
-    }, { data: t, error: o } = await b(e);
+    const e = {}, { data: t, error: o } = await A(e);
     return t !== void 0 ? t : o ? (console.error(o), "error") : "no data";
   }
   firstUpdated() {
-    this._selectedValue = this.value?.[0]?.selectedValue ?? "", this.getAllComponents(), this.shadowRoot?.querySelector("umb-input-dropdown-list") && this.addFormControlElement(this.shadowRoot.querySelector("umb-input-dropdown-list"));
+    this._selectedValue = this.value ?? "", this.getAllComponents(), this.shadowRoot?.querySelector("umb-input-dropdown-list") && this.addFormControlElement(this.shadowRoot.querySelector("umb-input-dropdown-list"));
   }
   render() {
     return c`${h(this, l, y).call(this)}`;
@@ -51,7 +46,7 @@ let n = class extends C(w) {
 l = /* @__PURE__ */ new WeakSet();
 _ = function(e) {
   const t = e.target.value;
-  this._selectedValue = t ?? "", this.value = [{ selectedValue: this._selectedValue }], this.dispatchEvent(new V());
+  this._selectedValue = t ?? "", this.value = this._selectedValue, this.dispatchEvent(new b());
 };
 y = function() {
   const e = !this.readonly, t = "component-select";
@@ -66,7 +61,7 @@ y = function() {
       ` : c`<uui-select label=${t}></uui-select>`;
 };
 n.styles = [
-  g.styles,
+  C.styles,
   f`
         uui-select {
           margin-top: 8px;
@@ -100,4 +95,4 @@ export {
   n as WysiwgComponentPickerElement,
   L as default
 };
-//# sourceMappingURL=wysiwg-component-picker.element-Dkb93aZK.js.map
+//# sourceMappingURL=wysiwg-component-picker.element-j03oGGRi.js.map

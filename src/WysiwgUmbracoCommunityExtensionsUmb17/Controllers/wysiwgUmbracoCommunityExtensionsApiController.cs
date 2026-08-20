@@ -38,10 +38,6 @@ namespace WysiwgUmbracoCommunityExtensions.Controllers;
 [Route("api/v{version:apiVersion}/wysiwg")]
 public partial class WysiwgApiController(
     IPublishedContentQuery publishedContent,
-    IContentTypeService contentTypeService,
-    IUmbracoMapper umbracoMapper,
-    IElementPresentationFactory elementPresentationFactory,
-    IElementService elementService,
     IDataTypeService dataTypeService,
     ISetupService installService,
     IMediaTypeService mediaTypeService,

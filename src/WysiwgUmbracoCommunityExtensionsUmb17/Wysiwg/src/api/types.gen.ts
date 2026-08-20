@@ -230,10 +230,6 @@ export type PostWysiwgPreviewMarkupResponses = {
      * OK
      */
     200: string;
-    /**
-     * Created
-     */
-    201: unknown;
 };
 
 export type PostWysiwgPreviewMarkupResponse = PostWysiwgPreviewMarkupResponses[keyof PostWysiwgPreviewMarkupResponses];

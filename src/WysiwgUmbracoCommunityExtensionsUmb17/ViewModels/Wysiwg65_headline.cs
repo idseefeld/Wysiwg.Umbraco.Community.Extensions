@@ -13,6 +13,6 @@ namespace WysiwgUmbracoCommunityExtensions.ViewModels
             var text = element?.Value<string>("text");
             Text = text != null ? new HtmlEncodedString(text) : null;
         }
-        public IHtmlEncodedString? Text { get; set; }
+        public IHtmlEncodedString? Text { get; }
     }
 }

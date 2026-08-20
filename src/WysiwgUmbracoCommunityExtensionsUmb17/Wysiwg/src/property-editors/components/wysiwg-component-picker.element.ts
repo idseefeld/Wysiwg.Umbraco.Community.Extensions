@@ -14,7 +14,6 @@ import {
   UUISelectElement,
   UUISelectOption
 } from '@umbraco-cms/backoffice/external/uui';
-import { WysiwgComponentPickerElementPropertyValue, WysiwgComponentPickerElementPropertyValues } from './types';
 import {
   UMB_VALIDATION_EMPTY_LOCALIZATION_KEY,
   UmbFormControlMixin
@@ -29,16 +28,16 @@ import { getAllComponents, GetAllComponentsData, GetAllComponentsResponse } from
 const elementName = 'wysiwg-component-picker';
 @customElement(elementName)
 export class WysiwgComponentPickerElement
-  extends UmbFormControlMixin<WysiwgComponentPickerElementPropertyValues | undefined, typeof UmbLitElement, undefined>(UmbLitElement)
+  extends UmbFormControlMixin<string | undefined, typeof UmbLitElement, undefined>(UmbLitElement)
   implements UmbPropertyEditorUiElement {
 
   //#region properties, states, ctor, methods
-  public set config(config: UmbPropertyEditorConfigCollection | undefined) {
-    if (!config) return;
-  }
+  // public set config(config: UmbPropertyEditorConfigCollection | undefined) {
+  //   if (!config) return;
+  // }
   //#region state
   @state()
-  private _options: Array<UUISelectOption> = [{ value: '', name: '' }];//Array<any & { invalid?: boolean }> = [];
+  private _options: Array<UUISelectOption> = [{ value: '', name: '' }];
 
   @state()
   private _selectedValue: string = "";
@@ -88,9 +87,7 @@ export class WysiwgComponentPickerElement
   }
 
   private async components(): Promise<GetAllComponentsResponse | "error" | "no data"> {
-    const options: GetAllComponentsData = {
-      url: '/api/v1/wysiwg/all-components'
-    }
+    const options = {} as GetAllComponentsData;
 
     const { data, error } = await getAllComponents(options);
 
@@ -106,17 +103,8 @@ export class WysiwgComponentPickerElement
     return "no data";
   }
 
-  constructor() {
-    super();
-
-    // this.consumeContext(UMB_PROPERTY_CONTEXT, (context) => {
-
-    // });
-
-  }
-
   override firstUpdated() {
-    this._selectedValue = this.value?.[0]?.selectedValue ?? "";
+    this._selectedValue = this.value ?? "";
     this.getAllComponents();
     const componentSelect = this.shadowRoot?.querySelector<UUISelectElement>("umb-input-dropdown-list");
     if (componentSelect) {
@@ -131,11 +119,7 @@ export class WysiwgComponentPickerElement
   #onChangeComponent(event: CustomEvent & { target: UUISelectElement }) {
     const selectedValue = event.target.value as string | undefined;
     this._selectedValue = selectedValue ?? "";
-    this.value = [{ selectedValue: this._selectedValue } as WysiwgComponentPickerElementPropertyValue];
-
-    // for (const option of this._options) {
-    //   option.selected = option.value === selectedValue;
-    // }
+    this.value = this._selectedValue;
 
     this.dispatchEvent(new UmbChangeEvent());
   }

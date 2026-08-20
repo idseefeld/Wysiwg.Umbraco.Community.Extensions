@@ -1,7 +1,7 @@
 import {
   html,
   customElement,
-  property,
+  // property,
   css,
   unsafeHTML,
 } from "@umbraco-cms/backoffice/external/lit";
@@ -17,8 +17,8 @@ export class CroppedPictureCustomView
 
   private _defaultColor: ColorType = { label: "Black", value: "#000" };
 
-  @property({ attribute: false })
-  content?: UmbBlockDataType;
+  // @property({ attribute: false })
+  // content?: UmbBlockDataType;
 
 
   render() {

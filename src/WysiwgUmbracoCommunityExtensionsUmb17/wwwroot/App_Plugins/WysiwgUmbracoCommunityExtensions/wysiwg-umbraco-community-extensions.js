@@ -59,7 +59,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.genericComponent",
     name: "Block Editor Custom View for Generic Component",
-    element: () => import("./component.view-CQ_9A80V.js"),
+    element: () => import("./component.view-BaircXRm.js"),
     forContentTypeAlias: o + "genericComponent",
     forBlockEditor: "block-grid"
   },
@@ -83,7 +83,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.croppedPicture",
     name: "Block Editor Custom View for Cropped Picture",
-    element: () => import("./cropped-picture.view-CBuSYFPw.js"),
+    element: () => import("./cropped-picture.view-Clxg5W7A.js"),
     forContentTypeAlias: o + "croppedPicture",
     forBlockEditor: "block-grid"
   },
@@ -158,7 +158,7 @@ const l = [
     type: "propertyEditorUi",
     alias: "wysiwg.PropertyEditorUi.ComponentPicker",
     name: "Wysiwg Component Picker",
-    element: () => import("./wysiwg-component-picker.element-Dkb93aZK.js"),
+    element: () => import("./wysiwg-component-picker.element-j03oGGRi.js"),
     meta: {
       label: "Wysiwg Component PropertyEditorUi Picker",
       propertyEditorSchemaAlias: "Wysiwg.ComponentPicker",
