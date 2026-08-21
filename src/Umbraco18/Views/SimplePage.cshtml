@@ -42,6 +42,8 @@
     <div id="canvas" style="@backgroundStyle">
         @await Html.GetBlockGridHtmlAsync(Model.Grid)
 
+        @await Component.InvokeAsync("ContactForm", new ContactFormModel())
+
         <footer>
             <a href="/">EN</a> | <a href="/de">DE</a>
             <span> - </span><a href="/umbraco" target="_blank">backoffice</a>
