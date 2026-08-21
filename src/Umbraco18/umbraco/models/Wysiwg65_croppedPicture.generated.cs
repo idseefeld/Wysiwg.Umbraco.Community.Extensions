@@ -74,6 +74,13 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		public virtual string FigCaption => this.Value<string>(_publishedValueFallback, "figCaption");
 
 		///<summary>
+		/// Layer Level
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "18.1.2+c2cb759")]
+		[ImplementPropertyType("layerLevel")]
+		public virtual int LayerLevel => this.Value<int>(_publishedValueFallback, "layerLevel");
+
+		///<summary>
 		/// Media Item: Select image and crop
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "18.1.2+c2cb759")]

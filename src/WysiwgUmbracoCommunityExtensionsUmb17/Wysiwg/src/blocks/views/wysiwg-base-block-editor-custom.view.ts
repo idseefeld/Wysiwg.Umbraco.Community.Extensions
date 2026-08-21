@@ -210,6 +210,7 @@ export class WysiwgBaseBlockEditorCustomViewElement
        }
        a#editor-link:hover{
         color: inherit;
+        cursor: pointer;
        }
     `];
 }

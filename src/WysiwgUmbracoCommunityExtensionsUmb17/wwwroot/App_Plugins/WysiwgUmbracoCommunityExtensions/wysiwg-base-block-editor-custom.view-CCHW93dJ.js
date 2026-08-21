@@ -103,6 +103,7 @@ a.baseStyles = [
        }
        a#editor-link:hover{
         color: inherit;
+        cursor: pointer;
        }
     `
 ];
@@ -130,4 +131,4 @@ a = u([
 export {
   a as W
 };
-//# sourceMappingURL=wysiwg-base-block-editor-custom.view-Cn6p_o0v.js.map
+//# sourceMappingURL=wysiwg-base-block-editor-custom.view-CCHW93dJ.js.map

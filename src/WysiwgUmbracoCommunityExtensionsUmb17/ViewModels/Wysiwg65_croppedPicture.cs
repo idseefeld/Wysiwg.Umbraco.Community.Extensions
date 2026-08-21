@@ -10,13 +10,15 @@ namespace WysiwgUmbracoCommunityExtensions.ViewModels
     {
         public Wysiwg65_croppedPicture() { }
 
-        public Wysiwg65_croppedPicture(IPublishedElement? element) {
+        public Wysiwg65_croppedPicture(IPublishedElement? element)
+        {
             MediaItem = element?.Value<MediaWithSelectedCrop>("mediaItem");
             AlternativeText = element?.Value<string>("alternativeText");
             FigCaption = element?.Value<string>("figCaption");
             CropAlias = element?.Value<string>("cropAlias");
             CaptionColor = element?.Value<PickedColor>("captionColor")?.Color ?? element?.Value<string>("captionColor");
-            Rotation = element?.Value<decimal?>("rotation");
+            Rotation = element?.Value<decimal>("rotation") ?? 0;
+            LayerLevel = element?.Value<int>("layerLevel") ?? 0;
         }
 
         public MediaWithSelectedCrop? MediaItem { get; set; }
@@ -24,6 +26,7 @@ namespace WysiwgUmbracoCommunityExtensions.ViewModels
         public string? FigCaption { get; set; }
         public string? CaptionColor { get; set; }
         public string? CropAlias { get; set; }
-        public decimal? Rotation { get; set; }
+        public decimal Rotation { get; set; }
+        public int LayerLevel { get; set; }
     }
 }

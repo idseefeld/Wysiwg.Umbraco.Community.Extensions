@@ -366,4 +366,6 @@ src/.idea
 /src/Umbraco17/wwwroot/styles/wysiwyg-blockgrid.min.css
 /src/Umbraco17/umbraco
 /src/WysiwgUmbracoCommunityExtensionsIntegrationTests/wwwroot/styles/wysiwyg-blockgrid.min.css
-/src/Umbraco18
+/src/Umbraco18/umbraco/Data
+/src/Umbraco18/umbraco/Logs
+/src/Umbraco18/wwwroot/styles/wysiwyg-blockgrid.min.css

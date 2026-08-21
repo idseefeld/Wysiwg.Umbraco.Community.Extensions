@@ -1,4 +1,4 @@
-@using Umbraco.Cms.Web.Common.PublishedModels;
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<SimplePage>
 @{
     Layout = null;
@@ -14,6 +14,9 @@
     <title>Simple Page</title>
 
     <link rel="shortcut icon" type="image/png" href="/favicon.png" />
+
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
 
     <link href="~/styles/wysiwyg-blockgrid.min.css" rel="stylesheet" />
     <link href="~/css/main.css" rel="stylesheet" />
@@ -40,15 +43,23 @@
 </head>
 <body id="top">
     <div id="canvas" style="@backgroundStyle">
+
         @await Html.GetBlockGridHtmlAsync(Model.Grid)
 
-        @await Component.InvokeAsync("ContactForm", new ContactFormModel())
-
         <footer>
-            <a href="/">EN</a> | <a href="/de">DE</a>
+            <a href="/">DE</a> | <a href="/en">EN</a>
             <span> - </span><a href="/umbraco" target="_blank">backoffice</a>
         </footer>
 
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js" integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk" crossorigin="anonymous"></script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.js"></script>
+
 </body>
 </html>

@@ -7,10 +7,11 @@ import {
   property,
 } from "@umbraco-cms/backoffice/external/lit";
 import WysiwgBaseBlockEditorCustomViewElement from "./wysiwg-base-block-editor-custom.view";
-import { ComponentPickerViewProps } from "./types";
+import { ComponentPickerViewProps, LanguagesWorkspaceContext, } from "./types";
 import { BlockPropertyValueModel, postWysiwgPreviewMarkup, PostWysiwgPreviewMarkupData, RequestPreviewMarkupModel } from "../../api";
 import { UmbBlockTypeBaseModel } from "@umbraco-cms/backoffice/block-type";
 import { UMB_PROPERTY_DATASET_CONTEXT } from "@umbraco-cms/backoffice/property";
+import { UMB_WORKSPACE_CONTEXT, UmbWorkspaceContext } from "@umbraco-cms/backoffice/workspace";
 
 const customElementName = "wysiwg-generic-component-view";
 @customElement(customElementName)
@@ -34,10 +35,21 @@ export class WysiwgGenericComponentView
 
   constructor() {
     super();
+
     this.consumeContext(UMB_PROPERTY_DATASET_CONTEXT, (instance) => {
       if (instance) {
         this.culture = instance.getVariantId().culture ?? '';
-        this.getMarkup();
+        if (!this.culture) {
+          this.consumeContext(UMB_WORKSPACE_CONTEXT, (workspaceInstance) => {
+            if (workspaceInstance) {
+              const languages = (workspaceInstance as LanguagesWorkspaceContext & UmbWorkspaceContext).languages;
+              this.culture = languages?.source.value.find((lang: any) => lang.isDefault)?.unique ?? '';
+              this.getMarkup();
+            }
+          });
+        } else {
+          this.getMarkup();
+        }
       }
     });
   }

@@ -15,6 +15,7 @@ export type CroppedPictureCustomViewProps = {
   figCaption: string;
   captionColor: ColorType;
   rotation: RotationSlider;
+  layerLevel: number;
 };
 
 export type RotationSlider = {
@@ -33,5 +34,21 @@ export type LayoutSettings = {
 };
 
 export type ComponentPickerViewProps = {
-  componentPicker:  string;
+  componentPicker: string;
+};
+
+export type Language = {
+  isDefault: boolean;
+  unique: string;
+  name: string;
+};
+
+export type Languages = {
+  source: {
+    value: Array<Language>;
+  };
+};
+
+export type LanguagesWorkspaceContext = {
+  languages: Languages;
 };

@@ -7,7 +7,6 @@ import {
 } from '@umbraco-cms/backoffice/external/lit';
 import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element';
 import type {
-  UmbPropertyEditorConfigCollection,
   UmbPropertyEditorUiElement
 } from '@umbraco-cms/backoffice/property-editor';
 import {

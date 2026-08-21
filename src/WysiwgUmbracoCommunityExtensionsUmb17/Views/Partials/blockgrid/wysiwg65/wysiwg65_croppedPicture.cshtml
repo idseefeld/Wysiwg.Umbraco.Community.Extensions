@@ -25,9 +25,12 @@
     var noBorder = color.IsTransparent();
     var selectedCrop = content.MediaItem.SelectedCropAlias ?? "";
     var alternativeText = content.AlternativeText ?? content.MediaItem.Name ?? selectedCrop;
-    var rotateStyle = new HtmlFormattableString(content.Rotation == null
+    var layerLevelStyle = content.LayerLevel > 0
+        ? $"z-index: {content.LayerLevel};position:absolute;"
+        : "";
+    var rotateStyle = new HtmlFormattableString(content.Rotation == 0
         ? ""
-        : $"style=\"margin: var(--wysiwg-figure-margin, 0);transform: var(--wysiwg-figure-transform, rotate({content.Rotation}deg));\"");
+        : $"style=\"margin: var(--wysiwg-figure-margin, 0);transform: var(--wysiwg-figure-transform, rotate({content.Rotation}deg));{layerLevelStyle}\"");
     var rotateClass = content.Rotation == null ? "" : "class=\"rotate\"";
     var border = string.IsNullOrEmpty(color) || color.IsTransparent()
         ? null
@@ -50,7 +53,7 @@
     {
         var src = image.GetSelectedCropUrl(width, cropAlias) ?? image.GetCropUrl(width: width, cropAlias: cropAlias);
 
-        <div class="wysiwg-croppedicture-view">
+        <div class="wysiwg-croppedicture-view" style="position:relative;">
             <figure @(rotateStyle)>
                 <div @(border)>
                     <img src="@src" alt="@alternativeText" />

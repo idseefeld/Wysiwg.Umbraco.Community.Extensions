@@ -1,5 +1,5 @@
 import { unsafeHTML as o, html as g, css as w, customElement as d } from "@umbraco-cms/backoffice/external/lit";
-import { W as h } from "./wysiwg-base-block-editor-custom.view-Cn6p_o0v.js";
+import { W as h } from "./wysiwg-base-block-editor-custom.view-CCHW93dJ.js";
 var m = Object.getOwnPropertyDescriptor, y = (e, i, s, l) => {
   for (var n = l > 1 ? void 0 : l ? m(i, s) : i, a = e.length - 1, r; a >= 0; a--)
     (r = e[a]) && (n = r(n) || n);
@@ -55,4 +55,4 @@ export {
   t as WysiwgBlockHeadlineView,
   p as default
 };
-//# sourceMappingURL=headline.view-Byx0s5h2.js.map
+//# sourceMappingURL=headline.view-tADGZpib.js.map

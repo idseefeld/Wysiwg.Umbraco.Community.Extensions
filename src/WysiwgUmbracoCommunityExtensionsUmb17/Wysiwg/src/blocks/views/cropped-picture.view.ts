@@ -1,11 +1,10 @@
 import {
   html,
   customElement,
-  // property,
   css,
   unsafeHTML,
+  property,
 } from "@umbraco-cms/backoffice/external/lit";
-import type { UmbBlockDataType } from "@umbraco-cms/backoffice/block";
 import { ColorType, CroppedPictureCustomViewProps } from "./types";
 import WysiwgBaseBlockEditorCustomViewElement from "./wysiwg-base-block-editor-custom.view";
 
@@ -17,9 +16,8 @@ export class CroppedPictureCustomView
 
   private _defaultColor: ColorType = { label: "Black", value: "#000" };
 
-  // @property({ attribute: false })
-  // content?: UmbBlockDataType;
-
+  @property({ attribute: false })
+  _layerLevel = 0; // TODO: This property is used to set the layer level of the figure element, which determines its z-index and position in the stacking order. But I could not find the necessary css styling to make it work.
 
   render() {
     const pictureWithCrop = this.content as CroppedPictureCustomViewProps;
@@ -51,7 +49,9 @@ export class CroppedPictureCustomView
 
       const caption = pictureWithCrop?.figCaption;
       const rotate = pictureWithCrop?.rotation?.from ?? 0;
-      const rotationStyle = !rotate ? '' : `margin: var(--wysiwg-figure-margin, 0);transform: var(--wysiwg-figure-transform, rotate(${rotate ?? 0}deg));`;
+      const layerLevel = this._layerLevel ?? pictureWithCrop?.layerLevel ?? 0;
+      const layerLevelStyle = layerLevel > 0 ? `z-index: ${layerLevel};position:absolute;` : '';
+      const rotationStyle = !rotate ? '' : `margin: var(--wysiwg-figure-margin, 0);transform: var(--wysiwg-figure-transform, rotate(${rotate ?? 0}deg));${layerLevelStyle}`;
       const figcaptionClass = !rotate ? '' : 'class="rotate" ';
       const figcaptionAttr = noBorder
         ? `${figcaptionClass}style="padding-top: 0;"`
@@ -60,8 +60,7 @@ export class CroppedPictureCustomView
         ? unsafeHTML(`<figcaption ${figcaptionAttr}>${caption}</figcaption>`)
         : "";
 
-
-      return html`<a id="editor-link" href="${editorUrl}"><figure style=${rotationStyle}>${img}${figCaption}</figure></a>`;
+      return html`<a id="editor-link" href="${editorUrl}"><figure style="${rotationStyle}">${img}${figCaption}</figure></a>`;
     }
   }
 
@@ -76,6 +75,7 @@ export class CroppedPictureCustomView
         padding: 0;
         font-family: var(--wysiwg-font-family, initial);
       }
+
       .error {
         color: var(--wysiwg-error-color, #cc0000);
         font-weight: bold;

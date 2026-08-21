@@ -1,40 +1,39 @@
-import { html as a, unsafeHTML as v, css as h, customElement as b } from "@umbraco-cms/backoffice/external/lit";
-import { W as p } from "./wysiwg-base-block-editor-custom.view-Cn6p_o0v.js";
-var C = Object.getOwnPropertyDescriptor, $ = (i, n, l, e) => {
-  for (var t = e > 1 ? void 0 : e ? C(n, l) : n, o = i.length - 1, r; o >= 0; o--)
-    (r = i[o]) && (t = r(t) || t);
-  return t;
+import { html as s, unsafeHTML as C, css as $, property as _, customElement as x } from "@umbraco-cms/backoffice/external/lit";
+import { W as f } from "./wysiwg-base-block-editor-custom.view-CCHW93dJ.js";
+var z = Object.defineProperty, L = Object.getOwnPropertyDescriptor, y = (e, r, l, i) => {
+  for (var o = i > 1 ? void 0 : i ? L(r, l) : r, t = e.length - 1, a; t >= 0; t--)
+    (a = e[t]) && (o = (i ? a(r, l, o) : a(o)) || o);
+  return i && o && z(r, l, o), o;
 };
-let s = class extends p {
+let n = class extends f {
   constructor() {
-    super(...arguments), this._debugLocalize = !1, this._defaultColor = { label: "Black", value: "#000" };
+    super(...arguments), this._debugLocalize = !1, this._defaultColor = { label: "Black", value: "#000" }, this._layerLevel = 0;
   }
-  // @property({ attribute: false })
-  // content?: UmbBlockDataType;
+  // TODO: This property is used to set the layer level of the figure element, which determines its z-index and position in the stacking order. But I could not find the necessary css styling to make it work.
   render() {
-    const i = this.content, n = this.config?.editContentPath ?? "";
-    if (!i)
-      return a`
+    const e = this.content, r = this.config?.editContentPath ?? "";
+    if (!e)
+      return s`
       <div class="error">
         <umb-localize key="wysiwg_invalidData" .debug=${this._debugLocalize}
           >invalid data</umb-localize
         >
       </div>`;
-    const e = (i?.mediaItem ?? [])[0] ?? null;
-    if (e ? e.mediaKey : "") {
-      const o = i?.captionColor?.value, r = this.isTransparentColor(o) || !o, c = i?.alternativeText ?? e?.selectedCropAlias ?? "", m = r ? a`<wysiwg-cropped-image .mediaItem=${e} .alt=${c}></wysiwg-cropped-image>` : a`<wysiwg-cropped-image .mediaItem=${e} .alt=${c} class="wysiwg-cropped-image" style="border-color: ${o};"></wysiwg-cropped-image>`, d = i?.figCaption, g = i?.rotation?.from ?? 0, f = g ? `margin: var(--wysiwg-figure-margin, 0);transform: var(--wysiwg-figure-transform, rotate(${g ?? 0}deg));` : "", w = g ? 'class="rotate" ' : "", y = r ? `${w}style="padding-top: 0;"` : `${w}style="color: var(--wysiwg-figcaption-color,${o ?? this._defaultColor.value});"`, u = d ? v(`<figcaption ${y}>${d}</figcaption>`) : "";
-      return a`<a id="editor-link" href="${n}"><figure style=${f}>${m}${u}</figure></a>`;
+    const i = (e?.mediaItem ?? [])[0] ?? null;
+    if (i ? i.mediaKey : "") {
+      const t = e?.captionColor?.value, a = this.isTransparentColor(t) || !t, c = e?.alternativeText ?? i?.selectedCropAlias ?? "", m = a ? s`<wysiwg-cropped-image .mediaItem=${i} .alt=${c}></wysiwg-cropped-image>` : s`<wysiwg-cropped-image .mediaItem=${i} .alt=${c} class="wysiwg-cropped-image" style="border-color: ${t};"></wysiwg-cropped-image>`, p = e?.figCaption, g = e?.rotation?.from ?? 0, d = this._layerLevel ?? e?.layerLevel ?? 0, v = d > 0 ? `z-index: ${d};position:absolute;` : "", u = g ? `margin: var(--wysiwg-figure-margin, 0);transform: var(--wysiwg-figure-transform, rotate(${g ?? 0}deg));${v}` : "", w = g ? 'class="rotate" ' : "", h = a ? `${w}style="padding-top: 0;"` : `${w}style="color: var(--wysiwg-figcaption-color,${t ?? this._defaultColor.value});"`, b = p ? C(`<figcaption ${h}>${p}</figcaption>`) : "";
+      return s`<a id="editor-link" href="${r}"><figure style="${u}">${m}${b}</figure></a>`;
     } else
-      return a`<div class="error">
+      return s`<div class="error">
         <umb-localize key="wysiwg_noImageSelected" .debug=${this._debugLocalize}
           >No image selected or found</umb-localize
         >
       </div>`;
   }
 };
-s.styles = [
-  p.baseStyles,
-  h`
+n.styles = [
+  f.baseStyles,
+  $`
       :host {
         display: block;
         height: auto;
@@ -43,6 +42,7 @@ s.styles = [
         padding: 0;
         font-family: var(--wysiwg-font-family, initial);
       }
+
       .error {
         color: var(--wysiwg-error-color, #cc0000);
         font-weight: bold;
@@ -83,12 +83,15 @@ s.styles = [
       }
     `
 ];
-s = $([
-  b("wysiwg-cropped-picture-view")
-], s);
-const _ = s;
+y([
+  _({ attribute: !1 })
+], n.prototype, "_layerLevel", 2);
+n = y([
+  x("wysiwg-cropped-picture-view")
+], n);
+const k = n;
 export {
-  s as CroppedPictureCustomView,
-  _ as default
+  n as CroppedPictureCustomView,
+  k as default
 };
-//# sourceMappingURL=cropped-picture.view-Clxg5W7A.js.map
+//# sourceMappingURL=cropped-picture.view-DmdsmNEq.js.map

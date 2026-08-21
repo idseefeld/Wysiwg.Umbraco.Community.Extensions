@@ -81,7 +81,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             $"{Constants.Prefix}ImageAndCropPicker",
             $"{Constants.Prefix}Rotation",
             // v18.1.0
-            $"{Constants.Prefix}ComponentPicker"
+            $"{Constants.Prefix}ComponentPicker",
+            $"{Constants.Prefix}LayerLevel"
         ];
         private readonly Dictionary<string, string[]> _versionNeedUpdateContentTypes = new()
         {
@@ -93,9 +94,11 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 $"{Constants.Prefix}rowSettings",
             ]},
             {"18.0.0", [
-                $"{Constants.Prefix}callToActionSettings",
+                $"{Constants.Prefix}callToActionSettings"
                 ]},
-            {"18.1.0", []}
+            {"18.1.0", [
+                $"{Constants.Prefix}croppedPicture"
+                ]}
         };
         private readonly Dictionary<string, string[]> _versionNewContentTypes = new()
         {
@@ -107,10 +110,11 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 $"{Constants.Prefix}rowSettings",
             ]},
             {"18.0.0", [
-                $"{Constants.Prefix}callToActionSettings",
+                $"{Constants.Prefix}callToActionSettings"
                 ]},
             {"18.1.0", [
-                $"{Constants.Prefix}genericComponent"
+                $"{Constants.Prefix}genericComponent",
+                $"{Constants.Prefix}croppedPicture"
                 ]}
         };
 
@@ -233,11 +237,36 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                     case $"{Constants.Prefix}ComponentPicker":
                         await CreateDataTypeComponentPicker(name, parent);
                         break;
+                    case $"{Constants.Prefix}LayerLevel":
+                        await CreateDataTypeLayerLevel(name, parent);
+                        break;
                     default:
                         break;
                 }
             }
             _existingDataTypes = [.. await GetAllWysiwgDataTypes()];
+        }
+
+        private async Task CreateDataTypeLayerLevel(string name, uReferenceByIdModel parent)
+        {
+            var createDataTypeRequestModel = new CreateDataTypeRequestModel
+            {
+                Parent = parent,
+                Name = name,
+                EditorAlias = "Umbraco.Integer",
+                EditorUiAlias = "Umb.PropertyEditorUi.Integer",
+                Values = [
+                    new DataTypePropertyPresentationModel {
+                        Alias = "min",
+                        Value = 0
+                    },
+                    new DataTypePropertyPresentationModel {
+                        Alias = "step",
+                        Value = 10
+                    }
+                ]
+            };
+            await CreateOrUpdateDataType(createDataTypeRequestModel);
         }
 
         private async Task CreateDataTypeComponentPicker(string name, uReferenceByIdModel parent)
@@ -1300,6 +1329,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 : elementTypeAlias;
             await CreateOrUpdateGenericComponentElementType(compareAlias, alias, elementContainer);
 
+
             #region Deprecated
             if (_deprecatedContentTypes.Length > 0)
             {
@@ -1609,7 +1639,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 new ("Alternative Text", "Textstring", 2, variations : ContentVariation.Culture),
                 new ("Fig Caption", "Textstring", 3, variations : ContentVariation.Culture),
                 new ("Caption Color", $"{Constants.Prefix}CustomerColors", 4),
-                new ("Rotation", $"{Constants.Prefix}Rotation", 5)
+                new ("Rotation", $"{Constants.Prefix}Rotation", 5),
+                new ("Layer Level", $"{Constants.Prefix}LayerLevel", 6)
             };
 
             await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);
