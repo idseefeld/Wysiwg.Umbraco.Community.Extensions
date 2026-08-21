@@ -2002,7 +2002,6 @@ namespace WysiwgUmbracoCommunityExtensions.Services
         private void CompleteUpdate()
         {
 
-            //ToDo: use package migrations
         }
 
         public async Task<VersionStatus> GetVersionStatus()

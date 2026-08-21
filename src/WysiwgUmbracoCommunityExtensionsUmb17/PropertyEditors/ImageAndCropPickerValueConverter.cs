@@ -79,8 +79,7 @@ namespace WysiwgUmbracoCommunityExtensions.PropertyEditors
                     };
 
                     localCrops.ApplyConfiguration(configuration);
-
-                    // TODO: HQ aims to optimize this. So check new versions v15.3.2+ for changes                    
+               
                     var mediaWithCropsType = typeof(MediaWithSelectedCrop<>).MakeGenericType(mediaItem.GetType());
                     var mediaWithCrops = Activator.CreateInstance(mediaWithCropsType, mediaItem, publishedValueFallback, localCrops)!;
                     if (mediaWithCrops is MediaWithSelectedCrop mediaWithCropsTyped)

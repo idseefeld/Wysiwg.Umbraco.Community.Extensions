@@ -10,7 +10,7 @@ import WysiwgBaseBlockEditorCustomViewElement from "./wysiwg-base-block-editor-c
 import { ComponentPickerViewProps } from "./types";
 import { BlockPropertyValueModel, postWysiwgPreviewMarkup, PostWysiwgPreviewMarkupData, RequestPreviewMarkupModel } from "../../api";
 import { UmbBlockTypeBaseModel } from "@umbraco-cms/backoffice/block-type";
-import { UmbBlockDataType } from "@umbraco-cms/backoffice/block";
+import { UMB_PROPERTY_DATASET_CONTEXT } from "@umbraco-cms/backoffice/property";
 
 const customElementName = "wysiwg-generic-component-view";
 @customElement(customElementName)
@@ -20,26 +20,34 @@ export class WysiwgGenericComponentView
   @state()
   selectedComponent: string | undefined = undefined;
 
+  @state()
+  culture?: string;
+
   @property({ attribute: false })
   markup: string = "";
 
   @property()
   contentKey?: string;
 
-  @property()
-  culture?: string;
-
   @property({ type: Object })
   blockType?: UmbBlockTypeBaseModel;
+
+  constructor() {
+    super();
+    this.consumeContext(UMB_PROPERTY_DATASET_CONTEXT, (instance) => {
+      if (instance) {
+        this.culture = instance.getVariantId().culture ?? '';
+        this.getMarkup();
+      }
+    });
+  }
 
   override render() {
     const componentPicker = (this.content as ComponentPickerViewProps)?.componentPicker ?? [];
 
-    if (componentPicker.length) {
-      if (this.selectedComponent !== componentPicker) {
-        this.selectedComponent = componentPicker;
-        this.getMarkup();
-      }
+    if (this.selectedComponent !== componentPicker) {
+      this.selectedComponent = componentPicker;
+      this.getMarkup();
     }
 
     return html`${unsafeHTML(this.setEditorLink(this.markup))}`;
@@ -48,7 +56,6 @@ export class WysiwgGenericComponentView
   private async getMarkup() {
     this.settings = this.getLayoutSettings()
 
-    this.selectedComponent = (this.content as ComponentPickerViewProps)?.componentPicker;
     if (!this.selectedComponent) {
       this.markup = "<em>[no component selected]</em>";
       return;

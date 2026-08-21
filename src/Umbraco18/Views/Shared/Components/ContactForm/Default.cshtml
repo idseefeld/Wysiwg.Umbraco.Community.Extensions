@@ -13,7 +13,7 @@
     //var displayName = Model.GetPropertyDisplayName("name");
     //displayName = Model.GetPropertyDisplayName("email");
 
-    //var lang = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
+    var lang = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
 
     var session = this.Context.Session;
     if (session.GetString(Constances.Common.FormPosted) == null)

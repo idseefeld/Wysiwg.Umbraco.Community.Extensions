@@ -11,7 +11,7 @@ const r = [
     type: "sectionView",
     alias: "WysiwgDashboardElement.Section",
     name: "WYSIWYG Extensions Section",
-    element: () => import("./dashboard.element-DpeBf9Mq.js"),
+    element: () => import("./dashboard.element-B5FAGIH-.js"),
     meta: {
       label: "WYSIWYG",
       icon: "icon-settings",
@@ -59,7 +59,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.genericComponent",
     name: "Block Editor Custom View for Generic Component",
-    element: () => import("./component.view-BaircXRm.js"),
+    element: () => import("./generic-component.view-C848YlHc.js"),
     forContentTypeAlias: o + "genericComponent",
     forBlockEditor: "block-grid"
   },

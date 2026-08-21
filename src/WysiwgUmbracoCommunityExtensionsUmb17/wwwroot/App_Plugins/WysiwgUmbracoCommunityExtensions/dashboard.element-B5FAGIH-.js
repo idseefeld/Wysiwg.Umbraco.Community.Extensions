@@ -51,7 +51,7 @@ class $ {
       return e;
   }
 }
-const k = "18.1.0-rc2", B = {
+const k = "18.1.0-rc3", B = {
   version: k
 };
 var E = Object.defineProperty, D = Object.getOwnPropertyDescriptor, a = (t, e, s, n) => {
@@ -339,4 +339,4 @@ export {
   r as WysiwgDashboardElement,
   P as default
 };
-//# sourceMappingURL=dashboard.element-DpeBf9Mq.js.map
+//# sourceMappingURL=dashboard.element-B5FAGIH-.js.map

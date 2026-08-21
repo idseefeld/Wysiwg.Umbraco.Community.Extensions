@@ -61,7 +61,7 @@ public partial class WysiwgApiController : ManagementApiControllerBase
             //var key = Guid.Parse("89bb2397-1aac-417f-9e1c-7f3ac0884999");// request.Data?.Key;
             //IPublishedElement owner = await GetPublishedOwnerAsync(key, page) ?? throw new InvalidOperationException("Failed to get owner for block data.");
 
-            markup = await this.GetMarkupForBlock(page, request.Data);
+            markup = await this.GetMarkupForBlock(page, request);
         }
         catch (Exception ex)
         {
@@ -72,11 +72,22 @@ public partial class WysiwgApiController : ManagementApiControllerBase
         return Ok(this.CleanUpMarkup(markup));
     }
 
-    private async Task<string> GetMarkupForBlock(IPublishedElement owner, BlockItemData? blockData)
+    private async Task<string> GetMarkupForBlock(IPublishedElement owner, RequestPreviewMarkupModel request)
     {
+        BlockItemData? blockData = request.Data;
         if (blockData == null || owner == null)
         {
             return string.Empty;
+        }
+
+        if (!string.IsNullOrEmpty(request.Culture))
+        {
+            var newCulture = new CultureInfo(request.Culture);
+            if (Thread.CurrentThread.CurrentCulture != newCulture)
+            {
+                Thread.CurrentThread.CurrentCulture = newCulture;
+                Thread.CurrentThread.CurrentUICulture = newCulture;
+            }
         }
 
         // convert the json data to a IPublishedElement (using the built-in conversion)
