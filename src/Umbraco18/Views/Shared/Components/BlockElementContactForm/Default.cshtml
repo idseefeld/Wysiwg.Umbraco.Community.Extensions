@@ -8,10 +8,6 @@
     var messageLabel = Umbraco.GetDictionaryValueOrDefault("messageLabel", "Message");
     var dataConsentLabel = Umbraco.GetDictionaryValueOrDefault("dataConsentLabel", "Consent for storing submitted data *");
     var dataConsentCheckboxLabel = Umbraco.GetDictionaryValueOrDefault("dataConsentCheckboxLabel", "Yes, I give permission to store and process my data.");
-    //nameLabel = emailLabel = subjectLabel = messageLabel = "placeholder";
-
-    //var displayName = Model.GetPropertyDisplayName("name");
-    //displayName = Model.GetPropertyDisplayName("email");
 
     var lang = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
 
@@ -20,9 +16,15 @@
     {
         session.SetString(Constances.Common.EditStart, DateTime.Now.Ticks.ToString());
     }
+
+    var includeStyles = Context.Request.Path.Value?.InvariantStartsWith("/api/") ?? false;
+    var includeScripts = !includeStyles;
 }
 
-@Html.Partial("bootstrap-inline")
+@if (includeStyles)
+{
+    @await Html.PartialAsync("bootstrap-inline")
+}
 
 @using (Html.BeginUmbracoForm<ContactFormController>(nameof(ContactFormController.HandleSubmit)))
 {
@@ -65,4 +67,7 @@
     <button type="submit" id="form-submit" class="btn btn-primary" name="Submit">@submitLabel</button>
 }
 
-<script src="~/js/forms.js"></script>
+@if (includeScripts)
+{
+    <script src="~/js/forms.js"></script>
+}

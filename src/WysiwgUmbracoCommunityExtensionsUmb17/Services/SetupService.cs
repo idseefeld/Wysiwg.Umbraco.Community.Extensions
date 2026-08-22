@@ -1750,7 +1750,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
             var propertyDefinitions = new List<PropertyDefinition>()
             {
-                new ("Component Picker", $"{Constants.Prefix}ComponentPicker", 1, "Selected component name", variations: ContentVariation.Nothing)
+                new ("Component Picker", $"{Constants.Prefix}ComponentPicker", 1, "Selected any component which name starts with BlockElement.", variations: ContentVariation.Nothing)
             };
 
             await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);

@@ -15,9 +15,10 @@ public class ComponentService(ILogger<ComponentService> logger, IViewComponentDe
         try
         {
             var components = descriptorProvider.ViewComponents.Items
+                .Where(d => d.ShortName.StartsWith("BlockElement"))
                 .Select(d => new ComponentPickerOption
                 {
-                    Name = d.ShortName,
+                    Name = d.ShortName, //[12..],
                     Value = d.ShortName
                 })
                 .ToArray();

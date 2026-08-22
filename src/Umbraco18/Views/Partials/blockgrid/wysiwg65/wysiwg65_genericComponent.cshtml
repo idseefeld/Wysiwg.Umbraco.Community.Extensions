@@ -9,14 +9,5 @@
     var content = new Wysiwg65_componentPicker(Model.Content, publishedValueFallback, jsonSerializer);
     var selectedComponent = content.SelectedComponent;
     if (string.IsNullOrEmpty(selectedComponent)) return;
-
-    var html = new HtmlString($"<h2>Razor view rendered content</h2><p>{selectedComponent}</p>");
 }
-@if (selectedComponent == "ContactForm")
-{
-    @await Component.InvokeAsync(selectedComponent)
-}
-else
-{
-    @html
-}
+@await Component.InvokeAsync(selectedComponent)

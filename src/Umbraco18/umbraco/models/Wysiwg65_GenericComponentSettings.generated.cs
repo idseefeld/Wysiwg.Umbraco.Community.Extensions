@@ -18,14 +18,14 @@ using Umbraco.Extensions;
 
 namespace Umbraco.Cms.Web.Common.PublishedModels
 {
-	/// <summary>Full Row</summary>
-	[PublishedModel("wysiwg65_layout1")]
-	public partial class Wysiwg65_layout1 : PublishedElementModel
+	/// <summary>Generic Component Settings</summary>
+	[PublishedModel("wysiwg65_GenericComponentSettings")]
+	public partial class Wysiwg65_GenericComponentSettings : PublishedElementModel
 	{
 		// helpers
 #pragma warning disable 0109 // new is redundant
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "18.1.1+43ba6c3")]
-		public new const string ModelTypeAlias = "wysiwg65_layout1";
+		public new const string ModelTypeAlias = "wysiwg65_GenericComponentSettings";
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "18.1.1+43ba6c3")]
 		public new const PublishedItemType ModelItemType = PublishedItemType.Content;
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "18.1.1+43ba6c3")]
@@ -34,19 +34,27 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 			=> PublishedModelUtility.GetModelContentType(contentTypeCache, ModelItemType, ModelTypeAlias);
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "18.1.1+43ba6c3")]
 		[return: global::System.Diagnostics.CodeAnalysis.MaybeNull]
-		public static IPublishedPropertyType GetModelPropertyType<TValue>(IPublishedContentTypeCache contentTypeCache, Expression<Func<Wysiwg65_layout1, TValue>> selector)
+		public static IPublishedPropertyType GetModelPropertyType<TValue>(IPublishedContentTypeCache contentTypeCache, Expression<Func<Wysiwg65_GenericComponentSettings, TValue>> selector)
 			=> PublishedModelUtility.GetModelPropertyType(GetModelContentType(contentTypeCache), selector);
 #pragma warning restore 0109
 
 		private IPublishedValueFallback _publishedValueFallback;
 
 		// ctor
-		public Wysiwg65_layout1(IPublishedElement content, IPublishedValueFallback publishedValueFallback)
+		public Wysiwg65_GenericComponentSettings(IPublishedElement content, IPublishedValueFallback publishedValueFallback)
 			: base(content, publishedValueFallback)
 		{
 			_publishedValueFallback = publishedValueFallback;
 		}
 
 		// properties
+
+		///<summary>
+		/// Allowed Components
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "18.1.1+43ba6c3")]
+		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		[ImplementPropertyType("allowedComponents")]
+		public virtual global::System.Collections.Generic.IEnumerable<string> AllowedComponents => this.Value<global::System.Collections.Generic.IEnumerable<string>>(_publishedValueFallback, "allowedComponents");
 	}
 }
