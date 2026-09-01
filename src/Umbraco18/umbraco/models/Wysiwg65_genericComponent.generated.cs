@@ -50,7 +50,7 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		// properties
 
 		///<summary>
-		/// Component Picker: Selected any component which name starts with BlockElement.
+		/// Component Picker: Selected a ViewComponent
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "18.1.1+43ba6c3")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]

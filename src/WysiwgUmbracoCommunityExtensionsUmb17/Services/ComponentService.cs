@@ -5,6 +5,8 @@ using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.Extensions.Logging;
 using WysiwgUmbracoCommunityExtensions.Models;
+using System.Reflection;
+using WysiwgUmbracoCommunityExtensions.Attributes;
 
 namespace WysiwgUmbracoCommunityExtensions.Services;
 
@@ -12,24 +14,27 @@ public class ComponentService(ILogger<ComponentService> logger, IViewComponentDe
 {
     public ComponentPickerOption[] GetComponents()
     {
-        try
-        {
-            var components = descriptorProvider.ViewComponents.Items
-                .Where(d => d.ShortName.StartsWith("BlockElement"))
-                .Select(d => new ComponentPickerOption
+        var components = AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(a =>
+            {
+                try
                 {
-                    Name = d.ShortName, //[12..],
-                    Value = d.ShortName
-                })
-                .ToArray();
+                    return a.GetTypes();
+                }
+                catch (ReflectionTypeLoadException ex)
+                {
+                    logger.LogError(ex, "Reflection error retrieving components.");
+                    return ex.Types.Where(t => t != null)!;
+                }
+            })
+            .Where(t => t != null && t.IsClass && !t.IsAbstract && t.GetCustomAttribute<BlockElementComponentAttribute>() != null)
+            .Select(d => new ComponentPickerOption
+            {
+                Name = d?.Name,
+                Value = d?.Name
+            })
+            .ToArray();
 
-            return components;
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error retrieving components.");
-        }
-
-        return Array.Empty<ComponentPickerOption>();
+        return components ?? [];
     }
 }
