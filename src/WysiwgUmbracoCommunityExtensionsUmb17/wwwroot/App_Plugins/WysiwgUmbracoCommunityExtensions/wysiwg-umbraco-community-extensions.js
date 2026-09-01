@@ -11,7 +11,7 @@ const r = [
     type: "sectionView",
     alias: "WysiwgDashboardElement.Section",
     name: "WYSIWYG Extensions Section",
-    element: () => import("./dashboard.element-DgmTHJZs.js"),
+    element: () => import("./dashboard.element-gjEvEskS.js"),
     meta: {
       label: "WYSIWYG",
       icon: "icon-settings",
@@ -29,7 +29,7 @@ const r = [
     type: "bundle",
     name: "wysiwg block components",
     alias: "wysiwg.block.components",
-    js: () => import("./index-C1--uVQq.js")
+    js: () => import("./index-D1Zks4mG.js")
   }
 ], o = "wysiwg65_";
 function s() {
@@ -43,7 +43,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.Layouts",
     name: "Block Editor Custom View for Layouts",
-    element: () => import("./block-layout.view-9zdyVhJS.js"),
+    element: () => import("./block-layout.view-B6KbXPWX.js"),
     forContentTypeAlias: s(),
     forBlockEditor: "block-grid"
   },
@@ -51,15 +51,15 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockHeadline",
     name: "Block Editor Custom View for Headline",
-    element: () => import("./headline.view-BJrPIm8S.js"),
+    element: () => import("./headline.view-tADGZpib.js"),
     forContentTypeAlias: o + "headline",
     forBlockEditor: "block-grid"
   },
   {
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.genericComponent",
-    name: "Block Editor Custom View for Component",
-    element: () => import("./component.view-bhT-xV1y.js"),
+    name: "Block Editor Custom View for Generic Component",
+    element: () => import("./generic-component.view-DrhT9hF5.js"),
     forContentTypeAlias: o + "genericComponent",
     forBlockEditor: "block-grid"
   },
@@ -67,7 +67,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.blockParagraph",
     name: "Block Editor Custom View for Paragraph",
-    element: () => import("./paragraph.view-CfK1vUym.js"),
+    element: () => import("./paragraph.view-Bm-msD60.js"),
     forContentTypeAlias: o + "paragraph",
     forBlockEditor: "block-grid"
   },
@@ -75,7 +75,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.pictureWithCrop",
     name: "Block Editor Custom View for Picture with Crop",
-    element: () => import("./picture-with-crop.view-BzJeA2ZP.js"),
+    element: () => import("./picture-with-crop.view-C-GcxIGZ.js"),
     forContentTypeAlias: o + "pictureWithCrop",
     forBlockEditor: "block-grid"
   },
@@ -83,7 +83,7 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.croppedPicture",
     name: "Block Editor Custom View for Cropped Picture",
-    element: () => import("./cropped-picture.view-DyJ-s3uO.js"),
+    element: () => import("./cropped-picture.view-DmdsmNEq.js"),
     forContentTypeAlias: o + "croppedPicture",
     forBlockEditor: "block-grid"
   },
@@ -91,19 +91,19 @@ const l = [
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.callToAction",
     name: "Block Editor Custom View for Call to Action",
-    element: () => import("./call-to-action.view-kcnHWaBl.js"),
+    element: () => import("./call-to-action.view-_1vdVtac.js"),
     forContentTypeAlias: o + "callToAction",
     forBlockEditor: "block-grid"
   }
-], p = [
+], c = [
   ...n,
   ...l
-], c = [
+], p = [
   {
     type: "propertyEditorUi",
     alias: "wysiwg.PropertyEditorUi.ImageAndCropPicker",
     name: "WYSIWG Picture and Crop Picker",
-    element: () => import("./wysiwg-image-and-crop-picker.element-DODlo3o_.js"),
+    element: () => import("./wysiwg-image-and-crop-picker.element-BU79qbBr.js"),
     meta: {
       label: "WYSIWG Picture and Crop Picker",
       propertyEditorSchemaAlias: "Wysiwg.ImageAndCropPicker",
@@ -158,7 +158,7 @@ const l = [
     type: "propertyEditorUi",
     alias: "wysiwg.PropertyEditorUi.ComponentPicker",
     name: "Wysiwg Component Picker",
-    element: () => import("./wysiwg-component-picker.element-tN2spQvW.js"),
+    element: () => import("./wysiwg-component-picker.element-j03oGGRi.js"),
     meta: {
       label: "Wysiwg Component PropertyEditorUi Picker",
       propertyEditorSchemaAlias: "Wysiwg.ComponentPicker",
@@ -179,7 +179,7 @@ const l = [
     }
   }
 ], y = [
-  ...c,
+  ...p,
   ...m
 ], d = [
   {
@@ -232,7 +232,7 @@ const l = [
     type: "workspaceContext",
     alias: "Wysiwg.WorkspaceContext.BlockGrid",
     name: "Wysiwg BlockGrid Context",
-    api: () => import("./wysiwg.workspace.context-CeinJtuE.js"),
+    api: () => import("./wysiwg.workspace.context-DCYqdiaY.js"),
     conditions: [
       {
         alias: e,
@@ -244,7 +244,7 @@ const l = [
   ...r,
   ...a,
   ...g,
-  ...p,
+  ...c,
   ...y,
   ...d
 ];

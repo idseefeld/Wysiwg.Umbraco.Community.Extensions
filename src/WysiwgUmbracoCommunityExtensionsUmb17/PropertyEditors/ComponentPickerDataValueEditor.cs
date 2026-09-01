@@ -1,5 +1,6 @@
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.IO;
+using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.Editors;
 using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Cms.Core.Serialization;
@@ -19,5 +20,17 @@ namespace WysiwgUmbracoCommunityExtensions.PropertyEditors
             DataEditorAttribute attribute)
             : base(shortStringHelper, jsonSerializer, ioHelper, attribute)
             => Validators.Add(new ComponentPickerValueValidator());
+
+        public override object? ToEditor(IProperty property, string? culture = null, string? segment = null)
+        {
+            var val = property.GetValue(culture, segment);
+
+            if (val == null)
+            {
+                return string.Empty;
+            }
+
+            return base.ToEditor(property, culture, segment);
+        }
     }
 }

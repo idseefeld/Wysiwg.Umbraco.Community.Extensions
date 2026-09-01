@@ -1,4 +1,3 @@
-import { UmbTextStyles } from "@umbraco-cms/backoffice/style";
 import {
   html,
   customElement,
@@ -47,11 +46,11 @@ export class WysiwgBlockParagraphView
     var property = this.content?.text as { blocks: {}; markup: string };
     var markup = property?.markup;
     const innerHtml = `<div id="paragraph" ${settings.inlineStyle}>${markup}</div>`;
-    return html`${unsafeHTML(innerHtml)}`;
+    return html`${unsafeHTML(this.setEditorLink(innerHtml))}`;
   }
 
   static override styles = [
-    UmbTextStyles,
+    WysiwgBaseBlockEditorCustomViewElement.baseStyles,
     css`
       :host {
         display: block;

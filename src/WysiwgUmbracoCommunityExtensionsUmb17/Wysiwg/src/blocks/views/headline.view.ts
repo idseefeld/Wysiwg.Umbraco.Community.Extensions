@@ -1,4 +1,3 @@
-import { UmbTextStyles } from "@umbraco-cms/backoffice/style";
 import {
   html,
   customElement,
@@ -17,11 +16,11 @@ export class WysiwgBlockHeadlineView
 
     const headline = this.content?.text ?? "Headline";
     const innerHtml = `<${settings.size} class="headline" ${settings.inlineStyle}>${headline}</${settings.size}>`;
-    return html`${unsafeHTML(innerHtml)}`;
+    return html`${unsafeHTML(this.setEditorLink(innerHtml))}`;
   }
 
   static override styles = [
-    UmbTextStyles,
+    WysiwgBaseBlockEditorCustomViewElement.baseStyles,
     css`
       :host {
         display: block;

@@ -1,4 +1,5 @@
 import {
+  css,
   customElement,
   LitElement,
   property,
@@ -18,6 +19,7 @@ import { UMB_DOCUMENT_WORKSPACE_CONTEXT, UmbDocumentWorkspaceContext } from "@um
 import { ColorType, LayoutSettings } from "./types";
 import { WYSIWG_BLOCKGRID_CONTEXT } from "../../context";
 import { UpdateStatus } from "../../types";
+import { UmbTextStyles } from "@umbraco-cms/backoffice/style";
 
 const customElementName = "wysiwg-base.block-editor-custom-view";
 @customElement(customElementName)
@@ -94,6 +96,11 @@ export class WysiwgBaseBlockEditorCustomViewElement
     return this.datasetSettings.filter(
       (s) => layout?.settingsKey === s.key
     )[0]?.values;
+  }
+
+  protected setEditorLink(content: string) {
+    const editorUrl = this.config?.editContentPath ?? "";
+    return `<a id="editor-link" href="${editorUrl}">${content}</a>`;
   }
 
   protected getLayoutSettings(sizeDefault: string = "h1"): LayoutSettings {
@@ -192,6 +199,20 @@ export class WysiwgBaseBlockEditorCustomViewElement
   protected async lastStepObservingProperties(pageProperties: Array<UmbPropertyValueDataPotentiallyWithEditorAlias>) {
     if (!pageProperties) { return; }
   }
+
+  static baseStyles = [
+    UmbTextStyles,
+    css`
+       a#editor-link{
+        color: initial;
+        text-decoration: none;
+        cursor: pointer;
+       }
+       a#editor-link:hover{
+        color: inherit;
+        cursor: pointer;
+       }
+    `];
 }
 
 export default WysiwgBaseBlockEditorCustomViewElement;

@@ -27,8 +27,8 @@ export const manifests: Array<UmbExtensionManifest> = [
   {
     type: "blockEditorCustomView",
     alias: "wysiwg.PorpertyEditorUi.genericComponent",
-    name: "Block Editor Custom View for Component",
-    element: () => import("./component.view.js"),
+    name: "Block Editor Custom View for Generic Component",
+    element: () => import("./generic-component.view.js"),
     forContentTypeAlias: prefix + "genericComponent",
     forBlockEditor: "block-grid",
   },

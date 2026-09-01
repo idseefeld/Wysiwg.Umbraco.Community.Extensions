@@ -1,46 +1,51 @@
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContactFormModel>
 @using Microsoft.AspNetCore.Http;
 @{
-    var submitLabel = Umbraco.GetDictionaryValueOrDefault("submitLabel", "Senden");
+    var submitLabel = Umbraco.GetDictionaryValueOrDefault("submitLabel", "Submit");
     var nameLabel = Umbraco.GetDictionaryValueOrDefault("nameLabel", "Name");
-    var emailLabel = Umbraco.GetDictionaryValueOrDefault("emailLabel", "E-Mail");
-    var subjectLabel = Umbraco.GetDictionaryValueOrDefault("subjectLabel", "Betreff");
-    var messageLabel = Umbraco.GetDictionaryValueOrDefault("messageLabel", "Nachricht");
+    var emailLabel = Umbraco.GetDictionaryValueOrDefault("emailLabel", "Email");
+    var subjectLabel = Umbraco.GetDictionaryValueOrDefault("subjectLabel", "Subject");
+    var messageLabel = Umbraco.GetDictionaryValueOrDefault("messageLabel", "Message");
     var dataConsentLabel = Umbraco.GetDictionaryValueOrDefault("dataConsentLabel", "Consent for storing submitted data *");
     var dataConsentCheckboxLabel = Umbraco.GetDictionaryValueOrDefault("dataConsentCheckboxLabel", "Yes, I give permission to store and process my data.");
-    //nameLabel = emailLabel = subjectLabel = messageLabel = "placeholder";
 
-    //var displayName = Model.GetPropertyDisplayName("name");
-    //displayName = Model.GetPropertyDisplayName("email");
-
-    //var lang = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
+    var lang = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
 
     var session = this.Context.Session;
     if (session.GetString(Constances.Common.FormPosted) == null)
     {
         session.SetString(Constances.Common.EditStart, DateTime.Now.Ticks.ToString());
     }
+
+    var includeStyles = Context.Request.Path.Value?.InvariantStartsWith("/api/") ?? false;
+    var includeScripts = !includeStyles;
 }
+
+@if (includeStyles)
+{
+    @await Html.PartialAsync("bootstrap-inline")
+}
+
 @using (Html.BeginUmbracoForm<ContactFormController>(nameof(ContactFormController.HandleSubmit)))
 {
     <div class="form-floating mb-3">
         <input asp-for="FirstAndLastName" class="form-control" placeholder="@nameLabel" autocomplete="off" />
-        <label asp-for="FirstAndLastName"></label>
+        <label asp-for="FirstAndLastName">@nameLabel</label>
         <span asp-validation-for="FirstAndLastName" class="form-text"></span>
     </div>
     <div class="form-floating mb-3">
         <input asp-for="Email" class="form-control" placeholder="@emailLabel" autocomplete="off" />
-        <label asp-for="Email"></label>
+        <label asp-for="Email">@emailLabel</label>
         <span asp-validation-for="Email" class="form-text"></span>
     </div>
     <div class="form-floating mb-3">
         <input asp-for="Subject" class="form-control" placeholder="@subjectLabel" />
-        <label asp-for="Subject"></label>
+        <label asp-for="Subject">@subjectLabel</label>
         <span asp-validation-for="Subject" class="form-text"></span>
     </div>
     <div class="form-floating mb-3">
         <textarea asp-for="Message" class="form-control" placeholder="@messageLabel" style="min-height: 100px"></textarea>
-        <label asp-for="Message"></label>
+        <label asp-for="Message">@messageLabel</label>
         <span asp-validation-for="Message" class="form-text"></span>
     </div>
 
@@ -62,4 +67,7 @@
     <button type="submit" id="form-submit" class="btn btn-primary" name="Submit">@submitLabel</button>
 }
 
-<script src="~/js/forms.js"></script>
+@if (includeScripts)
+{
+    <script src="~/js/forms.js"></script>
+}

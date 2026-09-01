@@ -1,31 +1,15 @@
 @using Microsoft.AspNetCore.Html
+@using Umbraco.Cms.Core.Models.PublishedContent
+@using Umbraco.Cms.Core.Serialization
 @using WysiwgUmbracoCommunityExtensions.ViewModels
 @model WysiwygBlockGridItem
+@inject IPublishedValueFallback publishedValueFallback
+@inject IJsonSerializer jsonSerializer
 @{
-    var content = new Wysiwg65_ComponentPicker(Model.Content);
-    if (string.IsNullOrEmpty(content?.SelectedComponent?.SelectedValue)) return;
+    var content = new Wysiwg65_componentPicker(Model.Content, publishedValueFallback, jsonSerializer);
+    var selectedComponent = content.SelectedComponent;
+    if (string.IsNullOrEmpty(selectedComponent)) return;
 
-    var html = new HtmlString($"<h2>Razor view rendered content</h2>");
+    var html = new HtmlString($"<h2>Razor view rendered content</h2><p>{selectedComponent}</p>");
 }
 @html
-<p>
-    @content.SelectedComponent?.SelectedValue
-</p>
-<style>
-    .done {
-        text-decoration: line-through;
-    }
-</style>
-<h3>TODOs</h3>
-<ul>
-    <li>add blockelement to install</li>
-    <li>add datatype to install</li>
-    <li>finish blockgrid view</li>
-    <li>finish this render view</li>
-</ul>
-<ul class="done">
-    <li>save and return selected component (path)</li>
-    <li>add API call for components</li>
-    <li>update blockgrid view</li>
-
-</ul>

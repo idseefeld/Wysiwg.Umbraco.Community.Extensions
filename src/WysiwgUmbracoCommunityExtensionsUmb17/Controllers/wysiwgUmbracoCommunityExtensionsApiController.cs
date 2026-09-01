@@ -4,361 +4,356 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
 using Umbraco.Cms.Api.Common.Attributes;
-using Umbraco.Cms.Api.Common.Filters;
-using Umbraco.Cms.Api.Management.Filters;
-using Umbraco.Cms.Api.Management.Routing;
+using Umbraco.Cms.Api.Management.Controllers;
+using Umbraco.Cms.Api.Management.Factories;
 using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Composing;
+using Umbraco.Cms.Core.Mapping;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.Membership;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
+using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Security;
 using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Web;
 using Umbraco.Cms.Web.Common.Authorization;
-using Umbraco.Cms.Web.Common.Controllers;
-using Umbraco.Cms.Web.Common.Filters;
-using Umbraco.Cms.Web.Common.Security;
 using Umbraco.Extensions;
 using WysiwgUmbracoCommunityExtensions.Models;
 using WysiwgUmbracoCommunityExtensions.Services;
-using static Umbraco.Cms.Core.PropertyEditors.ValueConverters.ColorPickerValueConverter;
 using static Umbraco.Cms.Core.PropertyEditors.ValueConverters.ImageCropperValue;
 using MediaConventions = Umbraco.Cms.Core.Constants.Conventions.Media;
 
-namespace WysiwgUmbracoCommunityExtensions.Controllers
+namespace WysiwgUmbracoCommunityExtensions.Controllers;
+
+
+[ApiVersion("1.0")]
+[ApiExplorerSettings(GroupName = "Wysiwg")]
+[MapToApi(Constants.ApiDocumentName)]
+[Authorize(Policy = AuthorizationPolicies.BackOfficeAccess)]
+[Route("api/v{version:apiVersion}/wysiwg")]
+public partial class WysiwgApiController(
+    IPublishedContentQuery publishedContent,
+    IDataTypeService dataTypeService,
+    ISetupService installService,
+    IMediaTypeService mediaTypeService,
+    ILogger<WysiwgApiController> logger,
+    ISetupService setupService,
+    IWysiwygPublishedContentService wysiwygPublishedContentService,
+    IBackOfficeSecurityAccessor backOfficeSecurityAccessor,
+    IComponentService componentService,
+    ITypeFinder typeFinder,
+    BlockEditorConverter blockEditorConverter,
+    IUmbracoContextAccessor umbracoContextAccessor,
+    IVariationContextAccessor variationContextAccessor,
+    IPublishedRouter publishedRouter,
+    IRazorViewEngine razorViewEngine,
+    ITempDataProvider tempDataProvider,
+    IPublishedValueFallback publishedValueFallback
+    ) : ManagementApiControllerBase
 {
-    [ApiController]
-    [ApiVersion("1.0")]
-    [MapToApi(Constants.ApiDocumentName)]
-    [Authorize(Policy = AuthorizationPolicies.BackOfficeAccess)]
-    [Route("api/v{version:apiVersion}/wysiwg")]
-    [JsonOptionsName(Umbraco.Cms.Core.Constants.JsonOptionsNames.BackOffice)]
-    [AppendEventMessages]
-    [DisableBrowserCache]
-    [MaintenanceModeActionFilter]
-
-    public class WysiwgApiController(
-        IPublishedContentQuery publishedContent,
-        IDataTypeService dataTypeService,
-        ISetupService installService,
-        IMediaTypeService mediaTypeService,
-        ILogger<WysiwgApiController> logger,
-        ISetupService setupService,
-        IWysiwygPublishedContentService wysiwygPublishedContentService,
-        IBackOfficeSecurityAccessor backOfficeSecurityAccessor,
-        IComponentService componentService
-        ) : Controller
+    [ApiExplorerSettings(GroupName = "Croping")]
+    [HttpGet("crops", Name = "GetCrops")]
+    [MapToApiVersion("1.0")]
+    [ProducesResponseType<IEnumerable<ImageCropperCrop>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<IEnumerable<ImageCropperCrop>>(StatusCodes.Status404NotFound)]
+    public IActionResult Crops(string mediaItemId = "")
     {
-        [ApiExplorerSettings(GroupName = "Croping")]
-        [HttpGet("crops", Name = "GetCrops")]
-        [MapToApiVersion("1.0")]
-        [ProducesResponseType<IEnumerable<ImageCropperCrop>>(StatusCodes.Status200OK)]
-        [ProducesResponseType<IEnumerable<ImageCropperCrop>>(StatusCodes.Status404NotFound)]
-        public IActionResult Crops(string mediaItemId = "")
+        IEnumerable<ImageCropperCrop> rVal;
+
+        if (string.IsNullOrEmpty(mediaItemId))
         {
-            IEnumerable<ImageCropperCrop> rVal;
-
-            if (string.IsNullOrEmpty(mediaItemId))
-            {
-                rVal = ImageCropperCrops();
-            }
-            else
-            {
-                if (publishedContent.Media(mediaItemId) is not MediaWithSelectedCrop tempItem)
-                { return NotFound($"No media item found for: {mediaItemId}"); }
-
-                MediaWithSelectedCrop mediaItem = tempItem;
-                rVal = mediaItem.LocalCrops?.Crops ?? [];
-            }
-            return Ok(rVal);
+            rVal = ImageCropperCrops();
         }
-
-        private IEnumerable<ImageCropperCrop> ImageCropperCrops()
+        else
         {
-            IEnumerable<ImageCropperCrop> rVal = [];
-            var cropperDataType = dataTypeService.GetByEditorAliasAsync("Umbraco.ImageCropper").Result.FirstOrDefault();
-            if (cropperDataType != null)
-            {
-                var cropsKey = "crops";
-                var cropperConfig = cropperDataType.ConfigurationData.TryGetValue(cropsKey, out object? value) ? value as JsonArray : null;
-                var json = cropperConfig?.ToJsonString();
-                if (string.IsNullOrEmpty(json))
-                {
-                    logger.LogWarning("No crops found in the ImageCropper data type configuration");
-                    return [];
-                }
-                var crops = JsonSerializer.Deserialize<ImageCropperCrop[]>(json, JsonSerializerOptions.Web);
-                if (crops != null)
-                {
-                    rVal = crops.Select(c =>
-                        new ImageCropperCrop
-                        {
-                            Alias = c.Alias,
-                            Coordinates = c.Coordinates,
-                            Width = c.Width,
-                            Height = c.Height
-                        }
-                    );
-                }
-            }
-            return rVal;
+            if (publishedContent.Media(mediaItemId) is not MediaWithSelectedCrop tempItem)
+            { return NotFound($"No media item found for: {mediaItemId}"); }
+
+            MediaWithSelectedCrop mediaItem = tempItem;
+            rVal = mediaItem.LocalCrops?.Crops ?? [];
         }
+        return Ok(rVal);
+    }
 
-        [ApiExplorerSettings(GroupName = "Croping")]
-        [HttpGet("cropurl", Name = "GetCropUrl")]
-        [MapToApiVersion("1.0")]
-        [ProducesResponseType<string>(StatusCodes.Status200OK)]
-        [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
-        public IActionResult CropUrl(string mediaItemId, string? cropAlias = "", double? width = 1400)
+    private IEnumerable<ImageCropperCrop> ImageCropperCrops()
+    {
+        IEnumerable<ImageCropperCrop> rVal = [];
+        var cropperDataType = dataTypeService.GetByEditorAliasAsync("Umbraco.ImageCropper").Result.FirstOrDefault();
+        if (cropperDataType != null)
         {
-            var allowedWidth = (int)Math.Ceiling(width.GetValueOrDefault() / 100.0) * 100;
-            if (allowedWidth < 10)
-            { allowedWidth = 10; }
-            var mediaItem = publishedContent.Media(mediaItemId);
-
-            //ToDo: frontend resolves mediaItemId to Umbraco.Cms.Core.Models.MediaWithCrops and GetCropUrl respects localCrops. How can I achieve same behavior here? Idea: MediaItems crop is not the same as the MediaPicker item which might has its own crop configuration. Thus I need another method ór more input parameters...
-
-            var umbracoFile = mediaItem?.GetProperty(MediaConventions.File)?.GetValue() as Umbraco.Cms.Core.PropertyEditors.ValueConverters.ImageCropperValue;
-            var hasCrop = (umbracoFile?.Crops) != null && umbracoFile.Crops.FirstOrDefault(c => c.Alias.InvariantEquals(cropAlias)) != null;
-
-            string? url = null;
-            if (hasCrop)
+            var cropsKey = "crops";
+            var cropperConfig = cropperDataType.ConfigurationData.TryGetValue(cropsKey, out object? value) ? value as JsonArray : null;
+            var json = cropperConfig?.ToJsonString();
+            if (string.IsNullOrEmpty(json))
             {
-                url = mediaItem?.GetCropUrl(width: allowedWidth, cropAlias: cropAlias);
+                logger.LogWarning("No crops found in the ImageCropper data type configuration");
+                return [];
             }
-            else
+            var crops = JsonSerializer.Deserialize<ImageCropperCrop[]>(json, JsonSerializerOptions.Web);
+            if (crops != null)
             {
-                logger.LogWarning("There are no crops defined on the Image data types cropper configuration! You should add: square, portrait and landscape");
-                url = mediaItem?.GetCropUrl(width: allowedWidth);
+                rVal = crops.Select(c =>
+                    new ImageCropperCrop
+                    {
+                        Alias = c.Alias,
+                        Coordinates = c.Coordinates,
+                        Width = c.Width,
+                        Height = c.Height
+                    }
+                );
             }
-
-            return url == null ? ImageUrl(mediaItemId) : Ok(url);
         }
+        return rVal;
+    }
 
+    [ApiExplorerSettings(GroupName = "Croping")]
+    [HttpGet("cropurl", Name = "GetCropUrl")]
+    [MapToApiVersion("1.0")]
+    [ProducesResponseType<string>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+    public IActionResult CropUrl(string mediaItemId, string? cropAlias = "", double? width = 1400)
+    {
+        var allowedWidth = (int)Math.Ceiling(width.GetValueOrDefault() / 100.0) * 100;
+        if (allowedWidth < 10)
+        { allowedWidth = 10; }
+        var mediaItem = publishedContent.Media(mediaItemId);
 
-        [ApiExplorerSettings(GroupName = "Croping")]
-        [HttpGet("imageurl", Name = "GetImageUrl")]
-        [MapToApiVersion("1.0")]
-        [ProducesResponseType<string>(StatusCodes.Status200OK)]
-        [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
-        public IActionResult ImageUrl(string mediaItemId)
+        //ToDo: frontend resolves mediaItemId to Umbraco.Cms.Core.Models.MediaWithCrops and GetCropUrl respects localCrops. How can I achieve same behavior here? Idea: MediaItems crop is not the same as the MediaPicker item which might has its own crop configuration. Thus I need another method ór more input parameters...
+
+        var umbracoFile = mediaItem?.GetProperty(MediaConventions.File)?.GetValue() as Umbraco.Cms.Core.PropertyEditors.ValueConverters.ImageCropperValue;
+        var hasCrop = (umbracoFile?.Crops) != null && umbracoFile.Crops.FirstOrDefault(c => c.Alias.InvariantEquals(cropAlias)) != null;
+
+        string? url = null;
+        if (hasCrop)
         {
-            var mediaItem = publishedContent.Media(mediaItemId);
-            var url = mediaItem?.Url();
-            if (mediaItem == null || url == null)
-            {
-                return NotFound($"No media found for: {mediaItemId}");
-            }
-            return Ok(url);
-        }
-
-
-        [ApiExplorerSettings(GroupName = "Croping")]
-        [HttpGet("v2-cropurl", Name = "GetV2CropUrl")]
-        [MapToApiVersion("1.0")]
-        [ProducesResponseType<string>(StatusCodes.Status200OK)]
-        [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
-        public IActionResult V2CropUrl(string mediaItemId, string cropAlias = "", string selectedCrop = "", double width = 1400.0, string selectedFocalPoint = "")
-        {
-            if (string.IsNullOrEmpty(mediaItemId))
-            {
-                return NotFound("No media item id provided");
-            }
-            var tempItem = publishedContent.Media(mediaItemId);
-            if (tempItem == null)
-            {
-                return NotFound($"No media item found for: {mediaItemId}");
-            }
-            ImageCropperCrop? selectedCropModel = null;
-            ImageCropperFocalPoint? focalPoint = null;
-            if (!string.IsNullOrEmpty(selectedCrop))
-            {
-                try
-                {
-                    selectedCropModel = JsonSerializer.Deserialize<ImageCropperCrop>(selectedCrop, JsonSerializerOptions.Web);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "Error deserializing selected crop: {Message}", ex.Message);
-                }
-            }
-            if (!string.IsNullOrEmpty(selectedFocalPoint))
-            {
-                try
-                {
-                    focalPoint = JsonSerializer.Deserialize<ImageCropperFocalPoint>(selectedFocalPoint, JsonSerializerOptions.Web);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "Error deserializing selected focal point: {Message}", ex.Message);
-                }
-            }
-            string? url = null;
-            var localCrops = new ImageCropperValue();
-            if (selectedCropModel != null)
-            { localCrops.Crops = [selectedCropModel]; }
-            localCrops.FocalPoint = focalPoint;
-
-            var mediaItem = new MediaWithCrops(tempItem, new NoopPublishedValueFallback(), localCrops);
-
-            var allowedWidth = (int)Math.Ceiling(width / 100.0) * 100;
-            if (allowedWidth < 10)
-            { allowedWidth = 10; }
-
-            if (mediaItem is MediaWithCrops croppedMedia)
-            {
-                url = croppedMedia.GetCropUrl(width: allowedWidth, cropAlias: cropAlias);
-                if (!string.IsNullOrEmpty(url))
-                { return Ok(url); }
-            }
-
-            logger.LogWarning("No crops found ");
             url = mediaItem?.GetCropUrl(width: allowedWidth, cropAlias: cropAlias);
-            return url == null ? ImageUrl(mediaItemId) : Ok(url);
         }
-
-        [ApiExplorerSettings(GroupName = "Settings")]
-        [HttpGet("site-background-color", Name = "GetSiteBackgroundColor")]
-        [MapToApiVersion("1.0")]
-        [ProducesResponseType<string>(StatusCodes.Status200OK)]
-        public IActionResult SiteBackgroundColor(string pageKey)
+        else
         {
-            return Ok(wysiwygPublishedContentService.GetBackgroundColor(pageKey));
+            logger.LogWarning("There are no crops defined on the Image data types cropper configuration! You should add: square, portrait and landscape");
+            url = mediaItem?.GetCropUrl(width: allowedWidth);
         }
 
-        [ApiExplorerSettings(GroupName = "Components")]
-        [HttpGet("all-components", Name = "GetAllComponents")]
-        [MapToApiVersion("1.0")]
-        [ProducesResponseType<IEnumerable<ComponentPickerOption>>(StatusCodes.Status200OK)]
-        public IActionResult GetAllComponents()
+        return url == null ? ImageUrl(mediaItemId) : Ok(url);
+    }
+
+
+    [ApiExplorerSettings(GroupName = "Croping")]
+    [HttpGet("imageurl", Name = "GetImageUrl")]
+    [MapToApiVersion("1.0")]
+    [ProducesResponseType<string>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+    public IActionResult ImageUrl(string mediaItemId)
+    {
+        var mediaItem = publishedContent.Media(mediaItemId);
+        var url = mediaItem?.Url();
+        if (mediaItem == null || url == null)
         {
-            return Ok(componentService.GetComponents());
+            return NotFound($"No media found for: {mediaItemId}");
         }
+        return Ok(url);
+    }
 
-        [ApiExplorerSettings(GroupName = "Settings")]
-        [HttpGet("mediatypes", Name = "GetMediaTypes")]
-        [ProducesResponseType<IEnumerable<IMediaType>>(StatusCodes.Status200OK)]
-        [ProducesResponseType<IEnumerable<IMediaType>>(StatusCodes.Status404NotFound)]
-        public IActionResult MediaTypes(string name = "")
+
+    [ApiExplorerSettings(GroupName = "Croping")]
+    [HttpGet("v2-cropurl", Name = "GetV2CropUrl")]
+    [MapToApiVersion("1.0")]
+    [ProducesResponseType<string>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+    public IActionResult V2CropUrl(string mediaItemId, string cropAlias = "", string selectedCrop = "", double width = 1400.0, string selectedFocalPoint = "")
+    {
+        if (string.IsNullOrEmpty(mediaItemId))
         {
-            var mediaTypes = mediaTypeService.GetAll().ToArray();
-            if (string.IsNullOrEmpty(name))
-            {
-                return Ok(mediaTypes);
-            }
-            else
-            {
-                var requestedTypeNames = name.Split(',');
-                var requestedMediaTypes = mediaTypes.Where(x => x.Name.InvariantEquals(name));
-                if (requestedMediaTypes == null)
-                {
-                    return NotFound($"No media type found for: {name}");
-                }
-                return Ok(requestedMediaTypes);
-            }
+            return NotFound("No media item id provided");
         }
-
-        [ApiExplorerSettings(GroupName = "Setup")]
-        [HttpGet("install", Name = "Install")]
-        [MapToApiVersion("1.0")]
-        [ProducesResponseType<string>(StatusCodes.Status200OK)]
-        [ProducesResponseType<string>(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Install()
+        var tempItem = publishedContent.Media(mediaItemId);
+        if (tempItem == null)
+        {
+            return NotFound($"No media item found for: {mediaItemId}");
+        }
+        ImageCropperCrop? selectedCropModel = null;
+        ImageCropperFocalPoint? focalPoint = null;
+        if (!string.IsNullOrEmpty(selectedCrop))
         {
             try
             {
-                await installService.Install();
+                selectedCropModel = JsonSerializer.Deserialize<ImageCropperCrop>(selectedCrop, JsonSerializerOptions.Web);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error installing package");
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                logger.LogError(ex, "Error deserializing selected crop: {Message}", ex.Message);
             }
-            return Ok("Installed");
         }
-
-        [ApiExplorerSettings(GroupName = "Setup")]
-        [HttpGet("variations", Name = "GetVariations")]
-        [MapToApiVersion("1.0")]
-        [ProducesResponseType<string>(StatusCodes.Status200OK)]
-        [ProducesResponseType<string>(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetVariations()
+        if (!string.IsNullOrEmpty(selectedFocalPoint))
         {
             try
             {
-                var variations = setupService.GetVariations();
-                return Ok(variations);
+                focalPoint = JsonSerializer.Deserialize<ImageCropperFocalPoint>(selectedFocalPoint, JsonSerializerOptions.Web);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error getting variations");
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                logger.LogError(ex, "Error deserializing selected focal point: {Message}", ex.Message);
             }
         }
+        string? url = null;
+        var localCrops = new ImageCropperValue();
+        if (selectedCropModel != null)
+        { localCrops.Crops = [selectedCropModel]; }
+        localCrops.FocalPoint = focalPoint;
 
-        [ApiExplorerSettings(GroupName = "Setup")]
-        [HttpGet("fixupgrade", Name = "FixUpgrade")]
-        [MapToApiVersion("1.0")]
-        [ProducesResponseType<string>(StatusCodes.Status200OK)]
-        [ProducesResponseType<string>(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> FixUpgrade(bool? culture, bool? segment)
+        var mediaItem = new MediaWithCrops(tempItem, new NoopPublishedValueFallback(), localCrops);
+
+        var allowedWidth = (int)Math.Ceiling(width / 100.0) * 100;
+        if (allowedWidth < 10)
+        { allowedWidth = 10; }
+
+        if (mediaItem is MediaWithCrops croppedMedia)
         {
-            try
-            {
-                await installService.FixUpgrade(culture, segment);
-
-                var variations = setupService.GetVariations();
-                return Ok(variations);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error fixing package");
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-        
-        [ApiExplorerSettings(GroupName = "Setup")]
-        [HttpGet("uninstall", Name = "UnInstall")]
-        [MapToApiVersion("1.0")]
-        [ProducesResponseType<string>(StatusCodes.Status200OK)]
-        public IActionResult UnInstall()
-        {
-            try
-            {
-                _ = installService.Uninstall();
-
-                Thread.Sleep(500);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error uninstalling package");
-                return BadRequest(ex.Message);
-            }
-            return Ok("Uninstalled");
+            url = croppedMedia.GetCropUrl(width: allowedWidth, cropAlias: cropAlias);
+            if (!string.IsNullOrEmpty(url))
+            { return Ok(url); }
         }
 
-        [ApiExplorerSettings(GroupName = "Status")]
-        [HttpGet("updateStatusCode", Name = "GetUpdateStatusCode")]
-        [MapToApiVersion("1.0")]
-        [ProducesResponseType<int>(StatusCodes.Status200OK)]
-        [ProducesResponseType<int>(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetUpdateStatusCode()
-        {
-            try
-            {
-                IUser currentUser = backOfficeSecurityAccessor.BackOfficeSecurity?.CurrentUser
-                            ?? throw new InvalidOperationException("No backoffice user found");
+        logger.LogWarning("No crops found ");
+        url = mediaItem?.GetCropUrl(width: allowedWidth, cropAlias: cropAlias);
+        return url == null ? ImageUrl(mediaItemId) : Ok(url);
+    }
 
-                var code = await setupService.GetVersionStatusCode();
-                return Ok(code);
-            }
-            catch (Exception ex)
+    [ApiExplorerSettings(GroupName = "Settings")]
+    [HttpGet("site-background-color", Name = "GetSiteBackgroundColor")]
+    [MapToApiVersion("1.0")]
+    [ProducesResponseType<string>(StatusCodes.Status200OK)]
+    public IActionResult SiteBackgroundColor(string pageKey)
+    {
+        return Ok(wysiwygPublishedContentService.GetBackgroundColor(pageKey));
+    }
+
+    [ApiExplorerSettings(GroupName = "Settings")]
+    [HttpGet("mediatypes", Name = "GetMediaTypes")]
+    [ProducesResponseType<IEnumerable<IMediaType>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<IEnumerable<IMediaType>>(StatusCodes.Status404NotFound)]
+    public IActionResult MediaTypes(string name = "")
+    {
+        var mediaTypes = mediaTypeService.GetAll().ToArray();
+        if (string.IsNullOrEmpty(name))
+        {
+            return Ok(mediaTypes);
+        }
+        else
+        {
+            var requestedTypeNames = name.Split(',');
+            var requestedMediaTypes = mediaTypes.Where(x => x.Name.InvariantEquals(name));
+            if (requestedMediaTypes == null)
             {
-                logger.LogError(ex, "Error checking version");
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return NotFound($"No media type found for: {name}");
             }
+            return Ok(requestedMediaTypes);
+        }
+    }
+
+    [ApiExplorerSettings(GroupName = "Setup")]
+    [HttpGet("install", Name = "Install")]
+    [MapToApiVersion("1.0")]
+    [ProducesResponseType<string>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Install()
+    {
+        try
+        {
+            await installService.Install();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error installing package");
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+        return Ok("Installed");
+    }
+
+    [ApiExplorerSettings(GroupName = "Setup")]
+    [HttpGet("variations", Name = "GetVariations")]
+    [MapToApiVersion("1.0")]
+    [ProducesResponseType<string>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status500InternalServerError)]
+    public IActionResult GetVariations()
+    {
+        try
+        {
+            var variations = setupService.GetVariations();
+            return Ok(variations);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting variations");
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [ApiExplorerSettings(GroupName = "Setup")]
+    [HttpGet("fixupgrade", Name = "FixUpgrade")]
+    [MapToApiVersion("1.0")]
+    [ProducesResponseType<string>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> FixUpgrade(bool? culture, bool? segment)
+    {
+        try
+        {
+            await installService.FixUpgrade(culture, segment);
+
+            var variations = setupService.GetVariations();
+            return Ok(variations);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error fixing package");
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+        }
+    }
+
+    [ApiExplorerSettings(GroupName = "Setup")]
+    [HttpGet("uninstall", Name = "UnInstall")]
+    [MapToApiVersion("1.0")]
+    [ProducesResponseType<string>(StatusCodes.Status200OK)]
+    public IActionResult UnInstall()
+    {
+        try
+        {
+            _ = installService.Uninstall();
+
+            Thread.Sleep(500);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error uninstalling package");
+            return BadRequest(ex.Message);
+        }
+        return Ok("Uninstalled");
+    }
+
+    [ApiExplorerSettings(GroupName = "Status")]
+    [HttpGet("updateStatusCode", Name = "GetUpdateStatusCode")]
+    [MapToApiVersion("1.0")]
+    [ProducesResponseType<int>(StatusCodes.Status200OK)]
+    [ProducesResponseType<int>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetUpdateStatusCode()
+    {
+        try
+        {
+            IUser currentUser = backOfficeSecurityAccessor.BackOfficeSecurity?.CurrentUser
+                        ?? throw new InvalidOperationException("No backoffice user found");
+
+            var code = await setupService.GetVersionStatusCode();
+            return Ok(code);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error checking version");
+            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
 }

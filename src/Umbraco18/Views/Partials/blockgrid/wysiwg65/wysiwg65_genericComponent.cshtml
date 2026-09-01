@@ -1,0 +1,13 @@
+@using Microsoft.AspNetCore.Html
+@using Umbraco.Cms.Core.Models.PublishedContent
+@using Umbraco.Cms.Core.Serialization
+@using WysiwgUmbracoCommunityExtensions.ViewModels
+@model WysiwygBlockGridItem
+@inject IPublishedValueFallback publishedValueFallback
+@inject IJsonSerializer jsonSerializer
+@{
+    var content = new Wysiwg65_componentPicker(Model.Content, publishedValueFallback, jsonSerializer);
+    var selectedComponent = content.SelectedComponent;
+    if (string.IsNullOrEmpty(selectedComponent)) return;
+}
+@await Component.InvokeAsync(selectedComponent)

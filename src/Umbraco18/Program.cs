@@ -1,5 +1,15 @@
 
+using Umbraco18.Models;
+using Umbraco18.Services;
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+var config = builder.Configuration;
+
+builder.Services.Configure<ContactMailOptions>(config.GetSection(ContactMailOptions.ContactMail));
+
+var contactMailConfig = config.GetSection(ContactMailOptions.ContactMail).Get<ContactMailOptions>();
+builder.Services.AddTransient<IMailService, MailKitService>();    
 
 builder.CreateUmbracoBuilder()
     .AddBackOffice()
@@ -8,7 +18,6 @@ builder.CreateUmbracoBuilder()
     .Build();
 
 WebApplication app = builder.Build();
-
 
 await app.BootUmbracoAsync();
 

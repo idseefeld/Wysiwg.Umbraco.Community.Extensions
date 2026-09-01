@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetAllComponentsData, GetAllComponentsErrors, GetAllComponentsResponses, GetCropsData, GetCropsErrors, GetCropsResponses, GetCropUrlData, GetCropUrlErrors, GetCropUrlResponses, GetFixUpgradeData, GetFixUpgradeErrors, GetFixUpgradeResponses, GetImageUrlData, GetImageUrlErrors, GetImageUrlResponses, GetInstallData, GetInstallErrors, GetInstallResponses, GetMediaTypesData, GetMediaTypesErrors, GetMediaTypesResponses, GetSiteBackgroundColorData, GetSiteBackgroundColorErrors, GetSiteBackgroundColorResponses, GetUnInstallData, GetUnInstallErrors, GetUnInstallResponses, GetUpdateStatusCodeData, GetUpdateStatusCodeErrors, GetUpdateStatusCodeResponses, GetV2CropUrlData, GetV2CropUrlErrors, GetV2CropUrlResponses, GetVariationsData, GetVariationsErrors, GetVariationsResponses } from './types.gen';
+import type { GetAllComponentsData, GetAllComponentsErrors, GetAllComponentsResponses, GetCropsData, GetCropsErrors, GetCropsResponses, GetCropUrlData, GetCropUrlErrors, GetCropUrlResponses, GetFixUpgradeData, GetFixUpgradeErrors, GetFixUpgradeResponses, GetImageUrlData, GetImageUrlErrors, GetImageUrlResponses, GetInstallData, GetInstallErrors, GetInstallResponses, GetMediaTypesData, GetMediaTypesErrors, GetMediaTypesResponses, GetSiteBackgroundColorData, GetSiteBackgroundColorErrors, GetSiteBackgroundColorResponses, GetUnInstallData, GetUnInstallErrors, GetUnInstallResponses, GetUpdateStatusCodeData, GetUpdateStatusCodeErrors, GetUpdateStatusCodeResponses, GetV2CropUrlData, GetV2CropUrlErrors, GetV2CropUrlResponses, GetVariationsData, GetVariationsErrors, GetVariationsResponses, PostWysiwgPreviewMarkupData, PostWysiwgPreviewMarkupErrors, PostWysiwgPreviewMarkupResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -22,6 +22,19 @@ export const getAllComponents = <ThrowOnError extends boolean = false>(options?:
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/wysiwg/all-components',
     ...options
+});
+
+/**
+ * Gets rendered markup for block element data.
+ */
+export const postWysiwgPreviewMarkup = <ThrowOnError extends boolean = false>(options: Options<PostWysiwgPreviewMarkupData, ThrowOnError>) => (options.client ?? client).post<PostWysiwgPreviewMarkupResponses, PostWysiwgPreviewMarkupErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/wysiwg/preview-markup',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });
 
 export const getCrops = <ThrowOnError extends boolean = false>(options?: Options<GetCropsData, ThrowOnError>) => (options?.client ?? client).get<GetCropsResponses, GetCropsErrors, ThrowOnError>({

@@ -11,7 +11,6 @@ namespace WysiwgUmbracoCommunityExtensions.PropertyEditors
 {
     [DataEditor(
             "Wysiwg.ComponentPicker",
-            ValueType = ValueTypes.Json,
             ValueEditorIsReusable = true)]
     public class ComponentPickerPropertyEditor : DataEditor, IValueSchemaProvider
     {
@@ -23,23 +22,16 @@ namespace WysiwgUmbracoCommunityExtensions.PropertyEditors
             SupportsReadOnly = true;
         }
 
-        public override IPropertyIndexValueFactory PropertyIndexValueFactory { get; } = new NoopPropertyIndexValueFactory();
+        public Type? GetValueType(object? configuration) => typeof(IEnumerable<string>);
 
         public JsonObject? GetValueSchema(object? configuration) => new()
         {
             ["$schema"] = "https://json-schema.org/draft/2020-12/schema",
-            ["type"] = new JsonArray("array", "null"),
-            ["items"] = new JsonObject
-            {
-                ["type"] = "string",
-            },
-            ["description"] = "Array of selected values from dropdown",
+            ["type"] = new JsonArray("string", "null"),
         };
-
-        public Type? GetValueType(object? configuration) => typeof(IEnumerable<string>);
 
         protected override IDataValueEditor CreateValueEditor() => DataValueEditorFactory.Create<ComponentPickerDataValueEditor>(Attribute!);
 
-        protected override IConfigurationEditor CreateConfigurationEditor() => new ComponentPickerConfigurationEditor(_ioHelper);
+        protected override IConfigurationEditor CreateConfigurationEditor() => new ConfigurationEditor();
     }
 }

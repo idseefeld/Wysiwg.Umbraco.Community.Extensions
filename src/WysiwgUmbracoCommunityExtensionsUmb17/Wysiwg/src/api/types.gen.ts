@@ -4,6 +4,20 @@ export type ClientOptions = {
     baseUrl: 'https://localhost:44313/' | (string & {});
 };
 
+export type BlockItemDataModel = {
+    contentTypeKey: string;
+    key: string;
+    values: Array<BlockPropertyValueModel>;
+};
+
+export type BlockPropertyValueModel = {
+    editorAlias?: null | string;
+    culture?: null | string;
+    segment?: null | string;
+    alias: string;
+    value?: unknown;
+};
+
 export type ComponentPickerOption = {
     name?: null | string;
     value?: null | string;
@@ -128,6 +142,14 @@ export type LazyOfint = {
     value: number | string;
 };
 
+export type ProblemDetails = {
+    type?: null | string;
+    title?: null | string;
+    status?: null | number | string;
+    detail?: null | string;
+    instance?: null | string;
+};
+
 export type PropertyGroupModel = {
     type: PropertyGroupTypeModel;
     name?: null | string;
@@ -144,6 +166,12 @@ export type PropertyGroupModel = {
 
 export type PropertyGroupTypeModel = number;
 
+export type RequestPreviewMarkupModel = {
+    data?: null | BlockItemDataModel;
+    pageKey?: null | string;
+    culture?: null | string;
+};
+
 export type ValueStorageTypeModel = number;
 
 export type GetAllComponentsData = {
@@ -158,6 +186,10 @@ export type GetAllComponentsErrors = {
      * The resource is protected and requires an authentication token
      */
     401: unknown;
+    /**
+     * The authenticated user does not have access to this resource
+     */
+    403: unknown;
 };
 
 export type GetAllComponentsResponses = {
@@ -168,6 +200,39 @@ export type GetAllComponentsResponses = {
 };
 
 export type GetAllComponentsResponse = GetAllComponentsResponses[keyof GetAllComponentsResponses];
+
+export type PostWysiwgPreviewMarkupData = {
+    body: RequestPreviewMarkupModel;
+    path?: never;
+    query?: never;
+    url: '/api/v1/wysiwg/preview-markup';
+};
+
+export type PostWysiwgPreviewMarkupErrors = {
+    /**
+     * The resource is protected and requires an authentication token
+     */
+    401: unknown;
+    /**
+     * The authenticated user does not have access to this resource
+     */
+    403: unknown;
+    /**
+     * Not Found
+     */
+    404: ProblemDetails;
+};
+
+export type PostWysiwgPreviewMarkupError = PostWysiwgPreviewMarkupErrors[keyof PostWysiwgPreviewMarkupErrors];
+
+export type PostWysiwgPreviewMarkupResponses = {
+    /**
+     * OK
+     */
+    200: string;
+};
+
+export type PostWysiwgPreviewMarkupResponse = PostWysiwgPreviewMarkupResponses[keyof PostWysiwgPreviewMarkupResponses];
 
 export type GetCropsData = {
     body?: never;
@@ -183,6 +248,10 @@ export type GetCropsErrors = {
      * The resource is protected and requires an authentication token
      */
     401: unknown;
+    /**
+     * The authenticated user does not have access to this resource
+     */
+    403: unknown;
     /**
      * Not Found
      */
@@ -217,6 +286,10 @@ export type GetCropUrlErrors = {
      */
     401: unknown;
     /**
+     * The authenticated user does not have access to this resource
+     */
+    403: unknown;
+    /**
      * Not Found
      */
     404: string;
@@ -247,6 +320,10 @@ export type GetImageUrlErrors = {
      * The resource is protected and requires an authentication token
      */
     401: unknown;
+    /**
+     * The authenticated user does not have access to this resource
+     */
+    403: unknown;
     /**
      * Not Found
      */
@@ -283,6 +360,10 @@ export type GetV2CropUrlErrors = {
      */
     401: unknown;
     /**
+     * The authenticated user does not have access to this resource
+     */
+    403: unknown;
+    /**
      * Not Found
      */
     404: string;
@@ -314,6 +395,10 @@ export type GetMediaTypesErrors = {
      */
     401: unknown;
     /**
+     * The authenticated user does not have access to this resource
+     */
+    403: unknown;
+    /**
      * Not Found
      */
     404: Array<IMediaTypeModel>;
@@ -344,6 +429,10 @@ export type GetSiteBackgroundColorErrors = {
      * The resource is protected and requires an authentication token
      */
     401: unknown;
+    /**
+     * The authenticated user does not have access to this resource
+     */
+    403: unknown;
 };
 
 export type GetSiteBackgroundColorResponses = {
@@ -370,6 +459,10 @@ export type GetFixUpgradeErrors = {
      * The resource is protected and requires an authentication token
      */
     401: unknown;
+    /**
+     * The authenticated user does not have access to this resource
+     */
+    403: unknown;
     /**
      * Internal Server Error
      */
@@ -400,6 +493,10 @@ export type GetInstallErrors = {
      */
     401: unknown;
     /**
+     * The authenticated user does not have access to this resource
+     */
+    403: unknown;
+    /**
      * Internal Server Error
      */
     500: string;
@@ -428,6 +525,10 @@ export type GetUnInstallErrors = {
      * The resource is protected and requires an authentication token
      */
     401: unknown;
+    /**
+     * The authenticated user does not have access to this resource
+     */
+    403: unknown;
 };
 
 export type GetUnInstallResponses = {
@@ -451,6 +552,10 @@ export type GetVariationsErrors = {
      * The resource is protected and requires an authentication token
      */
     401: unknown;
+    /**
+     * The authenticated user does not have access to this resource
+     */
+    403: unknown;
     /**
      * Internal Server Error
      */
@@ -480,6 +585,10 @@ export type GetUpdateStatusCodeErrors = {
      * The resource is protected and requires an authentication token
      */
     401: unknown;
+    /**
+     * The authenticated user does not have access to this resource
+     */
+    403: unknown;
     /**
      * Internal Server Error
      */
