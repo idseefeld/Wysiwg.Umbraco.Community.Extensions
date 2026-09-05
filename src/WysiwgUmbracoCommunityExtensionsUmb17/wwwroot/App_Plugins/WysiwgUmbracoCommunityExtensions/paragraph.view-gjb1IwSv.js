@@ -1,11 +1,11 @@
-import { unsafeHTML as h, html as l, css as p, customElement as w } from "@umbraco-cms/backoffice/external/lit";
-import { W as g } from "./wysiwg-base-block-editor-custom.view-CCHW93dJ.js";
-var d = Object.getOwnPropertyDescriptor, c = (e, a, i, r) => {
-  for (var t = r > 1 ? void 0 : r ? d(a, i) : a, s = e.length - 1, o; s >= 0; s--)
+import { css as h, customElement as l } from "@umbraco-cms/backoffice/external/lit";
+import { W as g } from "./wysiwg-base-block-editor-custom.view-CxUo8Q00.js";
+var p = Object.getOwnPropertyDescriptor, w = (e, a, i, r) => {
+  for (var t = r > 1 ? void 0 : r ? p(a, i) : a, s = e.length - 1, o; s >= 0; s--)
     (o = e[s]) && (t = o(t) || t);
   return t;
 };
-const y = "wysiwg-block-paragraph-view";
+const d = "wysiwg-block-paragraph-view";
 let n = class extends g {
   disableLinks() {
     const e = this.shadowRoot?.querySelector("#paragraph");
@@ -33,12 +33,12 @@ let n = class extends g {
     const e = this.getLayoutSettings();
     var a = this.content?.text, i = a?.markup;
     const r = `<div id="paragraph" ${e.inlineStyle}>${i}</div>`;
-    return l`${h(this.setEditorLink(r))}`;
+    return this.setEditorLink(r);
   }
 };
 n.styles = [
   g.baseStyles,
-  p`
+  h`
       :host {
         display: block;
         height: 100%;
@@ -87,12 +87,12 @@ n.styles = [
       }
     `
 ];
-n = c([
-  w(y)
+n = w([
+  l(d)
 ], n);
-const f = n;
+const v = n;
 export {
   n as WysiwgBlockParagraphView,
-  f as default
+  v as default
 };
-//# sourceMappingURL=paragraph.view-Bm-msD60.js.map
+//# sourceMappingURL=paragraph.view-gjb1IwSv.js.map

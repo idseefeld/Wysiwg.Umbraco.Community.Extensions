@@ -1,8 +1,6 @@
 import {
-  html,
   customElement,
   css,
-  unsafeHTML,
 } from "@umbraco-cms/backoffice/external/lit";
 import WysiwgBaseBlockEditorCustomViewElement from "./wysiwg-base-block-editor-custom.view";
 
@@ -19,7 +17,7 @@ export class WysiwgBlockCallToActionView
     const jsPrefix = "javascript:";
     const onClick = actionOrUrl.substring(0, jsPrefix.length) === jsPrefix ? actionOrUrl.substring(jsPrefix.length) : `location.href='${actionOrUrl}'`;
     const innerHtml = `<div class="call-to-action"><button ${settings.inlineStyle} title="${onClick}">${callToActionText}</button></div>`;
-    return html`${unsafeHTML(this.setEditorLink(innerHtml))}`;
+    return this.setEditorLink(innerHtml);
   }
 
   static override styles = [

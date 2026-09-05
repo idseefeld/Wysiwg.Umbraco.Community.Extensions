@@ -1,4 +1,3 @@
-@using Microsoft.AspNetCore.Html
 @using Umbraco.Cms.Core.Models.PublishedContent
 @using Umbraco.Cms.Core.Serialization
 @using WysiwgUmbracoCommunityExtensions.ViewModels
@@ -8,8 +7,8 @@
 @{
     var content = new Wysiwg65_componentPicker(Model.Content, publishedValueFallback, jsonSerializer);
     var selectedComponent = content.SelectedComponent;
-    if (string.IsNullOrEmpty(selectedComponent)) return;
+    var previewImage = content.PreviewImage;
 
-    var html = new HtmlString($"<h2>Razor view rendered content</h2><p>{selectedComponent}</p>");
+    if (string.IsNullOrEmpty(selectedComponent)) return;
 }
-@html
+@await Component.InvokeAsync(selectedComponent, new { previewImage })

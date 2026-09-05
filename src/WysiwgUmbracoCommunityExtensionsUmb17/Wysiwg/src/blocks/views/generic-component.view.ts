@@ -1,14 +1,13 @@
 import {
-  html,
   customElement,
   css,
-  unsafeHTML,
   state,
   property,
 } from "@umbraco-cms/backoffice/external/lit";
 import WysiwgBaseBlockEditorCustomViewElement from "./wysiwg-base-block-editor-custom.view";
 import { ComponentPickerViewProps, LanguagesWorkspaceContext, } from "./types";
 import { BlockPropertyValueModel, postWysiwgPreviewMarkup, PostWysiwgPreviewMarkupData, RequestPreviewMarkupModel } from "../../api";
+import { MediaPickerValueModel } from "../types";
 import { UmbBlockTypeBaseModel } from "@umbraco-cms/backoffice/block-type";
 import { UMB_PROPERTY_DATASET_CONTEXT } from "@umbraco-cms/backoffice/property";
 import { UMB_WORKSPACE_CONTEXT, UmbWorkspaceContext } from "@umbraco-cms/backoffice/workspace";
@@ -20,6 +19,9 @@ export class WysiwgGenericComponentView
 
   @state()
   selectedComponent: string | undefined = undefined;
+
+  @state()
+  previewImage: MediaPickerValueModel | undefined = undefined;
 
   @state()
   culture?: string;
@@ -55,19 +57,22 @@ export class WysiwgGenericComponentView
   }
 
   override render() {
-    const componentPicker = (this.content as ComponentPickerViewProps)?.componentPicker ?? [];
+    const content = this.content as ComponentPickerViewProps;
+    const componentPicker = content?.componentPicker ?? [];
+
+    if (this.previewImage !== content?.previewImage) {
+      this.previewImage = content?.previewImage ?? "";
+    }
 
     if (this.selectedComponent !== componentPicker) {
       this.selectedComponent = componentPicker;
       this.getMarkup();
     }
 
-    return html`${unsafeHTML(this.setEditorLink(this.markup))}`;
+    return this.setEditorLink(this.markup);
   }
 
   private async getMarkup() {
-    this.settings = this.getLayoutSettings()
-
     if (!this.selectedComponent) {
       this.markup = "<em>[no component selected]</em>";
       return;
@@ -75,16 +80,20 @@ export class WysiwgGenericComponentView
 
     const requestModel = {
       data: {
-        contentTypeKey: this.blockType?.contentElementTypeKey ?? "", // "89bb2397-1aac-417f-9e1c-7f3ac0884999",
-        key: this.contentKey ?? "", //"744f4fd0-c0e1-4512-9422-16822b87ac75",
+        contentTypeKey: this.blockType?.contentElementTypeKey ?? "",
+        key: this.contentKey ?? "",
         values: [
           {
             value: this.selectedComponent,
             alias: "componentPicker"
+          } as BlockPropertyValueModel,
+          {
+            value: this.previewImage,
+            alias: "previewImage"
           } as BlockPropertyValueModel
         ],
       },
-      pageKey: this.documentUnique, // ?? "df06978c-4e12-4205-b020-ba3dccf1fb5a",
+      pageKey: this.documentUnique,
       culture: this.culture ?? "",
     } as RequestPreviewMarkupModel;
 

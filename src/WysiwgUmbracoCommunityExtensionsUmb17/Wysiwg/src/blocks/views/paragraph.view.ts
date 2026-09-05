@@ -1,8 +1,6 @@
 import {
-  html,
   customElement,
   css,
-  unsafeHTML,
   PropertyValues,
 } from "@umbraco-cms/backoffice/external/lit";
 import WysiwgBaseBlockEditorCustomViewElement from "./wysiwg-base-block-editor-custom.view";
@@ -46,7 +44,7 @@ export class WysiwgBlockParagraphView
     var property = this.content?.text as { blocks: {}; markup: string };
     var markup = property?.markup;
     const innerHtml = `<div id="paragraph" ${settings.inlineStyle}>${markup}</div>`;
-    return html`${unsafeHTML(this.setEditorLink(innerHtml))}`;
+    return this.setEditorLink(innerHtml);
   }
 
   static override styles = [

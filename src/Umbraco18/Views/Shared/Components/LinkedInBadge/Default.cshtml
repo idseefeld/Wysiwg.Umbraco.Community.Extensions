@@ -1,0 +1,15 @@
+@using Umbraco18.Views.Shared.Components.LinkedInBadge
+@model LinkedInBadgeModel
+@{
+    var src = Model?.PreviewImage?.Content?.Value<string>("umbracoFile");
+}
+@if (!string.IsNullOrEmpty(src))
+{
+    <div class="editor-preview">
+        <img src="@src" alt="Preview Image" style="max-width: 100%;" />
+    </div>
+}
+else
+{
+    <p>Need more information.</p>
+}

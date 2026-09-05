@@ -1,20 +1,20 @@
-import { unsafeHTML as e, html as g, css as w, customElement as d } from "@umbraco-cms/backoffice/external/lit";
-import { W as s } from "./wysiwg-base-block-editor-custom.view-CCHW93dJ.js";
-var b = Object.getOwnPropertyDescriptor, y = (a, n, c, o) => {
-  for (var t = o > 1 ? void 0 : o ? b(n, c) : n, i = a.length - 1, l; i >= 0; i--)
+import { css as e, customElement as g } from "@umbraco-cms/backoffice/external/lit";
+import { W as s } from "./wysiwg-base-block-editor-custom.view-CxUo8Q00.js";
+var w = Object.getOwnPropertyDescriptor, d = (a, n, c, o) => {
+  for (var t = o > 1 ? void 0 : o ? w(n, c) : n, i = a.length - 1, l; i >= 0; i--)
     (l = a[i]) && (t = l(t) || t);
   return t;
 };
-const m = "wysiwg-block-call-to-action-view";
+const b = "wysiwg-block-call-to-action-view";
 let r = class extends s {
   render() {
     const a = this.getLayoutSettings(), n = this.content?.label ?? "Call to Action", o = (this.content?.actionOrUrl ?? [])[0]?.url ?? "#", t = "javascript:", i = o.substring(0, t.length) === t ? o.substring(t.length) : `location.href='${o}'`, l = `<div class="call-to-action"><button ${a.inlineStyle} title="${i}">${n}</button></div>`;
-    return g`${e(this.setEditorLink(l))}`;
+    return this.setEditorLink(l);
   }
 };
 r.styles = [
   s.baseStyles,
-  w`
+  e`
       :host {
         display: block;
         height: 100%;
@@ -43,12 +43,12 @@ r.styles = [
       }
     `
 ];
-r = y([
-  d(m)
+r = d([
+  g(b)
 ], r);
-const p = r;
+const u = r;
 export {
   r as WysiwgBlockCallToActionView,
-  p as default
+  u as default
 };
-//# sourceMappingURL=call-to-action.view-_1vdVtac.js.map
+//# sourceMappingURL=call-to-action.view-DQEbc_8S.js.map

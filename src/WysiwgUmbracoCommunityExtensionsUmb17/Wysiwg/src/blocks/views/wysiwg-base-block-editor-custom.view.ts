@@ -1,9 +1,11 @@
 import {
   css,
   customElement,
+  html,
   LitElement,
   property,
   state,
+  unsafeHTML,
 } from "@umbraco-cms/backoffice/external/lit";
 import { UmbElementMixin } from "@umbraco-cms/backoffice/element-api";
 import type { UmbBlockEditorCustomViewConfiguration, UmbBlockEditorCustomViewElement } from "@umbraco-cms/backoffice/block-custom-view";
@@ -20,6 +22,7 @@ import { ColorType, LayoutSettings } from "./types";
 import { WYSIWG_BLOCKGRID_CONTEXT } from "../../context";
 import { UpdateStatus } from "../../types";
 import { UmbTextStyles } from "@umbraco-cms/backoffice/style";
+import { openEditor } from "../../util/edit.action";
 
 const customElementName = "wysiwg-base.block-editor-custom-view";
 @customElement(customElementName)
@@ -35,6 +38,9 @@ export class WysiwgBaseBlockEditorCustomViewElement
 
   @property({ attribute: false })
   settings?: UmbBlockDataType;
+
+  @property({ attribute: false })
+  private _href = '';
 
   @state()
   protected documentUnique = '';
@@ -98,9 +104,17 @@ export class WysiwgBaseBlockEditorCustomViewElement
     )[0]?.values;
   }
 
+  protected openEditorDialog() {
+    openEditor(this._href);
+  }
+
   protected setEditorLink(content: string) {
-    const editorUrl = this.config?.editContentPath ?? "";
-    return `<a id="editor-link" href="${editorUrl}">${content}</a>`;
+    this._href = this.config?.editContentPath ?? "";
+    return html`
+      <div id="edit-button" @click="${this.openEditorDialog}">
+        ${unsafeHTML(content)}
+      </div>
+    `;
   }
 
   protected getLayoutSettings(sizeDefault: string = "h1"): LayoutSettings {
@@ -203,15 +217,9 @@ export class WysiwgBaseBlockEditorCustomViewElement
   static baseStyles = [
     UmbTextStyles,
     css`
-       a#editor-link{
-        color: initial;
-        text-decoration: none;
+      #edit-button{
         cursor: pointer;
-       }
-       a#editor-link:hover{
-        color: inherit;
-        cursor: pointer;
-       }
+      }
     `];
 }
 

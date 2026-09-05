@@ -1,8 +1,6 @@
 import {
-  html,
   customElement,
   css,
-  unsafeHTML,
 } from "@umbraco-cms/backoffice/external/lit";
 import WysiwgBaseBlockEditorCustomViewElement from "./wysiwg-base-block-editor-custom.view";
 
@@ -16,7 +14,7 @@ export class WysiwgBlockHeadlineView
 
     const headline = this.content?.text ?? "Headline";
     const innerHtml = `<${settings.size} class="headline" ${settings.inlineStyle}>${headline}</${settings.size}>`;
-    return html`${unsafeHTML(this.setEditorLink(innerHtml))}`;
+    return this.setEditorLink(innerHtml);
   }
 
   static override styles = [

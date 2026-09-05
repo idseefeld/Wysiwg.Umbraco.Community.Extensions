@@ -35,6 +35,7 @@ export type LayoutSettings = {
 
 export type ComponentPickerViewProps = {
   componentPicker: string;
+  previewImage: MediaPickerValueModel;
 };
 
 export type Language = {

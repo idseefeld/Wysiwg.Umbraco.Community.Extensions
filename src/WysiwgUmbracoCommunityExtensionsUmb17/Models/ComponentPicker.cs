@@ -6,5 +6,8 @@ namespace WysiwgUmbracoCommunityExtensions.Models
     {
         [ConfigurationField("selectedValue")]
         public string? SelectedValue { get; set; }
+
+        [ConfigurationField("previewImage")]
+        public string? PreviewImage { get; set; }
     }
 }
