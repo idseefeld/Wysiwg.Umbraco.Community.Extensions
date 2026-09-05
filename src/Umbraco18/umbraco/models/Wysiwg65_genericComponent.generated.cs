@@ -56,5 +56,13 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
 		[ImplementPropertyType("componentPicker")]
 		public virtual string ComponentPicker => this.Value<string>(_publishedValueFallback, "componentPicker");
+
+		///<summary>
+		/// Preview Image: Simulate preview with a static image
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "18.1.1+43ba6c3")]
+		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		[ImplementPropertyType("previewImage")]
+		public virtual global::Umbraco.Cms.Core.Models.MediaWithCrops PreviewImage => this.Value<global::Umbraco.Cms.Core.Models.MediaWithCrops>(_publishedValueFallback, "previewImage");
 	}
 }

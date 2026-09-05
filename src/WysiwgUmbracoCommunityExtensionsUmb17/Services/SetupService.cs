@@ -1750,7 +1750,8 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
             var propertyDefinitions = new List<PropertyDefinition>()
             {
-                new ("Component Picker", $"{Constants.Prefix}ComponentPicker", 1, "Selected any component which name starts with BlockElement.", variations: ContentVariation.Nothing)
+                new ("Component Picker", $"{Constants.Prefix}ComponentPicker", 1, "Selected a ViewComponent.", variations: ContentVariation.Nothing),
+                new ("Preview Image", "Umbraco.MediaPicker3", 1, "Simulate preview with a static image.", variations: ContentVariation.CultureAndSegment)
             };
 
             await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);
