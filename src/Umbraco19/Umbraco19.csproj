@@ -98,6 +98,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Owin" />
+    <PackageReference Include="Our.Umbraco.DictionaryLocalizer" />
     <PackageReference Include="Umbraco.Cms" />
     <PackageReference Include="uSync" />
   </ItemGroup>
