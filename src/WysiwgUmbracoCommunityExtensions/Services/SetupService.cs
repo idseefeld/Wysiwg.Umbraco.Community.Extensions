@@ -1327,7 +1327,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             compareAlias = string.IsNullOrEmpty(elementTypeAlias)
                 ? alias
                 : elementTypeAlias;
-            await CreateOrUpdateGenericComponentElementType(compareAlias, alias, elementContainer);
+            await CreateOrUpdateGenericComponentElementType(compareAlias, alias, elementContainer, culture, segment);
 
 
             #region Deprecated
@@ -1727,7 +1727,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);
         }
 
-        private async Task CreateOrUpdateGenericComponentElementType(string elementTypeAlias, string alias, EntityContainer elementContainer, bool? culture = false, bool? segment = false)
+        private async Task CreateOrUpdateGenericComponentElementType(string elementTypeAlias, string alias, EntityContainer elementContainer, bool? culture, bool? segment)
         {
             if (elementTypeAlias != alias)
             { return; }
@@ -1751,7 +1751,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             var propertyDefinitions = new List<PropertyDefinition>()
             {
                 new ("Component Picker", $"{Constants.Prefix}ComponentPicker", 1, "Selected a ViewComponent.", variations: ContentVariation.Nothing),
-                new ("Preview Image", "Image Media Picker", 1, "Simulate preview with a static image.", variations: ContentVariation.CultureAndSegment)
+                new ("Preview Image", "Image Media Picker", 1, "Simulate preview with a static image.", variations: ContentVariation.Culture)
             };
 
             await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);

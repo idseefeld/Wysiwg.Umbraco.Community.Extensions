@@ -10,6 +10,7 @@
     <UmbracoAppLocalIcuVersion Condition="'$(UmbracoAppLocalIcuVersion)' == ''">72.1.0.3</UmbracoAppLocalIcuVersion>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="Microsoft.Owin" Version="4.2.3" />
     <PackageVersion Include="Umbraco.Cms" Version="19.0.0-rc1" />
     <PackageVersion Include="Umbraco.Cms.DevelopmentMode.Backoffice" Version="19.0.0-rc1" />
     <PackageVersion Include="Microsoft.ICU.ICU4C.Runtime" Version="$(UmbracoAppLocalIcuVersion)" />
