@@ -5,27 +5,27 @@ namespace Umbraco19.Models
 {
     public class ContactFormModel : DictionaryDataAnnotationBaseModel
     {
-        [Required(ErrorMessage = "#nameRequired")]
+        [Required(ErrorMessage = "#requiredErrorMessage")]
         [Display(Name = "Name")]
         public string FirstAndLastName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "#emailRequired")]
-        [EmailAddress(ErrorMessage = "#emailInvalid")]
-        [Display(Name = "E-Mail")]
+        [Required(ErrorMessage = "#requiredErrorMessage")]
+        [EmailAddress(ErrorMessage = "#InvalidErrorMessage.email")]
+        [Display(Name = "#emailLabel")]
         public string Email { get; set; } = string.Empty;
 
-        [Display(Name = "Betreff")]
-        [Required(ErrorMessage = "#subjectRequired")]
+        [Display(Name = "#subjectLabel")]
+        [Required(ErrorMessage = "#requiredErrorMessage")]
         public string Subject { get; set; } = string.Empty;
 
-        [Display(Name = "Nachricht")]
-        [Required(ErrorMessage = "#messageRequired")]
+        [Display(Name = "#messageLabel")]
+        [Required(ErrorMessage = "#requiredErrorMessage")]
         public string Message { get; set; } = string.Empty;
 
         public int? EditingTime { get; set; }
         public string? HostInfo { get; set; }
         public bool DataConsent { get; set; }
-        [Required(ErrorMessage = "#dataConsentRequired")]
+        [Required(ErrorMessage = "#consentRequiredErrorMessage")]
         public string? DataConsentText { get; set; }
     }
 }
