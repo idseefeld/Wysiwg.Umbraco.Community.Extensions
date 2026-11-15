@@ -44,7 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WysiwgUmbracoCommunityExtensionsUmb17\WysiwgUmbracoCommunityExtensionsUmb17.csproj" />
+    <ProjectReference Include="..\WysiwgUmbracoCommunityExtensionsUmb17\WysiwgUmbracoCommunityExtensions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
