@@ -18,9 +18,24 @@ using Umbraco.Extensions;
 
 namespace Umbraco.Cms.Web.Common.PublishedModels
 {
+	// Mixin Content Type with alias "wysiwg65_genericComponent"
+	/// <summary>Generic Component</summary>
+	public partial interface IWysiwg65_genericComponent : IPublishedElement
+	{
+		/// <summary>Component Picker</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "18.1.1+43ba6c3")]
+		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		string ComponentPicker { get; }
+
+		/// <summary>Preview Image</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "18.1.1+43ba6c3")]
+		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		global::Umbraco.Cms.Core.Models.MediaWithCrops PreviewImage { get; }
+	}
+
 	/// <summary>Generic Component</summary>
 	[PublishedModel("wysiwg65_genericComponent")]
-	public partial class Wysiwg65_genericComponent : PublishedElementModel
+	public partial class Wysiwg65_genericComponent : PublishedElementModel, IWysiwg65_genericComponent
 	{
 		// helpers
 #pragma warning disable 0109 // new is redundant
@@ -55,7 +70,12 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "18.1.1+43ba6c3")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
 		[ImplementPropertyType("componentPicker")]
-		public virtual string ComponentPicker => this.Value<string>(_publishedValueFallback, "componentPicker");
+		public virtual string ComponentPicker => GetComponentPicker(this, _publishedValueFallback);
+
+		/// <summary>Static getter for Component Picker</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "18.1.1+43ba6c3")]
+		[return: global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		public static string GetComponentPicker(IWysiwg65_genericComponent that, IPublishedValueFallback publishedValueFallback) => that.Value<string>(publishedValueFallback, "componentPicker");
 
 		///<summary>
 		/// Preview Image: Simulate preview with a static image
@@ -63,6 +83,11 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "18.1.1+43ba6c3")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
 		[ImplementPropertyType("previewImage")]
-		public virtual global::Umbraco.Cms.Core.Models.MediaWithCrops PreviewImage => this.Value<global::Umbraco.Cms.Core.Models.MediaWithCrops>(_publishedValueFallback, "previewImage");
+		public virtual global::Umbraco.Cms.Core.Models.MediaWithCrops PreviewImage => GetPreviewImage(this, _publishedValueFallback);
+
+		/// <summary>Static getter for Preview Image</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "18.1.1+43ba6c3")]
+		[return: global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		public static global::Umbraco.Cms.Core.Models.MediaWithCrops GetPreviewImage(IWysiwg65_genericComponent that, IPublishedValueFallback publishedValueFallback) => that.Value<global::Umbraco.Cms.Core.Models.MediaWithCrops>(publishedValueFallback, "previewImage");
 	}
 }

@@ -20,7 +20,7 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 {
 	/// <summary>Full Row</summary>
 	[PublishedModel("wysiwg65_layout1")]
-	public partial class Wysiwg65_layout1 : PublishedElementModel
+	public partial class Wysiwg65_layout1 : PublishedElementModel, ILayoutComposition
 	{
 		// helpers
 #pragma warning disable 0109 // new is redundant
@@ -48,5 +48,13 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		}
 
 		// properties
+
+		///<summary>
+		/// Layout Marker: This serves only as visual help in backoffice Document types section.
+		///</summary>
+		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "18.1.1+43ba6c3")]
+		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
+		[ImplementPropertyType("layoutMarker")]
+		public virtual string LayoutMarker => global::Umbraco.Cms.Web.Common.PublishedModels.LayoutComposition.GetLayoutMarker(this, _publishedValueFallback);
 	}
 }
