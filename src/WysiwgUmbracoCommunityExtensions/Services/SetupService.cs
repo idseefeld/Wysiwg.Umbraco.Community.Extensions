@@ -1748,10 +1748,13 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 UpdateCultureAndSegment(culture, segment, type);
             }
 
+            var allDts = (await dataTypeService.GetAllAsync())
+                .Where(d => d.Name != null && d.Name.InvariantContains("media"))
+                .Select(d => $"{d.Id} {d.Name}");
             var propertyDefinitions = new List<PropertyDefinition>()
             {
                 new ("Component Picker", $"{Constants.Prefix}ComponentPicker", 1, "Selected a ViewComponent.", variations: ContentVariation.Nothing),
-                new ("Preview Image", "Umbraco.MediaPicker3", 1, "Simulate preview with a static image.", variations: ContentVariation.CultureAndSegment)
+                new ("Preview Image", "Image Media Picker", 1, "Simulate preview with a static image.", variations: ContentVariation.CultureAndSegment)
             };
 
             await CreateOrUpdateContentElementProperties(type, propertyDefinitions, newType);
@@ -1806,10 +1809,20 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             }
         }
 
-        private async Task<IPropertyType> GetPropertyType(PropertyDefinition definition)
+        private async Task<IPropertyType?> GetPropertyType(PropertyDefinition definition)
         {
-            var dt = await dataTypeService.GetAsync(definition.DataTypeName)
-                       ?? throw new Exception($"{_errorMsgDataTypeNotFoundStart} {definition.DataTypeName}");
+            IDataType? dt;
+            try
+            {
+                dt = await dataTypeService.GetAsync(definition.DataTypeName)
+                              ?? throw new Exception($"{_errorMsgDataTypeNotFoundStart} {definition.DataTypeName}");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, ex.Message);
+                return null;
+            }
+
             var propertyType = new PropertyType(shortStringHelper, dt)
             {
                 Alias = definition.Alias ?? definition.Name.ToFirstLower().Replace(" ", string.Empty),
@@ -1854,16 +1867,10 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             {
                 foreach (var definition in propertyDefinitions)
                 {
-                    try
+                    var propertyType = await GetPropertyType(definition);
+                    if (propertyType != null)
                     {
-                        var propertyType = await GetPropertyType(definition);
-
                         propItems.Add(propertyType);
-                    }
-                    catch (Exception)
-                    {
-
-                        throw;
                     }
                 }
             }

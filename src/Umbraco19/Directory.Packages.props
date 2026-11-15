@@ -13,5 +13,6 @@
     <PackageVersion Include="Umbraco.Cms" Version="19.0.0-rc1" />
     <PackageVersion Include="Umbraco.Cms.DevelopmentMode.Backoffice" Version="19.0.0-rc1" />
     <PackageVersion Include="Microsoft.ICU.ICU4C.Runtime" Version="$(UmbracoAppLocalIcuVersion)" />
+    <PackageVersion Include="uSync" Version="19.0.0-rc1" />
   </ItemGroup>
 </Project>

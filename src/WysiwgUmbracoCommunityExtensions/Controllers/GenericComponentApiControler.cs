@@ -90,8 +90,12 @@ public partial class WysiwgApiController : ManagementApiControllerBase
             }
         }
 
+        // The culture of the stored property value data was loaded from, or null when the
+        // property holding the block value does not vary by culture.
+        string? owningPropertyCulture = null;
+
         // convert the json data to a IPublishedElement (using the built-in conversion)
-        var element = blockEditorConverter.ConvertToElement(owner, blockData, PropertyCacheLevel.None, true) ?? throw new InvalidOperationException("Failed to convert block data to element.");
+        var element = blockEditorConverter.ConvertToElement(owner, blockData, PropertyCacheLevel.None, true, owningPropertyCulture) ?? throw new InvalidOperationException("Failed to convert block data to element.");
 
         // get the models builder type based on content type alias
         var blockType = typeFinder.FindClassesWithAttribute<PublishedModelAttribute>().FirstOrDefault(x =>

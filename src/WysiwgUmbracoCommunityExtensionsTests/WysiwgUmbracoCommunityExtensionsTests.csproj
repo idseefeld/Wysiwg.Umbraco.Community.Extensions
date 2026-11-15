@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net11.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WysiwgUmbracoCommunityExtensionsUmb17\WysiwgUmbracoCommunityExtensions.csproj" />
+    <ProjectReference Include="..\WysiwgUmbracoCommunityExtensions\WysiwgUmbracoCommunityExtensions.csproj" />
   </ItemGroup>
 
 </Project>

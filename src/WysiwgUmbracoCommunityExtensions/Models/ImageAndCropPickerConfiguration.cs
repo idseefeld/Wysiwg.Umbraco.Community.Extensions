@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Umbraco.Cms.Core.PropertyEditors;
-using static Umbraco.Cms.Core.PropertyEditors.MediaPicker3Configuration;
+using static Umbraco.Cms.Core.PropertyEditors.MediaPickerConfigurationBase;
 
 namespace WysiwgUmbracoCommunityExtensions.Models
 {
