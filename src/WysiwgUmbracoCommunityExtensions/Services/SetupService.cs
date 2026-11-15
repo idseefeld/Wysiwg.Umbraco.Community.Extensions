@@ -1456,7 +1456,7 @@ namespace WysiwgUmbracoCommunityExtensions.Services
             var propertyDefinitions = new List<PropertyDefinition>()
             {
                 new ("Background Color", $"{Constants.Prefix}CustomerColors", 1),
-                new ("Background Image", "Media Picker", 2),
+                new ("Background Image", "Image Media Picker", 2),
                 new ("Padding", "Textstring", 3, "Any valid css value e.g.: 10px, 10px 20px, 0 etc."),
                 new ("MinHeight", "Textstring", 4, "Any valid css size e.g.: 400px, 40em, 0 etc.")
             };
@@ -1748,9 +1748,6 @@ namespace WysiwgUmbracoCommunityExtensions.Services
                 UpdateCultureAndSegment(culture, segment, type);
             }
 
-            var allDts = (await dataTypeService.GetAllAsync())
-                .Where(d => d.Name != null && d.Name.InvariantContains("media"))
-                .Select(d => $"{d.Id} {d.Name}");
             var propertyDefinitions = new List<PropertyDefinition>()
             {
                 new ("Component Picker", $"{Constants.Prefix}ComponentPicker", 1, "Selected a ViewComponent.", variations: ContentVariation.Nothing),
@@ -1811,6 +1808,11 @@ namespace WysiwgUmbracoCommunityExtensions.Services
 
         private async Task<IPropertyType?> GetPropertyType(PropertyDefinition definition)
         {
+#if DEBUG
+            var allDts = (await dataTypeService.GetAllAsync())
+                .Select(d => $"{d.Id} {d.Name}");
+#endif
+
             IDataType? dt;
             try
             {

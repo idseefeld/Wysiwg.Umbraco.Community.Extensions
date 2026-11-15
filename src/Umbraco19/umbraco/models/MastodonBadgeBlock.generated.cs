@@ -73,7 +73,7 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		public virtual bool Watermark => this.Value<bool>(_publishedValueFallback, "watermark");
 
 		///<summary>
-		/// Component Picker: Selected a ViewComponent
+		/// Component Picker: Selected a ViewComponent.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "19.0.0-rc1+b158b78")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
@@ -81,7 +81,7 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		public virtual string ComponentPicker => global::Umbraco.Cms.Web.Common.PublishedModels.Wysiwg65_genericComponent.GetComponentPicker(this, _publishedValueFallback);
 
 		///<summary>
-		/// Preview Image: Simulate preview with a static image
+		/// Preview Image: Simulate preview with a static image.
 		///</summary>
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "19.0.0-rc1+b158b78")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
